@@ -1261,7 +1261,7 @@ export function renderPage8ActionSteps(data: ReportData): string {
         </div>
 
         <p style="line-height: 1.8; font-size: 1.05em; margin-bottom: 0;">
-          To schedule a consultation, contact us through our website or visit Srichakra Academy directly.
+          To schedule a consultation, visit <a href="https://srichakraacademy.org/contact" style="color: #006D77; font-weight: bold;">srichakraacademy.org/contact</a> or visit Srichakra Academy directly.
         </p>
       </div>
 
@@ -1296,7 +1296,7 @@ export function renderPage8ActionSteps(data: ReportData): string {
           Srichakra Academy — The School To Identify Your Child's Divine Gift!!
         </p>
         <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #ccc;">
-          For questions or consultation, contact us through our website.
+          For questions or consultation, visit <a href="https://srichakraacademy.org/contact" style="color: #83C5BE;">srichakraacademy.org/contact</a>
         </p>
       </div>
     </div>
