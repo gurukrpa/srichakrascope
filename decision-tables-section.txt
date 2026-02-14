@@ -1,0 +1,82 @@
+            <div class="recommendations" style="margin-top: 30px;">
+              <h3 style="margin-top: 0; color: #006D77;">🎯 Decision Table: After Class 10 – Subject Stream Readiness</h3>
+              <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 15px;">
+                Based on <strong>objective aptitude performance</strong>, here are your stream options ranked by readiness:
+              </p>
+              
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;">
+                <thead>
+                  <tr style="background: #006D77; color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Rank</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Stream Option</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Key Aptitudes Required</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Aptitude Score</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Readiness Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${streamOptions.map((stream, index) => `
+                    <tr style="${stream.readiness === 'READY NOW' ? 'background: #d4edda;' : stream.readiness === 'WITH DEVELOPMENT' ? 'background: #fff3cd;' : 'background: #f8d7da;'}">
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: center;">${index + 1}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${stream.stream}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">${stream.keyAptitudes}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${stream.score.toFixed(0)}%</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">
+                        <strong>${stream.readiness}</strong>
+                        ${stream.readiness === 'READY NOW' ? '<br><span style="font-size: 0.9em; color: #155724;">↗ Recommended pathway</span>' :
+                          stream.readiness === 'WITH DEVELOPMENT' ? '<br><span style="font-size: 0.9em; color: #856404;">⚠ Needs skill-building</span>' :
+                          '<br><span style="font-size: 0.9em; color: #721c24;">⚡ High effort required</span>'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              
+              <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                <strong>Parent Guidance:</strong> The ranking above is based purely on demonstrated aptitude readiness. 
+                Students showing "READY NOW" status have current capability; "WITH DEVELOPMENT" students can catch up with focused effort; 
+                "EXPLORATORY" paths may require significant remediation or may not align with current strengths.
+              </p>
+            </div>
+
+            <div class="recommendations" style="margin-top: 30px;">
+              <h3 style="margin-top: 0; color: #006D77;">🎓 Decision Table: After Class 12 – Course Family Alignment</h3>
+              <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 15px;">
+                Ranked by <strong>combined aptitude readiness (60%) + preference alignment (40%)</strong>:
+              </p>
+              
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;">
+                <thead>
+                  <tr style="background: #006D77; color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Rank</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Course Family</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Required Aptitudes</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Aptitude<br>Score</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Preference<br>Match</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Readiness Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${courseFamilies.map((cf, index) => `
+                    <tr style="${cf.readiness === 'READY NOW' ? 'background: #d4edda;' : cf.readiness === 'WITH DEVELOPMENT' ? 'background: #fff3cd;' : 'background: #f8d7da;'}">
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: center;">${index + 1}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${cf.family}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">${cf.requiredAptitudes}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${cf.score.toFixed(0)}%</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${(cf.preferenceAlignment).toFixed(1)}/5.0</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">
+                        <strong>${cf.readiness}</strong>
+                        ${cf.readiness === 'READY NOW' ? '<br><span style="font-size: 0.9em; color: #155724;">↗ Strong pathway match</span>' :
+                          cf.readiness === 'WITH DEVELOPMENT' ? '<br><span style="font-size: 0.9em; color: #856404;">⚠ Possible with prep</span>' :
+                          '<br><span style="font-size: 0.9em; color: #721c24;">⚡ Exploration only</span>'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              
+              <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                <strong>Parent Guidance:</strong> Rankings combine proven aptitude (objective test performance) with stated interest (self-reported preferences). 
+                Top-ranked families show both capability AND interest. Lower ranks may indicate interest without sufficient aptitude foundation, requiring extra preparation.
+              </p>
+            </div>

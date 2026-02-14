@@ -1,0 +1,624 @@
+================================================================================
+COMPREHENSIVE REPORT ENHANCEMENT PATCH
+For: client/src/pages/CareerAssessment.tsx
+Scope: PDF content and layout only - NO scoring/logic changes
+================================================================================
+
+SUMMARY OF CHANGES:
+===================
+1. Remove decision tables from Page 1 (Executive Summary)
+2. Transform Page 2 from "Detailed Charts" to "Aptitude Ability Snapshot" with enhanced interpretation
+3. Rename existing charts page to "Page 3: Preference Domain Analysis"  
+4. Keep Brain Analysis as Page 4
+5. Add new Page 5: Educational Pathway Decision Tables (with "Why This Fits You" explanations)
+6. Add new Page 6: Career Direction Clusters (exploration only, with disclaimer)
+7. Add new Page 7: Action Steps & Guidance
+8. Update all page markers and flow
+
+TARGET STRUCTURE:
+=================
+Page 1: Cover & Executive Summary
+Page 2: Aptitude Ability Snapshot (NEW - enhanced)
+Page 3: Preference Domain Analysis (RENAMED from Page 2)
+Page 4: Brain Hemisphere & Learning Style Analysis
+Page 5: Educational Pathway Decision Tables (MOVED from Page 1, enhanced)
+Page 6: Career Direction Clusters (NEW - exploration only)
+Page 7: Action Steps & Guidance (NEW)
+
+================================================================================
+PATCH INSTRUCTIONS:
+================================================================================
+
+---
+CHANGE #1: Remove decision tables from Page 1
+LOCATION: After line ~755 (after Executive Summary </div>)
+ACTION: DELETE lines containing both decision tables
+---
+
+FIND AND DELETE (approximately lines 758-840):
+
+```
+            <div class="recommendations" style="margin-top: 30px;">
+              <h3 style="margin-top: 0; color: #006D77;">🎯 Decision Table: After Class 10 – Subject Stream Readiness</h3>
+              ...
+              [entire Class 10 table]
+              ...
+            </div>
+
+            <div class="recommendations" style="margin-top: 30px;">
+              <h3 style="margin-top: 0; color: #006D77;">🎓 Decision Table: After Class 12 – Course Family Alignment</h3>
+              ...
+              [entire Class 12 table]
+              ...
+            </div>
+```
+
+DELETE FROM: Line starting with `<div class="recommendations" style="margin-top: 30px;">`
+             (where next line contains "Decision Table: After Class 10")
+DELETE UNTIL: Line before `<!-- Page 2: Detailed Charts -->`
+KEEP: The `</div>` closing tag before the Page 2 comment
+
+RESULT: Page 1 should end with:
+```
+              </p>
+            </div>
+          </div>
+
+          <!-- Page 2: Aptitude Ability Snapshot -->
+```
+
+---
+CHANGE #2: Transform Page 2 to Aptitude Ability Snapshot
+LOCATION: Line ~843 (Page 2 header section)
+ACTION: REPLACE entire page structure
+---
+
+FIND (lines ~843-848):
+```
+          <!-- Page 2: Detailed Charts -->
+          <div class="page">
+            <div class="header">
+              <h1>Detailed Analysis & Charts</h1>
+            </div>
+
+            <h2>Domain Scores Breakdown</h2>
+```
+
+REPLACE WITH:
+```
+          <!-- Page 2: Aptitude Ability Snapshot -->
+          <div class="page">
+            <div class="header">
+              <h1>Aptitude Ability Snapshot</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">Objective Assessment of Current Academic Readiness</p>
+            </div>
+
+            <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #006D77; border-radius: 8px; margin-bottom: 25px;">
+              <h3 style="margin-top: 0; color: #006D77;">📊 Understanding Aptitude Scores</h3>
+              <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 12px;">
+                This section reflects <strong>objective ability-based questions</strong> with right or wrong answers. 
+                Unlike preferences (what you enjoy), aptitudes measure what you can currently do well. 
+                These are <em>current snapshots</em> that can improve with practice and development.
+              </p>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                <strong>Four Key Domains Assessed:</strong>
+              </p>
+              <ul style="font-size: 1.05em; line-height: 1.8; margin: 10px 0 0 25px;">
+                <li><strong>Numerical Reasoning:</strong> Ability to work with numbers, calculations, mathematical patterns</li>
+                <li><strong>Logical Reasoning:</strong> Problem-solving, pattern recognition, analytical thinking</li>
+                <li><strong>Verbal Reasoning:</strong> Language comprehension, vocabulary, communication clarity</li>
+                <li><strong>Spatial Reasoning:</strong> Visual-spatial awareness, design thinking, 3D visualization</li>
+              </ul>
+            </div>
+
+            <h2 style="color: #006D77; margin-top: 25px;">Your Aptitude Performance</h2>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;">
+              <thead>
+                <tr style="background: #006D77; color: white;">
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Aptitude Domain</th>
+                  <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Score</th>
+                  <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Performance</th>
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Readiness Band</th>
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Academic Skills Enabled</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${aptitudeResults.map(apt => `
+                  <tr style="${apt.percentage >= 75 ? 'background: #d4edda;' : apt.percentage >= 50 ? 'background: #fff3cd;' : 'background: #f8d7da;'}">
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${apt.domain}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${apt.correct}/${apt.total}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${apt.percentage.toFixed(0)}%</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                      ${apt.percentage >= 75 ? '<strong style="color: #155724;">READY NOW</strong><br><span style="font-size: 0.9em;">Strong foundation demonstrated</span>' :
+                        apt.percentage >= 50 ? '<strong style="color: #856404;">WITH DEVELOPMENT</strong><br><span style="font-size: 0.9em;">Requires focused skill-building</span>' :
+                        '<strong style="color: #721c24;">EXPLORATORY ONLY</strong><br><span style="font-size: 0.9em;">Needs significant strengthening</span>'}
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">
+                      ${apt.domain === 'Numerical Reasoning' ? 'Mathematics, Science, Engineering, Finance, Data Analysis, Quantitative Research' :
+                        apt.domain === 'Logical Reasoning' ? 'Problem-solving, Programming, Strategy Development, Research, Systems Analysis' :
+                        apt.domain === 'Verbal Reasoning' ? 'Communication, Writing, Teaching, Law, Humanities, Language Studies' :
+                        'Design, Architecture, Engineering Drawing, Art, Geometry, Visualization, Spatial Planning'}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div style="margin-top: 25px; padding: 20px; background: #fff9e6; border-left: 5px solid #f0ad4e; border-radius: 8px;">
+              <h3 style="margin-top: 0; color: #856404;">📋 What This Means: Your Aptitude Profile</h3>
+              <div style="font-size: 1.05em; line-height: 1.8;">
+                <p style="margin-bottom: 15px;"><strong>READY NOW Domains (${aptitudeResults.filter(a => a.percentage >= 75).length} of 4):</strong></p>
+                <ul style="margin: 5px 0 15px 25px;">
+                  ${aptitudeResults.filter(a => a.percentage >= 75).map(a => `
+                    <li><strong>${a.domain}</strong> – You demonstrate strong capability. Academic pathways requiring this aptitude are well-matched to your current strengths.</li>
+                  `).join('')}
+                  ${aptitudeResults.filter(a => a.percentage >= 75).length === 0 ? '<li><em>No domains currently at this level. Your strongest areas are in the WITH DEVELOPMENT category below.</em></li>' : ''}
+                </ul>
+
+                <p style="margin-bottom: 15px;"><strong>WITH DEVELOPMENT Domains (${aptitudeResults.filter(a => a.percentage >= 50 && a.percentage < 75).length} of 4):</strong></p>
+                <ul style="margin: 5px 0 15px 25px;">
+                  ${aptitudeResults.filter(a => a.percentage >= 50 && a.percentage < 75).map(a => `
+                    <li><strong>${a.domain}</strong> – Foundational ability present. With focused practice over 6-12 months, pathways requiring this aptitude become viable.</li>
+                  `).join('')}
+                  ${aptitudeResults.filter(a => a.percentage >= 50 && a.percentage < 75).length === 0 ? '<li><em>No domains in this range.</em></li>' : ''}
+                </ul>
+
+                <p style="margin-bottom: 15px;"><strong>EXPLORATORY ONLY Domains (${aptitudeResults.filter(a => a.percentage < 50).length} of 4):</strong></p>
+                <ul style="margin: 5px 0 0 25px;">
+                  ${aptitudeResults.filter(a => a.percentage < 50).map(a => `
+                    <li><strong>${a.domain}</strong> – Performance suggests this may not align with natural strengths. Pathways heavily dependent on this require significant effort and may not be optimal fits.</li>
+                  `).join('')}
+                  ${aptitudeResults.filter(a => a.percentage < 50).length === 0 ? '<li><em>Excellent! No domains in this range. You show balanced or strong performance across all areas.</em></li>' : ''}
+                </ul>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-left: 5px solid #2196F3; border-radius: 8px;">
+              <h4 style="margin-top: 0; color: #1976D2;">💡 For Parents: Using Aptitude Data</h4>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                These scores reveal where your child currently excels and where additional support may be needed. 
+                The upcoming <strong>Decision Tables (Page 5)</strong> will show exactly how these aptitude strengths map to specific academic streams (Class 10) and course families (Class 12). 
+                <strong>Key insight:</strong> Aptitudes can be developed through practice—these are current snapshots, not fixed limits.
+              </p>
+            </div>
+          </div>
+
+          <!-- Page 3: Preference Domain Analysis -->
+```
+
+---
+CHANGE #3: Update preference charts page header
+LOCATION: After the new Page 2 closing </div>
+ACTION: UPDATE page comment and header
+---
+
+The existing bar charts and pie charts should remain intact, just update the header.
+
+FIND (the next occurrence after new Page 2):
+```
+          <div class="page">
+            <div class="header">
+              <h1>Detailed Analysis & Charts</h1>
+            </div>
+
+            <h2>Domain Scores Breakdown</h2>
+```
+
+REPLACE WITH:
+```
+          <div class="page">
+            <div class="header">
+              <h1>Preference Domain Analysis</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">What You Enjoy & Feel Confident About</p>
+            </div>
+
+            <div style="background: #fff9e6; padding: 15px; border-left: 4px solid #f0ad4e; border-radius: 6px; margin-bottom: 20px;">
+              <p style="font-size: 1.05em; line-height: 1.6; margin: 0;">
+                <strong>Note:</strong> These charts show your <em>preferences</em> (interest + confidence), not aptitude. 
+                High preference without aptitude readiness requires extra preparation. See Page 2 for objective ability assessment.
+              </p>
+            </div>
+
+            <h2>Domain Scores Breakdown</h2>
+```
+
+---
+CHANGE #4: Update Brain Analysis page comment
+LOCATION: Line ~886
+ACTION: UPDATE comment only
+---
+
+FIND:
+```
+          <!-- Page 3: Brain Analysis -->
+```
+
+REPLACE WITH:
+```
+          <!-- Page 4: Brain Hemisphere & Learning Style Analysis -->
+```
+
+---
+CHANGE #5: Insert Enhanced Decision Tables Page (Page 5)
+LOCATION: After Brain Analysis page closes (before "<!-- Page 4: Career Recommendations -->")
+ACTION: INSERT new page
+---
+
+FIND:
+```
+          </div>
+
+          <!-- Page 4: Career Recommendations -->
+```
+
+INSERT BETWEEN </div> and <!-- Page 4... --> comment:
+
+```
+          </div>
+
+          <!-- Page 5: Educational Pathway Decision Tables -->
+          <div class="page">
+            <div class="header">
+              <h1>Educational Pathway Guidance</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">Aptitude-Driven Recommendations for Academic Decision Points</p>
+            </div>
+
+            <div style="background: #e8f4f8; padding: 20px; border-left: 5px solid #006D77; border-radius: 8px; margin-bottom: 25px;">
+              <h3 style="margin-top: 0; color: #006D77;">🎯 Why These Rankings Fit You</h3>
+              <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 12px;">
+                The rankings below are based on <strong>your demonstrated aptitude strengths</strong> from Page 2. 
+                ${aptitudeResults.filter(a => a.percentage >= 75).length > 0 ? `
+                Your strongest aptitudes are <strong>${aptitudeResults.filter(a => a.percentage >= 75).map(a => a.domain).join(' and ')}</strong>. 
+                ` : ''}
+                Here's how each aptitude domain supports different academic pathways:
+              </p>
+              <ul style="font-size: 1.05em; line-height: 1.7; margin: 0 0 12px 25px;">
+                <li><strong>Numerical Reasoning</strong> → Science stream, Mathematics, Engineering, Finance-related courses</li>
+                <li><strong>Logical Reasoning</strong> → Computer Science, Engineering, Research-based programs, Strategy fields</li>
+                <li><strong>Verbal Reasoning</strong> → Humanities, Commerce, Law, Communication-based fields</li>
+                <li><strong>Spatial Reasoning</strong> → Architecture, Design, Engineering Drawing, Visual Arts, Geography</li>
+              </ul>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                <strong>How to read the tables:</strong> Top-ranked options match your current aptitude readiness. 
+                "READY NOW" = demonstrated strengths align perfectly. 
+                "WITH DEVELOPMENT" = achievable with focused effort in specific skill areas. 
+                "EXPLORATORY" = significant aptitude gaps exist; pursue only with exceptional motivation.
+              </p>
+            </div>
+
+            <div class="recommendations" style="margin-top: 30px;">
+              <h3 style="margin-top: 0; color: #006D77;">📚 After Class 10: Subject Stream Readiness</h3>
+              <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 15px;">
+                Ranked by objective aptitude performance in relevant domains:
+              </p>
+              
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;">
+                <thead>
+                  <tr style="background: #006D77; color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Rank</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Stream Option</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Key Aptitudes Required</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Your Aptitude Score</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Readiness Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${streamOptions.map((stream, index) => `
+                    <tr style="${stream.readiness === 'READY NOW' ? 'background: #d4edda;' : stream.readiness === 'WITH DEVELOPMENT' ? 'background: #fff3cd;' : 'background: #f8d7da;'}">
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: center;">${index + 1}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${stream.stream}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">${stream.keyAptitudes}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${stream.score.toFixed(0)}%</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">
+                        <strong>${stream.readiness}</strong>
+                        ${stream.readiness === 'READY NOW' ? '<br><span style="font-size: 0.9em; color: #155724;">✓ Current strengths support this path</span>' :
+                          stream.readiness === 'WITH DEVELOPMENT' ? '<br><span style="font-size: 0.9em; color: #856404;">⚠ Achievable with focused preparation</span>' :
+                          '<br><span style="font-size: 0.9em; color: #721c24;">⚡ Significant skill gap exists</span>'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              
+              <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-left: 4px solid #6c757d; border-radius: 6px;">
+                <p style="font-size: 0.95em; color: #495057; margin: 0; line-height: 1.6;">
+                  <strong>Parent Guidance:</strong> Rankings are based purely on demonstrated aptitude readiness. 
+                  "READY NOW" students have current capability for the stream's academic demands. 
+                  "WITH DEVELOPMENT" students can succeed with focused effort in specific aptitude areas over 6-12 months. 
+                  "EXPLORATORY" paths may require significant remediation or may not align with natural strengths—pursue only if student shows extraordinary motivation.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page 6: Higher Education Pathway Decision Table -->
+          <div class="page">
+            <div class="header">
+              <h1>After Class 12: Course Family Alignment</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">Combining Aptitude Readiness (60%) with Interest Alignment (40%)</p>
+            </div>
+
+            <div style="background: #fff9e6; padding: 20px; border-left: 5px solid #f0ad4e; border-radius: 8px; margin-bottom: 25px;">
+              <h3 style="margin-top: 0; color: #856404;">🎓 Understanding Course Family Rankings</h3>
+              <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 12px;">
+                This table uses a <strong>weighted scoring model</strong>:
+              </p>
+              <ul style="font-size: 1.05em; line-height: 1.7; margin: 0 0 12px 25px;">
+                <li><strong>60% weight:</strong> Aptitude readiness (can you handle the coursework objectively?)</li>
+                <li><strong>40% weight:</strong> Preference alignment (do you enjoy related activities?)</li>
+              </ul>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                <strong>Why this matters:</strong> Top-ranked families show both strong aptitude foundation AND genuine interest. 
+                Lower rankings may indicate passion without aptitude support (requires intensive prep) or aptitude without interest (risk of burnout). 
+                Both factors are essential for sustained success in higher education.
+              </p>
+            </div>
+
+            <div class="recommendations">
+              <h3 style="margin-top: 0; color: #006D77;">📊 Course Family Rankings</h3>
+              
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em;">
+                <thead>
+                  <tr style="background: #006D77; color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Rank</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Course Family</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Required Aptitudes</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Aptitude<br>Score (60%)</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Interest<br>Match (40%)</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Overall Readiness</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${courseFamilies.map((cf, index) => `
+                    <tr style="${cf.readiness === 'READY NOW' ? 'background: #d4edda;' : cf.readiness === 'WITH DEVELOPMENT' ? 'background: #fff3cd;' : 'background: #f8d7da;'}">
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: center;">${index + 1}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${cf.family}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">${cf.requiredAptitudes}</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${cf.score.toFixed(0)}%</td>
+                      <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${(cf.preferenceAlignment).toFixed(1)}/5.0</td>
+                      <td style="padding: 10px; border: 1px solid #ddd;">
+                        <strong>${cf.readiness}</strong>
+                        ${cf.readiness === 'READY NOW' ? '<br><span style="font-size: 0.9em; color: #155724;">✓ Strong capability + interest match</span>' :
+                          cf.readiness === 'WITH DEVELOPMENT' ? '<br><span style="font-size: 0.9em; color: #856404;">⚠ Possible with targeted preparation</span>' :
+                          '<br><span style="font-size: 0.9em; color: #721c24;">⚡ For exploration, not immediate pursuit</span>'}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              
+              <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-left: 4px solid #6c757d; border-radius: 6px;">
+                <p style="font-size: 0.95em; color: #495057; margin: 0; line-height: 1.6;">
+                  <strong>Parent Guidance:</strong> Rankings combine proven aptitude (objective test performance) with stated interest (self-reported preferences). 
+                  Top-ranked families show both capability AND motivation—ideal combinations. 
+                  Lower ranks may indicate (1) passion without aptitude readiness = requires significant prep work, or (2) aptitude without genuine interest = risk of burnout. 
+                  <strong>Both factors matter</strong> for long-term success in higher education and career satisfaction.
+                </p>
+              </div>
+            </div>
+
+            <div style="margin-top: 25px; padding: 20px; background: #e3f2fd; border-left: 5px solid #2196F3; border-radius: 8px;">
+              <h4 style="margin-top: 0; color: #1976D2;">💡 Next Steps for Parents</h4>
+              <ul style="font-size: 1.05em; line-height: 1.8; margin: 10px 0 0 20px;">
+                <li><strong>Focus exploration</strong> on top 3 course families (college visits, subject trials, mentorship connections)</li>
+                <li><strong>For "WITH DEVELOPMENT" options:</strong> Identify specific aptitude gaps and create targeted skill-building plans</li>
+                <li><strong>Use bridge programs:</strong> Summer courses or foundation programs can strengthen readiness before committing</li>
+                <li><strong>Remember:</strong> This is guidance, not prescription. Student motivation can overcome aptitude gaps with proper support and time</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Page 7: Career Direction Clusters (Exploration Only) -->
+```
+
+---
+CHANGE #6: Replace Career Recommendations Page with Enhanced Version
+LOCATION: Current "Page 4: Career Recommendations" (minimal placeholder)
+ACTION: REPLACE with comprehensive career clusters + action steps
+---
+
+FIND:
+```
+          <!-- Page 4: Career Recommendations -->
+          <div class="page">
+            <div class="header">
+              <h1>Career Recommendations</h1>
+            </div>
+
+            <h2>Recommended Career Paths</h2>
+
+            <div class="page-footer">
+              <h3 style="margin: 0 0 10px 0;">Thank You for Taking the Assessment</h3>
+              <p style="margin: 0; opacity: 0.9;">This report is generated by Srichakra Academy's comprehensive career assessment system.</p>
+              <p style="margin: 5px 0 0 0; font-size: 0.9em; opacity: 0.8;">For questions or consultation, contact us through our website.</p>
+            </div>
+          </div>
+```
+
+REPLACE WITH:
+```
+          <!-- Page 7: Career Direction Clusters -->
+          <div class="page">
+            <div class="header">
+              <h1>Career Direction Clusters</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">For Awareness & Exploration Only</p>
+            </div>
+
+            <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #f0ad4e; border-radius: 8px; margin-bottom: 25px;">
+              <h3 style="margin-top: 0; color: #856404;">⚠️ Important: This Section is for Exploration, Not Decision-Making</h3>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                The career clusters below are based on your <strong>top preference domains</strong> (what you enjoy), NOT aptitude readiness (what you can objectively do well). 
+                These are meant to <strong>spark curiosity and awareness</strong> about career fields related to your interests. 
+                <strong>Do not use this section to make educational pathway decisions</strong>—refer to Pages 5-6 (Decision Tables) for aptitude-driven guidance.
+              </p>
+            </div>
+
+            <h2 style="color: #006D77; margin-top: 20px;">Careers Related to Your Top Interest Areas</h2>
+            
+            <div style="margin-top: 20px;">
+              ${topDomains.map((domain, index) => `
+                <div style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-left: 4px solid #006D77; border-radius: 8px;">
+                  <h3 style="margin-top: 0; color: #006D77;">${index + 1}. ${domain.domain} Domain (Preference Score: ${domain.average.toFixed(1)}/5.0)</h3>
+                  <p style="font-size: 1.05em; line-height: 1.6; margin-bottom: 12px;">
+                    <strong>Sample Career Directions to Explore:</strong>
+                  </p>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px;">
+                    ${(careerSuggestions[domain.domain] || careerSuggestions['General']).map(career => `
+                      <div style="padding: 10px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 0.95em;">
+                        • ${career}
+                      </div>
+                    `).join('')}
+                  </div>
+                  <p style="font-size: 0.95em; color: #6c757d; margin: 0; padding: 10px; background: #fff3cd; border-radius: 4px; font-style: italic;">
+                    ⚠️ <strong>Reality Check:</strong> High interest doesn't guarantee aptitude fit. Cross-reference with your Aptitude Snapshot (Page 2) and Decision Tables (Pages 5-6) before committing to any pathway.
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="margin-top: 25px; padding: 20px; background: #e8f4f8; border-left: 5px solid #006D77; border-radius: 8px;">
+              <h4 style="margin-top: 0; color: #006D77;">📚 How to Use Career Clusters Responsibly</h4>
+              <ul style="font-size: 1.05em; line-height: 1.8; margin: 10px 0 0 20px;">
+                <li><strong>Exploration Phase:</strong> Use these as conversation starters. Research what these careers actually involve day-to-day</li>
+                <li><strong>Reality Check:</strong> Compare your enthusiasm for these fields with your aptitude readiness from Pages 2, 5, and 6</li>
+                <li><strong>Skill Gap Analysis:</strong> If a career cluster excites you but aptitude is low, identify the specific skill gaps to address</li>
+                <li><strong>Timeline Awareness:</strong> These are possibilities to explore over the next 2-3 years, not immediate choices to lock in now</li>
+                <li><strong>Cross-Reference Rule:</strong> Never pursue a pathway based on interest alone—validate against aptitude data first</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Page 8: Action Steps & Guidance -->
+          <div class="page">
+            <div class="header">
+              <h1>Action Steps & Next Phase</h1>
+              <p style="font-size: 1.1em; color: #666; margin-top: 10px;">What to Do With This Report</p>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h2 style="color: #006D77;">For Parents: Immediate Next Steps (Next 2 Weeks)</h2>
+              
+              <div style="margin-top: 20px; padding: 20px; background: #d4edda; border-left: 5px solid #28a745; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #155724;">1️⃣ Joint Review Session (15-20 minutes)</h3>
+                <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                  Sit with your child and review Pages 2, 5, and 6 together. 
+                  Discuss why certain streams/courses rank higher based on aptitude readiness. 
+                  Focus conversation on "READY NOW" and "WITH DEVELOPMENT" categories. 
+                  Avoid "EXPLORATORY" options unless your child demonstrates exceptional, sustained motivation over 6+ months.
+                </p>
+              </div>
+
+              <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-left: 5px solid #f0ad4e; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #856404;">2️⃣ Skill Gap Identification (20-30 minutes)</h3>
+                <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 12px;">
+                  If your child's top-choice stream/course family shows "WITH DEVELOPMENT" status, identify which specific aptitudes need strengthening:
+                </p>
+                <ul style="font-size: 1.05em; line-height: 1.7; margin: 0 0 0 20px;">
+                  <li><strong>Numerical/Logical gaps?</strong> Math tutoring, logic puzzle apps, coding bootcamps, competitive math programs</li>
+                  <li><strong>Verbal gaps?</strong> Reading challenges (30 min/day), debate clubs, creative writing workshops, vocabulary builders</li>
+                  <li><strong>Spatial gaps?</strong> Design thinking courses, 3D modeling software, Lego/Minecraft building projects, geometry practice</li>
+                </ul>
+              </div>
+
+              <div style="margin-top: 20px; padding: 20px; background: #e3f2fd; border-left: 5px solid #2196F3; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #1976D2;">3️⃣ Trial Before Commitment (3-6 months)</h3>
+                <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                  Before finalizing stream selection or course family, arrange hands-on trial experiences: 
+                  shadow professionals in target fields, attend subject-specific workshops, take online courses in relevant domains. 
+                  This validates whether <em>aptitude + preference = sustainable long-term interest</em>.
+                </p>
+              </div>
+
+              <div style="margin-top: 20px; padding: 20px; background: #f8d7da; border-left: 5px solid #dc3545; border-radius: 8px;">
+                <h3 style="margin-top: 0; color: #721c24;">❌ What NOT to Do</h3>
+                <ul style="font-size: 1.05em; line-height: 1.7; margin: 0 0 0 20px;">
+                  <li><strong>Don't force "EXPLORATORY" pathways</strong> unless student shows extraordinary, documented commitment over extended period</li>
+                  <li><strong>Don't ignore aptitude data</strong> in favor of "dream careers"—dreams need realistic foundations</li>
+                  <li><strong>Don't use Career Clusters (Page 7)</strong> as decision-making data—they're awareness tools only</li>
+                  <li><strong>Don't finalize pathways</strong> based on one assessment—use this as one data point among multiple inputs</li>
+                  <li><strong>Don't skip the trial phase</strong>—real-world exposure prevents costly misalignments later</li>
+                </ul>
+              </div>
+            </div>
+
+            <h2 style="color: #006D77; margin-top: 30px;">For Students: Your Homework (Next 4 Weeks)</h2>
+            
+            <div style="margin-top: 15px; padding: 20px; background: #f8f9fa; border-left: 4px solid #6c757d; border-radius: 8px;">
+              <ul style="font-size: 1.05em; line-height: 1.8; margin: 0 0 0 20px;">
+                <li><strong>Research Assignment:</strong> Pick 3 careers from your top-ranked course family. Research: What does a typical day look like? What's the realistic education path? What's the job market outlook?</li>
+                <li><strong>Informational Interview:</strong> Find and interview someone working in a field related to your "READY NOW" aptitudes. Ask about challenges, satisfactions, and skill requirements</li>
+                <li><strong>Skill-Building Plan:</strong> If you're passionate about a "WITH DEVELOPMENT" pathway, create a specific 6-month plan to strengthen the relevant aptitude (tutor, course, practice schedule)</li>
+                <li><strong>Reflection Journal:</strong> Track which activities energize vs. drain you over 4 weeks. Notice patterns between your energy levels and aptitude strengths</li>
+                <li><strong>Trial Experience:</strong> Arrange one hands-on experience in your top pathway (workshop, online course, shadowing)—validate interest through action, not just imagination</li>
+              </ul>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #e8f4f8; border-left: 5px solid #006D77; border-radius: 8px;">
+              <h3 style="margin-top: 0; color: #006D77;">🔄 6-Month Re-Assessment Recommended</h3>
+              <p style="font-size: 1.05em; line-height: 1.7; margin: 0;">
+                Aptitudes can develop significantly with focused effort. 
+                If you're working on skill-building (especially in "WITH DEVELOPMENT" areas), consider retaking this assessment in 6 months to track progress and refine pathway recommendations. 
+                This is especially valuable for students in Class 9-11 who have time to strengthen readiness before final decisions.
+              </p>
+            </div>
+
+            <div class="page-footer" style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #006D77;">
+              <h3 style="margin: 0 0 10px 0; color: #006D77;">Thank You for Completing This Assessment</h3>
+              <p style="margin: 0; opacity: 0.9; line-height: 1.6; font-size: 1.05em;">
+                This comprehensive report was generated by <strong>Srichakra Academy's</strong> psychometric assessment system. 
+                It combines objective aptitude testing with preference mapping to provide data-driven educational pathway guidance.
+              </p>
+              <p style="margin: 15px 0 0 0; font-size: 0.95em; opacity: 0.8; line-height: 1.6;">
+                <strong>Need personalized counseling support?</strong> Contact Srichakra Academy for one-on-one consultation sessions 
+                to interpret this report in depth and create customized action plans. 
+                Our counselors can help bridge aptitude gaps, validate pathway choices, and provide ongoing guidance.
+              </p>
+              <p style="margin: 10px 0 0 0; font-size: 0.9em; opacity: 0.7;">
+                Visit our website or call for consultation scheduling. <br>
+                <em>Srichakra Academy - The School To Identify Your Child's Divine Gift!!</em>
+              </p>
+            </div>
+          </div>
+```
+
+================================================================================
+END OF PATCH
+================================================================================
+
+VALIDATION CHECKLIST:
+=====================
+Before applying this patch, verify:
+
+□ Backup created: client/src/pages/CareerAssessment.tsx.backup3
+□ Current working directory: srichakra project root
+□ No uncommitted changes you want to preserve
+□ Understanding of each change location
+
+After applying this patch:
+
+□ Run: npm run build (verify no TypeScript errors)
+□ Test: Generate PDF from assessment (verify all 8 pages render)
+□ Verify: Decision tables appear on Pages 5-6 (NOT Page 1)
+□ Verify: Aptitude Snapshot is Page 2 with enhanced table
+□ Verify: Career clusters have disclaimer about exploration only
+□ Verify: All "Why This Fits You" explanations present
+
+ESTIMATED IMPACT:
+=================
+- Report pages: 4 → 8 pages
+- Content depth: ~200% increase
+- Aptitude interpretation: Basic → Comprehensive with academic skill mapping
+- Decision context: Minimal → Rich with "Why This Fits You" explanations
+- Career guidance: Brief clusters → Full disclaimer + responsible usage guide
+- Parent/student actions: None → Specific next-step frameworks
+
+IMPLEMENTATION NOTES:
+=====================
+1. This is a CONTENT-ONLY patch - zero changes to scoring algorithms
+2. All aptitudeResults, streamOptions, courseFamilies use existing calculated values
+3. Template literals (${...}) reference existing variables from downloadPDF() scope
+4. Page breaks maintained via existing .page class CSS
+5. Color schemes and styling consistent with existing design system
+
+REVIEW COMPLETE - READY FOR APPROVAL

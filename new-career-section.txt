@@ -1,0 +1,57 @@
+            <h2>Career Exploration by Domain Strength</h2>
+            <p style="font-size: 1.05em; color: #666; margin-bottom: 15px;">
+              The table below shows career families ranked by your <strong>preference scores</strong>. 
+              These represent areas where you've indicated interest and confidence, supported by your aptitude readiness where applicable.
+            </p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 0.95em;">
+              <thead>
+                <tr style="background: #006D77; color: white;">
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Rank</th>
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Domain Strength</th>
+                  <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Preference<br>Score</th>
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Sample Career Paths</th>
+                  <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Exploration Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${topDomains.map((domain, index) => `
+                  <tr style="${index === 0 ? 'background: #d4edda;' : index === 1 ? 'background: #fff3cd;' : 'background: #e2e3e5;'}">
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; text-align: center;">${index + 1}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${domain.domain}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 1.1em;">${domain.score.toFixed(1)}/5.0</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                      ${(careerSuggestions[domain.domain as keyof typeof careerSuggestions] || ['General roles']).slice(0,4).join(' • ')}
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">
+                      ${index === 0 ? '<strong>Primary strength area</strong> – highest interest & confidence' :
+                        index === 1 ? '<strong>Secondary strength</strong> – complementary pathway option' :
+                        '<strong>Tertiary interest</strong> – exploratory consideration'}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div style="margin: 25px 0; padding: 20px; background: #e8f4f8; border-left: 4px solid #006D77; border-radius: 8px;">
+              <h3 style="margin-top: 0; color: #006D77;">🔍 How to Use These Career Recommendations</h3>
+              <ul style="line-height: 1.8; margin: 10px 0;">
+                <li><strong>Cross-reference with Aptitude Tables:</strong> Check if your top preference domains align with your "READY NOW" aptitude areas for strongest pathway confidence.</li>
+                <li><strong>Consider Rank 1 & 2 Together:</strong> Your top two domains often complement each other (e.g., Analytical + Technical for engineering, Verbal + Social for teaching).</li>
+                <li><strong>Don't Ignore Lower Ranks:</strong> Rank 3 may still be viable if supported by strong aptitude scores in the objective assessment.</li>
+                <li><strong>Interest Can Grow:</strong> Preferences are self-reported and may evolve with exposure. Aptitude readiness is more objective at this stage.</li>
+              </ul>
+            </div>
+
+            <h2>Next Steps & Recommendations</h2>
+            <div class="next-steps">
+              <h3 style="margin-top: 0; color: #006D77;">Action Plan</h3>
+              <ol style="font-size: 1.1em; line-height: 1.8;">
+                <li><strong>Review Decision Tables First:</strong> Start with the Class 10 or Class 12 decision tables above to understand your aptitude-based readiness for different streams and course families.</li>
+                <li><strong>Match Aptitude + Preference:</strong> Look for careers where your top preference domains (this table) overlap with your "READY NOW" aptitude areas (earlier tables).</li>
+                <li><strong>Skill Development:</strong> For areas marked "WITH DEVELOPMENT," create a focused improvement plan with targeted practice and support.</li>
+                <li><strong>Educational Planning:</strong> Research degree programs and entrance requirements that align with your readiness status and interest areas.</li>
+                <li><strong>Gain Experience:</strong> Seek internships, projects, or volunteer opportunities in your top-ranked domains to validate interest and build practical skills.</li>
+                <li><strong>Consult an Expert:</strong> Schedule a follow-up consultation with our career counselors to create a personalized roadmap based on this assessment.</li>
+              </ol>
+            </div>

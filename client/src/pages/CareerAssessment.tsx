@@ -18,23 +18,23 @@ import { generateFullReport, ReportData } from './reportTemplate';
  */
 interface CareerAssessmentProps {
   // Student info
-  studentName: string;
-  assessmentDate: string;
+  studentName?: string;
+  assessmentDate?: string;
 
   // Pre-computed scores
-  aptitudeScores: ReportData['aptitudeScores'];
-  preferenceScores: ReportData['preferenceScores'];
-  dominantHemisphere: ReportData['dominantHemisphere'];
-  learningStyles: ReportData['learningStyles'];
+  aptitudeScores?: ReportData['aptitudeScores'];
+  preferenceScores?: ReportData['preferenceScores'];
+  dominantHemisphere?: ReportData['dominantHemisphere'];
+  learningStyles?: ReportData['learningStyles'];
 
   // Pre-computed recommendations
-  streamRecommendations: ReportData['streamRecommendations'];
-  courseFamilyRecommendations: ReportData['courseFamilyRecommendations'];
-  careerClusters: ReportData['careerClusters'];
+  streamRecommendations?: ReportData['streamRecommendations'];
+  courseFamilyRecommendations?: ReportData['courseFamilyRecommendations'];
+  careerClusters?: ReportData['careerClusters'];
 
   // Stats
-  totalAnswered: ReportData['totalAnswered'];
-  completionRate: ReportData['completionRate'];
+  totalAnswered?: ReportData['totalAnswered'];
+  completionRate?: ReportData['completionRate'];
 }
 
 /**
@@ -69,7 +69,7 @@ const CareerAssessment: React.FC<CareerAssessmentProps> = (props) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Career_Assessment_Report_${props.studentName.replace(/\s+/g, '_')}.html`;
+    link.download = `Career_Assessment_Report_${(props.studentName || 'Student').replace(/\s+/g, '_')}.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
