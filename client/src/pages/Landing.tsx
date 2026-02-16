@@ -230,14 +230,16 @@ const Landing: React.FC = () => {
           <p style={s.heroSubtitle}>
             Scientific assessments, expert counselling, and personalized career guidance for Class 8–12 students.
           </p>
-          <button
-            style={s.heroCta}
-            onClick={() => navigate('/login')}
+          <a
+            href="https://wa.me/918590396662?text=Hi%20Srichakra%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20your%20career%20assessment%20services."
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...s.heroCta, textDecoration: 'none', display: 'inline-block', textAlign: 'center' as const }}
             onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#006D77'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#fff'; }}
           >
             Get Started →
-          </button>
+          </a>
         </div>
       </section>
 
