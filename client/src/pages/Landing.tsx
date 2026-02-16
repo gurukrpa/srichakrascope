@@ -1,239 +1,649 @@
 /**
  * LANDING PAGE — Srichakra Academy
- * Original welcome card with academy branding, assessment info, and CTA buttons.
+ *
+ * - Teal header bar with Srichakra branding, Login/Register
+ * - Navigation bar with dropdown menus
+ * - Hero banner with graduate image
+ * - Service cards (DMIT, Career Assessment, Overseas Admission, Bridging Courses)
+ *   → Career Assessment card opens /login for assessment login
+ *   → Other cards show an info modal with service explanation
+ * - Footer
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+/* ── Nav menu items with dropdown children ── */
+const NAV_ITEMS = [
+  {
+    label: 'DMIT',
+    children: [
+      { label: 'What is DMIT?', desc: 'Scientific fingerprint-based intelligence profiling' },
+      { label: 'Benefits', desc: 'Discover innate talents, learning style & brain dominance' },
+      { label: 'Book DMIT Test', desc: 'Schedule a session for your child today' },
+    ],
+  },
+  {
+    label: 'Career Counseling',
+    children: [
+      { label: 'Career Assessment', desc: '76-question psychometric test with 10-page report' },
+      { label: 'One-on-One Counselling', desc: 'Personalized expert guidance for stream & career choices' },
+      { label: 'Demo Report', desc: 'Preview a sample career guidance report' },
+    ],
+  },
+  {
+    label: 'Overseas Admission',
+    children: [
+      { label: 'Study in Australia', desc: 'Top universities, PR pathways & scholarship options' },
+      { label: 'Study in UK', desc: 'Russell Group universities & post-study work visa' },
+      { label: 'Study in USA', desc: 'Ivy League & state universities with financial aid' },
+      { label: 'Study in Canada', desc: 'Affordable education with immigration pathways' },
+      { label: 'Study in Germany', desc: 'Tuition-free public universities & STEM programs' },
+      { label: 'More Countries', desc: 'New Zealand, Ireland, Singapore & beyond' },
+    ],
+  },
+  {
+    label: 'Bridging Courses',
+    children: [
+      { label: 'Foundation Courses', desc: 'Includes international pathway programs for all streams' },
+      { label: 'School Enrichment', desc: 'Fill academic gaps and strengthen core subject skills' },
+      { label: 'Skill Enhancement', desc: 'Build competencies for your chosen career path' },
+      { label: 'Exam Preparation', desc: 'Focused coaching for competitive and board exams' },
+    ],
+  },
+];
+
+/* ── Service cards data ── */
+const SERVICE_CARDS = [
+  {
+    id: 'dmit',
+    title: 'DMIT',
+    subtitle: 'Dermatoglyphics Multiple Intelligence Test',
+    image: '/images/dmit.png',
+    description: 'DMIT is a scientific study of fingerprint patterns that helps identify a person\'s innate intelligence, strengths, and potential. It reveals your child\'s natural talents through biometric analysis, helping parents and educators guide them towards the right learning path and career choices.',
+    features: ['Innate talent discovery', 'Learning style identification', 'Brain dominance analysis', 'Personality profiling'],
+    isAssessment: false,
+  },
+  {
+    id: 'career',
+    title: 'Career Assessment',
+    subtitle: 'Psychometric Career Guidance',
+    image: '/images/career-assessment-1.jpg',
+    description: 'Our comprehensive 76-question psychometric assessment measures cognitive aptitude and personal preferences to generate a detailed 10-page career guidance report for Class 8–10 students.',
+    features: ['76 scientifically designed questions', '10-page personalized report', 'Stream & course recommendations', 'Career cluster mapping'],
+    isAssessment: true,
+  },
+  {
+    id: 'overseas',
+    title: 'Overseas Admission',
+    subtitle: 'Study Abroad Guidance',
+    image: '/images/graduate.jpg',
+    description: 'Expert guidance for students aspiring to study abroad. We help with university selection, application support, visa guidance, and pre-departure briefing for top destinations including Australia, UK, USA, Canada, and Germany.',
+    features: ['University selection & shortlisting', 'Application & SOP assistance', 'Visa documentation support', 'Scholarship guidance'],
+    isAssessment: false,
+  },
+  {
+    id: 'bridging',
+    title: 'Bridging Courses',
+    subtitle: 'Foundation, School Enrichment & Skill Enhancement',
+    image: '/images/bridging-course.jpg',
+    description: 'Bridge the gap between where you are and where you want to be. Our foundation courses include international pathway programs, while school enrichment programs help fill academic gaps. Combined with skill enhancement workshops and focused exam preparation, we build the competencies students need for their chosen career path.',
+    features: ['Foundation courses with international pathway programs', 'School enrichment to fill academic gaps', 'Skill enhancement workshops', 'Competitive exam preparation'],
+    isAssessment: false,
+  },
+];
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [showEnquiry, setShowEnquiry] = useState(false);
+  const [enquiryForm, setEnquiryForm] = useState({ name: '', phone: '', email: '', message: '' });
+  const [enquirySent, setEnquirySent] = useState(false);
+
+  /* ── Handle nav dropdown actions ── */
+  const handleNavAction = (parent: string, child: string) => {
+    setOpenDropdown(null);
+    if (child === 'Career Assessment') navigate('/login');
+    else if (child === 'Demo Report') navigate('/demo');
+    else if (child === 'Book DMIT Test') setActiveModal('dmit');
+    else if (child === 'One-on-One Counselling') navigate('/login');
+    else if (parent === 'Bridging Courses') setActiveModal('bridging');
+    else if (parent === 'DMIT') setActiveModal('dmit');
+    else if (parent === 'Overseas Admission') setActiveModal('overseas');
+    else navigate('/login');
+  };
+
+  /* ── Handle card click ── */
+  const handleCardClick = (card: typeof SERVICE_CARDS[0]) => {
+    if (card.isAssessment) {
+      navigate('/login');
+    } else {
+      setActiveModal(card.id);
+    }
+  };
+
+  /* ── Get modal card data ── */
+  const modalCard = SERVICE_CARDS.find(c => c.id === activeModal);
 
   return (
-    <div style={styles.page}>
-      <div style={styles.welcomeSection}>
-        <div style={styles.card}>
-          {/* Academy Branding */}
-          <div style={styles.headerBand}>
-            <h1 style={styles.academy}>Srichakra Academy</h1>
-            <p style={styles.tagline}>Empowering Futures, One Decision at a Time</p>
+    <div style={s.page}>
+
+      {/* ══════════ HEADER BAR ══════════ */}
+      <header style={s.header}>
+        <div style={s.headerInner}>
+          {/* Logo + Branding */}
+          <div style={s.brandRow}>
+            <img
+              src="/images/srichakra-logo.png"
+              alt="Srichakra Logo"
+              style={{ height: 52, width: 'auto', borderRadius: 6 }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+            <div>
+              <h1 style={s.brandTitle}>
+                <span style={s.pillar}>||</span>{' '}
+                <span style={s.brandName}>srichakra</span>{' '}
+                <span style={s.pillar}>||</span>
+              </h1>
+              <p style={s.brandTagline}>The School To identify Your Child's Divine Gift!!</p>
+            </div>
           </div>
 
-          {/* Assessment Info */}
-          <div style={styles.cardBody}>
-            <h2 style={styles.cardTitle}>Career Assessment</h2>
-            <p style={styles.cardDesc}>
-              Discover your cognitive strengths, interest patterns, and recommended academic pathways
-              with our comprehensive psychometric assessment.
+          {/* Login / Register */}
+          <div style={s.authBtns}>
+            <button
+              style={s.loginBtn}
+              onClick={() => navigate('/login')}
+              onMouseEnter={e => { e.currentTarget.style.background = '#005a63'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+            >
+              Login
+            </button>
+            <button
+              style={s.registerBtn}
+              onClick={() => navigate('/login')}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f0f0f0'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+            >
+              Register
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ══════════ NAVIGATION BAR ══════════ */}
+      <nav style={s.nav}>
+        <div style={s.navInner}>
+          {NAV_ITEMS.map((item, idx) => (
+            <div
+              key={idx}
+              style={s.navItem}
+              onMouseEnter={() => setOpenDropdown(idx)}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <span style={s.navLabel}>
+                {item.label} <span style={s.chevron}>▾</span>
+              </span>
+              {openDropdown === idx && (
+                <div style={s.dropdown}>
+                  {item.children.map((child, ci) => (
+                    <div
+                      key={ci}
+                      style={child.desc ? { ...s.dropdownItem, padding: '10px 20px' } : s.dropdownItem}
+                      onClick={() => handleNavAction(item.label, child.label)}
+                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = '#f0f9f9'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = '#fff'; }}
+                    >
+                      <div style={{ fontWeight: 600, color: '#333', fontSize: '0.92em' }}>{child.label}</div>
+                      {child.desc && (
+                        <div style={{ fontSize: '0.78em', color: '#888', marginTop: 2, lineHeight: 1.4 }}>{child.desc}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* ══════════ HERO BANNER ══════════ */}
+      <section style={s.hero}>
+        <img
+          src="/images/graduate.jpg"
+          alt="Srichakra Academy"
+          style={s.heroImage}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
+        <div style={s.heroOverlay}>
+          <h2 style={s.heroTitle}>Empowering Students to Discover Their True Potential</h2>
+          <p style={s.heroSubtitle}>
+            Scientific assessments, expert counselling, and personalized career guidance for Class 8–12 students.
+          </p>
+          <button
+            style={s.heroCta}
+            onClick={() => navigate('/login')}
+            onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#006D77'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#fff'; }}
+          >
+            Get Started →
+          </button>
+        </div>
+      </section>
+
+      {/* ══════════ SERVICE CARDS ══════════ */}
+      <section style={s.cardsSection}>
+        <h2 style={s.sectionTitle}>Our Support & Services</h2>
+        <p style={s.sectionSubtitle}>Comprehensive support and guidance to shape your child's future</p>
+        <div style={s.cardsGrid}>
+          {SERVICE_CARDS.map((card) => (
+            <div
+              key={card.id}
+              style={s.card}
+              onClick={() => handleCardClick(card)}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-8px)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 48px rgba(0,109,119,0.2)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+              }}
+            >
+              <div style={s.cardImageWrap}>
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  style={s.cardImage}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+                {card.isAssessment && (
+                  <div style={s.cardBadge}>Take Assessment</div>
+                )}
+              </div>
+              <div style={s.cardBody}>
+                <h3 style={s.cardTitle}>{card.title}</h3>
+                <p style={s.cardSubtitle}>{card.subtitle}</p>
+                <p style={s.cardDesc}>
+                  {card.description.substring(0, 100)}...
+                </p>
+                <div style={s.cardAction}>
+                  {card.isAssessment ? (
+                    <span style={s.cardBtn}>Login & Start →</span>
+                  ) : (
+                    <span style={s.cardBtnSecondary}>Learn More →</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════ QUICK STATS BAR ══════════ */}
+      <section style={s.statsBar}>
+        <div style={s.statItem}>
+          <span style={s.statNum}>1000+</span>
+          <span style={s.statLabel}>Happy Clients</span>
+        </div>
+        <div style={s.statItem}>
+          <span style={s.statNum}>100+</span>
+          <span style={s.statLabel}>Universities Across the Globe</span>
+        </div>
+        <div style={s.statItem}>
+          <span style={s.statNum}>10+</span>
+          <span style={s.statLabel}>Years of Experience</span>
+        </div>
+        <div style={s.statItem}>
+          <span style={s.statNum}>✦</span>
+          <span style={s.statLabel}>Personalised Support</span>
+        </div>
+      </section>
+
+      {/* ══════════ WHO WE ARE ══════════ */}
+      <section style={s.highlightSection}>
+        <div style={s.highlightContent}>
+          <div style={s.highlightText}>
+            <h2 style={{ color: '#006D77', margin: '0 0 6px', fontSize: '1.6em' }}>
+              Who We Are
+            </h2>
+            <p style={{ color: '#888', fontStyle: 'italic', margin: '0 0 14px', fontSize: '1.05em' }}>
+              Srichakra — The School To Identify Your Child's Divine Gift!!
+            </p>
+            <p style={{ color: '#555', lineHeight: 1.8, margin: '0 0 20px' }}>
+              Srichakra is an educational support organization dedicated to complementing diverse
+              curricula and learner needs through personalized and holistic learning solutions.
+              We believe every child has a unique potential waiting to be discovered — and our mission
+              is to help them enhance their abilities, overcome learning challenges, and achieve their
+              fullest potential through inclusive and strength-based approaches.
             </p>
 
-            <div style={styles.infoRow}>
-              <div style={styles.infoBadge}>
-                <span style={styles.infoBadgeNum}>76</span>
-                <span style={styles.infoBadgeLabel}>Questions</span>
-              </div>
-              <div style={styles.infoBadge}>
-                <span style={styles.infoBadgeNum}>25–35</span>
-                <span style={styles.infoBadgeLabel}>Minutes</span>
-              </div>
-              <div style={styles.infoBadge}>
-                <span style={styles.infoBadgeNum}>10</span>
-                <span style={styles.infoBadgeLabel}>Page Report</span>
-              </div>
-            </div>
+            <h3 style={{ color: '#006D77', margin: '0 0 12px', fontSize: '1.15em' }}>What We Do</h3>
+            <ul style={{ color: '#555', lineHeight: 2.2, margin: 0, paddingLeft: 20 }}>
+              <li><strong>Multiple Intelligence–Based Enrichment:</strong> Discover unique learning styles, build confidence & life skills</li>
+              <li><strong>Career Counselling & Guidance:</strong> MI, MBTI, Holland RIASEC & Aptitude-based expert counselling</li>
+              <li><strong>Overseas Education & Admissions:</strong> End-to-end support for Australia, Canada, UK, USA, Germany & more</li>
+              <li><strong>School Partnership Programs:</strong> On-campus & virtual career guidance for students</li>
+            </ul>
+            <p style={{ color: '#006D77', fontWeight: 700, margin: '18px 0 0', fontSize: '1.05em', letterSpacing: 1 }}>
+              Discover &bull; Decide &bull; Develop!!
+            </p>
+          </div>
+          <div style={s.highlightImageWrap}>
+            <img
+              src="/images/overseas-admission.jpg"
+              alt="100+ Universities Across the Globe"
+              style={s.highlightImage}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+        </div>
+      </section>
 
-            {/* Two parts */}
-            <div style={styles.partRow}>
-              <div style={styles.partCard}>
-                <div style={{ fontSize: '1.4em', marginBottom: '6px' }}>🧠</div>
-                <strong style={{ color: '#006D77' }}>Part 1 — Aptitude</strong>
-                <p style={styles.partDesc}>16 objective MCQs covering Numerical, Logical, Verbal, and Spatial reasoning.</p>
-              </div>
-              <div style={styles.partCard}>
-                <div style={{ fontSize: '1.4em', marginBottom: '6px' }}>💡</div>
-                <strong style={{ color: '#E29578' }}>Part 2 — Preferences</strong>
-                <p style={styles.partDesc}>60 self-report questions about your interests, learning style, and motivations.</p>
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div style={styles.ctaRow}>
-              <button
-                onClick={() => navigate('/assessment')}
-                style={styles.btnPrimary}
-                onMouseEnter={e => (e.currentTarget.style.background = '#005a63')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#006D77')}
-              >
-                Start Assessment →
-              </button>
-              <button
-                onClick={() => navigate('/demo')}
-                style={styles.btnSecondary}
-                onMouseEnter={e => { e.currentTarget.style.background = '#006D77'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#006D77'; }}
-              >
-                View Demo Report
-              </button>
-            </div>
-
-            <p style={styles.loginHint}>
-              Already have an account?{' '}
-              <span style={styles.loginLink} onClick={() => navigate('/login')}>Login / Register</span>
+      {/* ══════════ VISION & MISSION ══════════ */}
+      <section style={{ padding: '60px 24px', background: '#fff' }}>
+        <h2 style={{ textAlign: 'center' as const, color: '#006D77', fontSize: '1.8em', fontWeight: 800, margin: '0 0 8px' }}>Our Vision & Mission</h2>
+        <p style={{ textAlign: 'center' as const, color: '#777', margin: '0 0 40px' }}>The guiding principles behind everything we do</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32, maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ background: 'linear-gradient(135deg, #EDF6F9 0%, #f0f9f9 100%)', borderRadius: 16, padding: '36px 30px', border: '1px solid #d0e8e8' }}>
+            <div style={{ fontSize: '2.2em', marginBottom: 12 }}>🔭</div>
+            <h3 style={{ color: '#006D77', margin: '0 0 12px', fontSize: '1.3em', fontWeight: 700 }}>Our Vision</h3>
+            <p style={{ color: '#555', lineHeight: 1.8, margin: 0, fontSize: '1em' }}>
+              To create an inclusive and inspired learning ecosystem where every child's individuality is recognized, nurtured, and celebrated.
+            </p>
+          </div>
+          <div style={{ background: 'linear-gradient(135deg, #EDF6F9 0%, #f0f9f9 100%)', borderRadius: 16, padding: '36px 30px', border: '1px solid #d0e8e8' }}>
+            <div style={{ fontSize: '2.2em', marginBottom: 12 }}>🎯</div>
+            <h3 style={{ color: '#006D77', margin: '0 0 12px', fontSize: '1.3em', fontWeight: 700 }}>Our Mission</h3>
+            <p style={{ color: '#555', lineHeight: 1.8, margin: 0, fontSize: '1em' }}>
+              To empower every child to access education in the way they learn best, nurturing their confidence and potential through personalized learning approaches — and to help them find career paths that align with their unique strengths and aspirations.
             </p>
           </div>
         </div>
-      </div>
+        <blockquote style={{ borderLeft: '4px solid #E29578', paddingLeft: 20, margin: '36px auto 0', maxWidth: 700, color: '#006D77', fontStyle: 'italic', fontSize: '1.05em', lineHeight: 1.7, textAlign: 'center' as const }}>
+          "Education is every child's right — and it is our responsibility to ensure that every child learns in the way they are most receptive to."
+        </blockquote>
+      </section>
+
+      {/* ══════════ FOUNDER ══════════ */}
+      <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, #EDF6F9 0%, #f0f9f9 100%)' }}>
+        <h2 style={{ textAlign: 'center' as const, color: '#006D77', fontSize: '1.8em', fontWeight: 800, margin: '0 0 8px' }}>Our Founder</h2>
+        <p style={{ textAlign: 'center' as const, color: '#777', margin: '0 0 40px' }}>The driving force behind Srichakra Academy</p>
+        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', gap: 36, alignItems: 'flex-start', flexWrap: 'wrap' as const }}>
+          <div style={{ flex: '0 0 180px', textAlign: 'center' as const }}>
+            <img src="/images/founder.jpg" alt="Eswari — Founder & Director" style={{ width: 160, height: 160, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', border: '4px solid #E29578', display: 'block' }} />
+            <h3 style={{ color: '#006D77', margin: '0 0 4px', fontSize: '1.15em' }}>Eswari</h3>
+            <p style={{ color: '#E29578', margin: 0, fontSize: '0.85em', fontWeight: 600 }}>Founder & Director</p>
+            <p style={{ color: '#888', margin: '4px 0 0', fontSize: '0.8em', lineHeight: 1.4 }}>
+              Certified Career Counsellor<br />International Education Advisor<br />Special Educator
+            </p>
+          </div>
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <p style={{ color: '#555', lineHeight: 1.9, margin: '0 0 16px', fontSize: '0.95em' }}>
+              With 29 years of cross-sector experience since 1996, Eswari brings together corporate leadership, educational psychology, and international academic guidance into a unified mission — to help every learner realize their strengths and shape a meaningful future.
+            </p>
+            <p style={{ color: '#555', lineHeight: 1.9, margin: '0 0 16px', fontSize: '0.95em' }}>
+              She founded Srichakra with the sole intention of enriching every child's potential through inclusive and personalized educational practices. Her deep involvement in supporting students with Specific Learning Differences (SLD) — a hidden challenge often unidentified at an early stage — led to gaps in learning being addressed through strength-based approaches.
+            </p>
+            <p style={{ color: '#555', lineHeight: 1.9, margin: '0 0 16px', fontSize: '0.95em' }}>
+              Over the years, this initiative has evolved into a comprehensive educational support system that spans every stage of a student's journey — from early learning and academic development to career identification and professional goal achievement. Her unique approach blends traditional wisdom with modern pedagogical tools, ensuring that each learner discovers their individuality, confidence, and capability.
+            </p>
+            <p style={{ color: '#555', lineHeight: 1.9, margin: '0 0 16px', fontSize: '0.95em' }}>
+              As a natural extension of this vision, <strong>Sri Overseas</strong> was established — an initiative dedicated to helping students explore and pursue global education opportunities in countries such as Australia, Canada, New Zealand, Germany, France, USA, UK, Ireland, and several Asian countries.
+            </p>
+            <div style={{ background: '#fff', borderRadius: 12, padding: '16px 20px', border: '1px solid #d0e8e8', marginTop: 8 }}>
+              <p style={{ color: '#006D77', margin: 0, fontSize: '0.9em', fontWeight: 600 }}>
+                🤝 Proud Career Counselling Partner of <strong>Spring Days International School</strong>, offering on-campus guidance programs that help students explore possibilities and build meaningful futures.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ CONTACT SECTION ══════════ */}
+      <section style={s.contactSection}>
+        <h2 style={{ textAlign: 'center' as const, color: '#006D77', fontSize: '1.8em', fontWeight: 800, margin: '0 0 8px' }}>Get In Touch</h2>
+        <p style={{ textAlign: 'center' as const, color: '#777', margin: '0 0 36px' }}>Have questions? We'd love to hear from you.</p>
+        <div style={s.contactGrid}>
+          <div style={s.contactCard}>
+            <div style={s.contactIcon}>📞</div>
+            <h4 style={{ color: '#006D77', margin: '0 0 8px' }}>Phone</h4>
+            <a href="tel:8590396662" style={s.contactLink}>85903 96662</a>
+            <a href="tel:9843030697" style={s.contactLink}>98430 30697</a>
+          </div>
+          <div style={s.contactCard}>
+            <div style={s.contactIcon}>✉️</div>
+            <h4 style={{ color: '#006D77', margin: '0 0 8px' }}>Email</h4>
+            <a href="mailto:admin@srichakraacademy.org" style={s.contactLink}>admin@srichakraacademy.org</a>
+          </div>
+          <div style={{ ...s.contactCard, cursor: 'pointer' }} onClick={() => { setShowEnquiry(true); setEnquirySent(false); }}>
+            <div style={s.contactIcon}>📝</div>
+            <h4 style={{ color: '#006D77', margin: '0 0 8px' }}>Enquiry</h4>
+            <span style={s.contactLink}>Send us a message</span>
+          </div>
+          <div style={s.contactCard}>
+            <div style={s.contactIcon}>💬</div>
+            <h4 style={{ color: '#006D77', margin: '0 0 8px' }}>WhatsApp</h4>
+            <a href="https://wa.me/918590396662" target="_blank" rel="noopener" style={s.contactLink}>Chat with us</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ FOOTER ══════════ */}
+      <footer style={s.footer}>
+        <div style={s.footerInner}>
+          <div>
+            <h3 style={{ color: '#fff', margin: '0 0 8px' }}>Srichakra Academy</h3>
+            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.9em', lineHeight: 1.7 }}>
+              Empowering students with data-driven career guidance,<br />
+              overseas admissions, and professional counselling.
+            </p>
+          </div>
+          <div>
+            <h4 style={{ color: '#83C5BE', margin: '0 0 10px' }}>Quick Links</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={s.footerLink} onClick={() => navigate('/login')}>Career Assessment</span>
+              <span style={s.footerLink} onClick={() => navigate('/demo')}>Demo Report</span>
+              <span style={s.footerLink} onClick={() => navigate('/login')}>Login / Register</span>
+              <span style={s.footerLink} onClick={() => navigate('/admin/login')}>Admin</span>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#83C5BE', margin: '0 0 10px' }}>Contact Us</h4>
+            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.9em', lineHeight: 2 }}>
+              📞 <a href="tel:8590396662" style={{ color: '#83C5BE', textDecoration: 'none' }}>85903 96662</a><br />
+              📞 <a href="tel:9843030697" style={{ color: '#83C5BE', textDecoration: 'none' }}>98430 30697</a><br />
+              ✉️ <a href="mailto:admin@srichakraacademy.org" style={{ color: '#83C5BE', textDecoration: 'none' }}>admin@srichakraacademy.org</a><br />
+              🌐 <a href="https://srichakraacademy.org" style={{ color: '#83C5BE', textDecoration: 'none' }}>srichakraacademy.org</a>
+            </p>
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', marginTop: 24, paddingTop: 16, textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.5)', margin: 0, fontSize: '0.85em' }}>
+            © {new Date().getFullYear()} Srichakra Academy. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
+      {/* ══════════ INFO MODAL ══════════ */}
+      {activeModal && modalCard && (
+        <div style={s.modalOverlay} onClick={() => setActiveModal(null)}>
+          <div style={s.modalContent} onClick={e => e.stopPropagation()}>
+            <button style={s.modalClose} onClick={() => setActiveModal(null)}>✕</button>
+            <img
+              src={modalCard.image}
+              alt={modalCard.title}
+              style={s.modalImage}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+            <h2 style={{ color: '#006D77', margin: '0 0 4px', fontSize: '1.4em' }}>{modalCard.title}</h2>
+            <p style={{ color: '#E29578', margin: '0 0 16px', fontSize: '0.95em', fontWeight: 600 }}>{modalCard.subtitle}</p>
+            <p style={{ color: '#555', lineHeight: 1.8, margin: '0 0 20px', fontSize: '0.95em' }}>{modalCard.description}</p>
+            <h4 style={{ color: '#006D77', margin: '0 0 10px' }}>Key Features</h4>
+            <ul style={{ color: '#555', lineHeight: 2, margin: '0 0 24px', paddingLeft: 20 }}>
+              {modalCard.features.map((f, i) => (
+                <li key={i}>{f}</li>
+              ))}
+            </ul>
+            <button
+              style={s.modalCta}
+              onClick={() => { setActiveModal(null); navigate('/login'); }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#005a63'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#006D77'; }}
+            >
+              Contact Us to Learn More
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ ENQUIRY MODAL ══════════ */}
+      {showEnquiry && (
+        <div style={s.modalOverlay} onClick={() => setShowEnquiry(false)}>
+          <div style={{ ...s.modalContent, maxWidth: 480 }} onClick={e => e.stopPropagation()}>
+            <button style={s.modalClose} onClick={() => setShowEnquiry(false)}>✕</button>
+            <h2 style={{ color: '#006D77', margin: '0 0 4px', fontSize: '1.4em' }}>📝 Enquiry Form</h2>
+            <p style={{ color: '#777', margin: '0 0 20px', fontSize: '0.9em' }}>Fill in your details and we'll get back to you soon.</p>
+            {enquirySent ? (
+              <div style={{ textAlign: 'center' as const, padding: '30px 0' }}>
+                <div style={{ fontSize: '3em', marginBottom: 12 }}>✅</div>
+                <h3 style={{ color: '#006D77', margin: '0 0 8px' }}>Thank You!</h3>
+                <p style={{ color: '#555' }}>We've received your enquiry. We'll contact you shortly.</p>
+              </div>
+            ) : (
+              <form onSubmit={(e) => { e.preventDefault(); setEnquirySent(true); }} style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+                <input
+                  type="text" required placeholder="Your Name"
+                  value={enquiryForm.name}
+                  onChange={e => setEnquiryForm(p => ({ ...p, name: e.target.value }))}
+                  style={s.enquiryInput}
+                />
+                <input
+                  type="tel" required placeholder="Phone Number"
+                  value={enquiryForm.phone}
+                  onChange={e => setEnquiryForm(p => ({ ...p, phone: e.target.value }))}
+                  style={s.enquiryInput}
+                />
+                <input
+                  type="email" placeholder="Email (optional)"
+                  value={enquiryForm.email}
+                  onChange={e => setEnquiryForm(p => ({ ...p, email: e.target.value }))}
+                  style={s.enquiryInput}
+                />
+                <textarea
+                  required placeholder="Your message or enquiry..."
+                  value={enquiryForm.message}
+                  onChange={e => setEnquiryForm(p => ({ ...p, message: e.target.value }))}
+                  rows={4}
+                  style={{ ...s.enquiryInput, resize: 'vertical' as const }}
+                />
+                <button
+                  type="submit"
+                  style={s.modalCta}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#005a63'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#006D77'; }}
+                >
+                  Submit Enquiry
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-// ═══════════════════════════════════════════════════
-// STYLES
-// ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   STYLES
+   ═══════════════════════════════════════════════════ */
+const s: Record<string, React.CSSProperties> = {
+  page: { minHeight: '100vh', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", color: '#333', background: '#fff' },
 
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    color: '#333',
-  },
-  welcomeSection: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px 20px',
-    background: 'linear-gradient(135deg, #006D77 0%, #83C5BE 50%, #EDF6F9 100%)',
-  },
-  card: {
-    background: '#fff',
-    borderRadius: '20px',
-    boxShadow: '0 8px 40px rgba(0,0,0,0.15)',
-    maxWidth: '640px',
-    width: '100%',
-    overflow: 'hidden',
-  },
-  headerBand: {
-    background: '#006D77',
-    padding: '28px 32px',
-    textAlign: 'center' as const,
-  },
-  academy: {
-    color: '#fff',
-    fontSize: '1.6em',
-    fontWeight: 800,
-    margin: '0 0 4px',
-    letterSpacing: '0.5px',
-  },
-  tagline: {
-    color: '#83C5BE',
-    margin: 0,
-    fontSize: '0.95em',
-    fontWeight: 500,
-  },
-  cardBody: {
-    padding: '32px',
-  },
-  cardTitle: {
-    color: '#006D77',
-    fontSize: '1.35em',
-    fontWeight: 700,
-    margin: '0 0 12px',
-    textAlign: 'center' as const,
-  },
-  cardDesc: {
-    color: '#555',
-    fontSize: '0.95em',
-    lineHeight: 1.7,
-    textAlign: 'center' as const,
-    margin: '0 0 24px',
-  },
-  infoRow: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '24px',
-    flexWrap: 'wrap' as const,
-  },
-  infoBadge: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    padding: '12px 20px',
-    background: '#f0f9f9',
-    borderRadius: '12px',
-    minWidth: '80px',
-  },
-  infoBadgeNum: {
-    fontSize: '1.4em',
-    fontWeight: 800,
-    color: '#006D77',
-  },
-  infoBadgeLabel: {
-    fontSize: '0.8em',
-    color: '#777',
-    marginTop: '2px',
-  },
-  partRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '16px',
-    marginBottom: '28px',
-  },
-  partCard: {
-    padding: '16px',
-    background: '#fafafa',
-    borderRadius: '12px',
-    textAlign: 'center' as const,
-    border: '1px solid #eee',
-  },
-  partDesc: {
-    color: '#777',
-    fontSize: '0.85em',
-    lineHeight: 1.5,
-    margin: '6px 0 0',
-  },
-  ctaRow: {
-    display: 'flex',
-    gap: '12px',
-    justifyContent: 'center',
-    flexWrap: 'wrap' as const,
-    marginBottom: '16px',
-  },
-  btnPrimary: {
-    padding: '14px 32px',
-    background: '#006D77',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '10px',
-    fontSize: '1.05em',
-    fontWeight: 700,
-    cursor: 'pointer',
-    transition: 'background 0.2s',
-  },
-  btnSecondary: {
-    padding: '14px 32px',
-    background: 'transparent',
-    color: '#006D77',
-    border: '2px solid #006D77',
-    borderRadius: '10px',
-    fontSize: '1.05em',
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-  },
-  loginHint: {
-    textAlign: 'center' as const,
-    color: '#999',
-    fontSize: '0.88em',
-    margin: 0,
-  },
-  loginLink: {
-    color: '#006D77',
-    fontWeight: 600,
-    cursor: 'pointer',
-    textDecoration: 'underline',
-  },
+  /* ── Header ── */
+  header: { background: '#006D77', padding: '16px 0' },
+  headerInner: { maxWidth: 1280, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  brandRow: { display: 'flex', alignItems: 'center', gap: 16 },
+  logoFallback: { width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.3)' },
+  brandTitle: { margin: 0, display: 'flex', alignItems: 'center', gap: 8 },
+  pillar: { color: '#d4a843', fontSize: '1.6em', fontWeight: 700 },
+  brandName: { color: '#c0392b', fontSize: '1.8em', fontWeight: 800, fontFamily: "'Georgia', 'Times New Roman', serif", letterSpacing: 1 },
+  brandTagline: { margin: '2px 0 0', color: 'rgba(255,255,255,0.85)', fontSize: '0.95em', fontWeight: 500 },
+  authBtns: { display: 'flex', gap: 12 },
+  loginBtn: { padding: '10px 26px', background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1.5px solid rgba(255,255,255,0.4)', borderRadius: 6, fontSize: '0.95em', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' },
+  registerBtn: { padding: '10px 26px', background: '#fff', color: '#006D77', border: '1.5px solid #fff', borderRadius: 6, fontSize: '0.95em', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' },
+
+  /* ── Nav bar ── */
+  nav: { background: '#fff', borderBottom: '1px solid #e0e0e0', position: 'sticky' as const, top: 0, zIndex: 100 },
+  navInner: { maxWidth: 1280, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  navItem: { position: 'relative' as const, padding: '14px 24px', cursor: 'pointer' },
+  navLabel: { fontSize: '1em', fontWeight: 600, color: '#333', whiteSpace: 'nowrap' as const },
+  chevron: { fontSize: '0.75em', marginLeft: 4, color: '#888' },
+  dropdown: { position: 'absolute' as const, top: '100%', left: 0, minWidth: 280, background: '#fff', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden' },
+  dropdownItem: { padding: '12px 20px', fontSize: '0.92em', color: '#333', cursor: 'pointer', transition: 'background 0.15s', borderBottom: '1px solid #f5f5f5' },
+
+  /* ── Hero banner ── */
+  hero: { position: 'relative' as const, height: 420, overflow: 'hidden', background: '#006D77' },
+  heroImage: { width: '100%', height: '100%', objectFit: 'cover' as const, display: 'block' },
+  heroOverlay: { position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(135deg, rgba(0,109,119,0.85) 0%, rgba(0,109,119,0.6) 100%)', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  heroTitle: { color: '#fff', fontSize: '2.2em', fontWeight: 800, textAlign: 'center' as const, margin: '0 0 16px', maxWidth: 700, lineHeight: 1.3 },
+  heroSubtitle: { color: 'rgba(255,255,255,0.9)', fontSize: '1.1em', textAlign: 'center' as const, margin: '0 0 28px', maxWidth: 600, lineHeight: 1.6 },
+  heroCta: { padding: '14px 36px', background: 'transparent', color: '#fff', border: '2px solid #fff', borderRadius: 10, fontSize: '1.1em', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s' },
+
+  /* ── Service cards ── */
+  cardsSection: { padding: '60px 24px', background: '#fff' },
+  sectionTitle: { textAlign: 'center' as const, color: '#006D77', fontSize: '1.8em', fontWeight: 800, margin: '0 0 8px' },
+  sectionSubtitle: { textAlign: 'center' as const, color: '#777', fontSize: '1em', margin: '0 0 40px' },
+  cardsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: 28, maxWidth: 1200, margin: '0 auto' },
+  card: { background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', cursor: 'pointer', transition: 'transform 0.3s, box-shadow 0.3s', border: '1px solid #f0f0f0' },
+  cardImageWrap: { position: 'relative' as const, height: 200, overflow: 'hidden', background: '#f5f5f5' },
+  cardImage: { width: '100%', height: '100%', objectFit: 'cover' as const, display: 'block' },
+  cardBadge: { position: 'absolute' as const, top: 12, right: 12, background: '#E29578', color: '#fff', padding: '6px 14px', borderRadius: 20, fontSize: '0.8em', fontWeight: 700 },
+  cardBody: { padding: '20px 22px 24px' },
+  cardTitle: { color: '#006D77', fontSize: '1.2em', fontWeight: 700, margin: '0 0 4px' },
+  cardSubtitle: { color: '#E29578', fontSize: '0.85em', fontWeight: 600, margin: '0 0 12px' },
+  cardDesc: { color: '#777', fontSize: '0.9em', lineHeight: 1.6, margin: '0 0 16px' },
+  cardAction: { paddingTop: 4 },
+  cardBtn: { color: '#006D77', fontWeight: 700, fontSize: '0.95em' },
+  cardBtnSecondary: { color: '#E29578', fontWeight: 700, fontSize: '0.95em' },
+
+  /* ── Stats bar ── */
+  statsBar: { display: 'flex', justifyContent: 'center', gap: 48, padding: '40px 24px', background: '#006D77', flexWrap: 'wrap' as const },
+  statItem: { display: 'flex', flexDirection: 'column' as const, alignItems: 'center' },
+  statNum: { fontSize: '2.2em', fontWeight: 800, color: '#fff' },
+  statLabel: { fontSize: '0.9em', color: 'rgba(255,255,255,0.75)', marginTop: 4 },
+
+  /* ── Highlight section ── */
+  highlightSection: { padding: '60px 24px', background: 'linear-gradient(135deg, #EDF6F9 0%, #f0f9f9 100%)' },
+  highlightContent: { maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap' as const },
+  highlightText: { flex: 1, minWidth: 300 },
+  highlightImageWrap: { flex: 1, minWidth: 300, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' },
+  highlightImage: { width: '100%', height: 'auto', display: 'block' },
+
+  /* ── Footer ── */
+  footer: { background: '#1a1a2e', padding: '40px 24px 20px' },
+  footerInner: { maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 30 },
+  footerLink: { color: 'rgba(255,255,255,0.7)', fontSize: '0.9em', cursor: 'pointer' },
+
+  /* ── Contact section ── */
+  contactSection: { padding: '60px 24px', background: '#fff' },
+  contactGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24, maxWidth: 1000, margin: '0 auto' },
+  contactCard: { background: '#f0f9f9', borderRadius: 16, padding: '28px 24px', textAlign: 'center' as const, border: '1px solid #e0f0f0' },
+  contactIcon: { fontSize: '2em', marginBottom: 12 },
+  contactLink: { display: 'block', color: '#006D77', fontSize: '0.95em', textDecoration: 'none', lineHeight: 1.8, fontWeight: 500 },
+
+  /* ── Modal ── */
+  modalOverlay: { position: 'fixed' as const, top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 },
+  modalContent: { background: '#fff', borderRadius: 20, maxWidth: 560, width: '100%', padding: 32, position: 'relative' as const, maxHeight: '90vh', overflowY: 'auto' as const, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' },
+  modalClose: { position: 'absolute' as const, top: 16, right: 16, background: 'none', border: 'none', fontSize: '1.4em', color: '#999', cursor: 'pointer', padding: 4 },
+  modalImage: { width: '100%', height: 200, objectFit: 'cover' as const, borderRadius: 12, marginBottom: 20 },
+  modalCta: { width: '100%', padding: '14px 0', background: '#006D77', color: '#fff', border: 'none', borderRadius: 10, fontSize: '1.05em', fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s' },
+
+  /* ── Enquiry form ── */
+  enquiryInput: { width: '100%', padding: '12px 14px', border: '1.5px solid #d0e8e8', borderRadius: 10, fontSize: '0.95em', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' as const },
 };
 
 export default Landing;
