@@ -126,6 +126,7 @@ const AdminDashboard: React.FC = () => {
   const navItems = [
     { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
     { id: 'students', icon: '👥', label: 'Students' },
+    { id: 'bulk-register', icon: '📋', label: 'Bulk Register' },
     { id: 'reports', icon: '📄', label: 'Reports' },
     { id: 'analytics', icon: '📊', label: 'Analytics' },
     { id: 'settings', icon: '⚙️', label: 'Settings' },
@@ -187,7 +188,13 @@ const AdminDashboard: React.FC = () => {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => {
+                if (item.id === 'bulk-register') {
+                  navigate('/admin/bulk-register');
+                } else {
+                  setActiveSection(item.id);
+                }
+              }}
               style={{
                 ...s.navItem,
                 ...(activeSection === item.id ? s.navItemActive : {}),

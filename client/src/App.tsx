@@ -6,6 +6,7 @@ import CareerAssessment from './pages/CareerAssessment';
 import StudentLogin from './pages/StudentLogin';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import BulkRegistration from './pages/BulkRegistration';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import type { ReportData } from './pages/reportTemplate';
 
@@ -238,6 +239,16 @@ function App() {
             element={
               <RequireAdmin>
                 <AdminDashboard />
+              </RequireAdmin>
+            }
+          />
+
+          {/* Bulk registration — admin only */}
+          <Route
+            path="/admin/bulk-register"
+            element={
+              <RequireAdmin>
+                <BulkRegistration />
               </RequireAdmin>
             }
           />
