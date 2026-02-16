@@ -168,6 +168,15 @@ const Landing: React.FC = () => {
             >
               Register
             </button>
+            <button
+              style={{ ...s.loginBtn, fontSize: '0.82em', padding: '8px 14px', borderColor: '#E29578', color: '#E29578' }}
+              onClick={() => navigate('/admin/login')}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(226,149,120,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              title="Admin Portal"
+            >
+              🛡️ Admin
+            </button>
           </div>
         </div>
       </header>

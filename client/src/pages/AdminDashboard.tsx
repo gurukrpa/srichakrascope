@@ -145,7 +145,18 @@ const AdminDashboard: React.FC = () => {
         {/* Logo & close */}
         <div style={s.sidebarHeader}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={s.logoCircle}>S</div>
+            <img
+              src="/images/srichakra-logo.png"
+              alt="Srichakra Logo"
+              style={{ height: 40, width: 40, borderRadius: '50%', objectFit: 'cover' }}
+              onError={(e) => {
+                const el = e.target as HTMLImageElement;
+                el.style.display = 'none';
+                const fallback = el.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+            <div style={{ ...s.logoCircle, display: 'none' }}>S</div>
             <span style={s.logoText}>Srichakra</span>
           </div>
           <button
