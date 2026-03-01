@@ -7,8 +7,36 @@ import StudentLogin from './pages/StudentLogin';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import BulkRegistration from './pages/BulkRegistration';
+import SchoolLogin from './pages/SchoolLogin';
+import AccessGate from './pages/AccessGate';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import type { ReportData } from './pages/reportTemplate';
+
+/** Error Boundary to catch and display runtime errors */
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'monospace', color: '#c00' }}>
+          <h2>Something went wrong:</h2>
+          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error?.message}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.85em', color: '#555' }}>{this.state.error?.stack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 /**
  * Protected Route — requires logged-in user.
@@ -29,6 +57,20 @@ function RequireAdmin({ children }: { children: React.ReactElement }) {
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#2C3E50', fontFamily: 'Segoe UI' }}>Loading...</div>;
   if (!currentUser) return <Navigate to="/admin/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
+  return children;
+}
+
+/**
+ * Access Gate — requires logged-in user WITH paid/approved access.
+ * If logged in but no access → redirect to /access-gate (payment page).
+ * Admins bypass access check.
+ */
+function RequireAccess({ children }: { children: React.ReactElement }) {
+  const { currentUser, loading, hasAssessmentAccess, accessLoading, isAdmin } = useAuth();
+  if (loading || accessLoading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#006D77', fontFamily: 'Segoe UI' }}>Loading...</div>;
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (isAdmin) return children;
+  if (!hasAssessmentAccess) return <Navigate to="/access-gate" replace />;
   return children;
 }
 
@@ -223,12 +265,16 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ErrorBoundary>
         <Routes>
           {/* Landing page — start here */}
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
 
           {/* Student login / register */}
           <Route path="/login" element={<StudentLogin />} />
+
+          {/* School / Bulk student login */}
+          <Route path="/school-login" element={<SchoolLogin />} />
 
           {/* Admin login */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -253,13 +299,23 @@ function App() {
             }
           />
 
-          {/* Live assessment wizard — requires login */}
+          {/* Access gate — payment / approval page */}
+          <Route
+            path="/access-gate"
+            element={
+              <RequireAuth>
+                <AccessGate />
+              </RequireAuth>
+            }
+          />
+
+          {/* Live assessment wizard — requires login + paid/approved access */}
           <Route
             path="/assessment"
             element={
-              <RequireAuth>
+              <RequireAccess>
                 <Assessment onComplete={(data) => setReportData(data)} />
-              </RequireAuth>
+              </RequireAccess>
             }
           />
 
@@ -287,6 +343,7 @@ function App() {
             element={<CareerAssessment {...DEMO_DATA} />}
           />
         </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );

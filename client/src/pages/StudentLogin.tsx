@@ -11,6 +11,9 @@ import { useAuth } from '../contexts/AuthContext';
 
 const StudentLogin: React.FC = () => {
   const [isRegister, setIsRegister] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -19,7 +22,7 @@ const StudentLogin: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, register } = useAuth();
+  const { login, register, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +43,7 @@ const StudentLogin: React.FC = () => {
       } else {
         await login(email, password);
       }
-      navigate('/assessment');
+      navigate('/access-gate');
     } catch (err: any) {
       const code = err?.code || '';
       if (code === 'auth/email-already-in-use') setError('An account with this email already exists');
@@ -59,7 +62,8 @@ const StudentLogin: React.FC = () => {
         {/* Branding */}
         <div style={styles.brandBar}>
           <h1 style={{ margin: 0, fontSize: '1.4em', color: '#fff' }}>Srichakra Academy</h1>
-          <p style={{ margin: '4px 0 0', color: '#83C5BE', fontSize: '0.9em' }}>Career Assessment Portal</p>
+          <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.7)', fontSize: '0.75em', fontStyle: 'italic' }}>(A Unit of SriKrpa Foundation Trust)</p>
+          <p style={{ margin: '4px 0 0', color: '#83C5BE', fontSize: '0.9em' }}>SCOPE Assessment Portal</p>
         </div>
 
         {/* Tab Toggle */}
@@ -143,10 +147,82 @@ const StudentLogin: React.FC = () => {
           <button type="submit" style={styles.submitBtn} disabled={loading}>
             {loading ? 'Please wait...' : isRegister ? 'Create Account' : 'Login'}
           </button>
+
+          {/* Forgot Password link (login mode only) */}
+          {!isRegister && (
+            <button
+              type="button"
+              onClick={() => { setShowForgotPassword(true); setError(''); setResetMessage(''); setResetEmail(email); }}
+              style={{ ...styles.linkBtn, marginTop: 12, fontSize: '0.88em' }}
+            >
+              Forgot Password?
+            </button>
+          )}
         </form>
 
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div style={styles.forgotOverlay}>
+            <div style={styles.forgotCard}>
+              <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>Reset Password</h3>
+              <p style={{ margin: '0 0 16px', color: '#666', fontSize: '0.9em', lineHeight: 1.6 }}>
+                Enter your registered email. We'll send a password reset link.
+              </p>
+              <input
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="Enter your email"
+                style={styles.input}
+              />
+              {resetMessage && (
+                <div style={{
+                  marginTop: 10,
+                  padding: '10px 14px',
+                  borderRadius: 8,
+                  fontSize: '0.88em',
+                  background: resetMessage.startsWith('✓') ? '#f0fff4' : '#fff3f3',
+                  color: resetMessage.startsWith('✓') ? '#276749' : '#d32f2f',
+                  border: `1px solid ${resetMessage.startsWith('✓') ? '#c6f6d5' : '#ffcdd2'}`,
+                }}>
+                  {resetMessage}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                <button
+                  onClick={async () => {
+                    if (!resetEmail.trim()) { setResetMessage('Please enter an email address'); return; }
+                    setResetMessage('');
+                    try {
+                      await resetPassword(resetEmail.trim());
+                      setResetMessage('✓ Password reset email sent! Check your inbox and spam/junk folder. It may take a minute to arrive.');
+                    } catch (err: any) {
+                      const code = err?.code || '';
+                      if (code === 'auth/user-not-found') setResetMessage('No account found with this email.');
+                      else if (code === 'auth/invalid-email') setResetMessage('Invalid email address.');
+                      else setResetMessage(err?.message || 'Failed to send reset email. Try again.');
+                    }
+                  }}
+                  style={{ ...styles.submitBtn, flex: 1, marginTop: 0 }}
+                >
+                  Send Reset Link
+                </button>
+                <button
+                  onClick={() => setShowForgotPassword(false)}
+                  style={{ ...styles.submitBtn, flex: 1, marginTop: 0, background: '#999' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Back to home */}
-        <div style={{ textAlign: 'center' as const, padding: '0 0 24px' }}>
+        <div style={{ textAlign: 'center' as const, padding: '0 0 24px', display: 'flex', flexDirection: 'column' as const, gap: 10, alignItems: 'center' }}>
+          <button onClick={() => navigate('/school-login')} style={styles.linkBtn}>
+            Academic Partner Login →
+          </button>
           <button onClick={() => navigate('/')} style={styles.linkBtn}>
             ← Back to Home
           </button>
@@ -249,6 +325,24 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     fontSize: '0.95em',
     textDecoration: 'underline',
+  },
+  forgotOverlay: {
+    position: 'fixed' as const,
+    inset: 0,
+    background: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: '20px',
+  },
+  forgotCard: {
+    background: '#fff',
+    borderRadius: '16px',
+    padding: '28px 24px',
+    maxWidth: '400px',
+    width: '100%',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
   },
 };
 

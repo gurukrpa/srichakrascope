@@ -23,9 +23,15 @@ import {
 } from '../data/questionBank';
 import { buildReportFromAnswers, type RawAnswers } from '../scoring/scoringEngine';
 import type { ReportData } from './reportTemplate';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
+
+// ────────────────────────────────────────────
+// Constants
+// ────────────────────────────────────────────
+
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
 
 // ────────────────────────────────────────────
 // Props
@@ -44,6 +50,55 @@ const PROGRESS_KEY = 'srichakra_assessment_progress';
 const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+
+  // ── Access control state ──
+  const [accessStatus, setAccessStatus] = useState<'checking' | 'allowed' | 'completed' | 'expired'>('checking');
+  const [accessMessage, setAccessMessage] = useState('');
+
+  // ── Check if user already completed / assessment expired ──
+  useEffect(() => {
+    const checkAccess = async () => {
+      if (!currentUser) {
+        setAccessStatus('allowed');
+        return;
+      }
+
+      try {
+        const studentDoc = await getDoc(doc(db, 'students', currentUser.uid));
+        if (studentDoc.exists()) {
+          const data = studentDoc.data();
+
+          // Already completed? Block re-use
+          if (data.assessmentCompleted === true) {
+            setAccessStatus('completed');
+            setAccessMessage('You have already completed the assessment. Each student can take it only once. If you need to retake the assessment, please contact your school coordinator or admin@srichakraacademy.org.');
+            return;
+          }
+
+          // Started but not completed? Check 3-day window
+          if (data.assessmentStartedAt) {
+            const startedAt = data.assessmentStartedAt instanceof Timestamp
+              ? data.assessmentStartedAt.toDate()
+              : new Date(data.assessmentStartedAt);
+            const elapsed = Date.now() - startedAt.getTime();
+
+            if (elapsed > THREE_DAYS_MS) {
+              setAccessStatus('expired');
+              setAccessMessage('Your assessment window has expired. Unfinished assessments must be completed within 3 days of starting. Please contact your school coordinator or admin@srichakraacademy.org to request a reset.');
+              return;
+            }
+          }
+        }
+
+        setAccessStatus('allowed');
+      } catch (err) {
+        console.error('Error checking assessment access:', err);
+        setAccessStatus('allowed'); // Allow on error to not block
+      }
+    };
+
+    checkAccess();
+  }, [currentUser]);
 
   // ── Restore saved progress (survives page refresh) ──
   const [_saved] = useState(() => {
@@ -171,6 +226,78 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
       : preferenceAnswers[currentQ.id] !== undefined);
 
   // ────────────────────────────────────────────
+  // Helper: Record assessment start in Firestore
+  // ────────────────────────────────────────────
+
+  const startAssessment = async () => {
+    // Record start time in Firestore (only if not already recorded)
+    if (currentUser) {
+      try {
+        const studentDoc = await getDoc(doc(db, 'students', currentUser.uid));
+        if (studentDoc.exists() && !studentDoc.data().assessmentStartedAt) {
+          await updateDoc(doc(db, 'students', currentUser.uid), {
+            assessmentStartedAt: serverTimestamp(),
+          });
+        }
+      } catch (err) {
+        console.error('Failed to record assessment start time:', err);
+      }
+    }
+    setPhase('aptitude');
+  };
+
+  // ────────────────────────────────────────────
+  // Render: Access Blocked (completed or expired)
+  // ────────────────────────────────────────────
+
+  if (accessStatus === 'checking') {
+    return (
+      <div style={styles.container}>
+        <div style={{ ...styles.card, textAlign: 'center' as const }}>
+          <div style={{ fontSize: '2.5em', marginBottom: '16px' }}>🔍</div>
+          <h2 style={{ color: '#006D77' }}>Checking Access...</h2>
+          <p style={{ color: '#666', fontSize: '1.05em' }}>Verifying your assessment eligibility.</p>
+          <div style={styles.spinner} />
+        </div>
+      </div>
+    );
+  }
+
+  if (accessStatus === 'completed' || accessStatus === 'expired') {
+    return (
+      <div style={styles.container}>
+        <div style={{ ...styles.card, textAlign: 'center' as const }}>
+          <div style={{ fontSize: '3em', marginBottom: '16px' }}>
+            {accessStatus === 'completed' ? '✅' : '⏰'}
+          </div>
+          <h2 style={{ color: accessStatus === 'completed' ? '#006D77' : '#d32f2f', marginBottom: 12 }}>
+            {accessStatus === 'completed' ? 'Assessment Already Completed' : 'Assessment Window Expired'}
+          </h2>
+          <p style={{ color: '#555', lineHeight: 1.8, fontSize: '1.05em', maxWidth: 480, margin: '0 auto 24px' }}>
+            {accessMessage}
+          </p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' as const }}>
+            {accessStatus === 'completed' && (
+              <button
+                onClick={() => navigate('/report')}
+                style={{ ...styles.primaryBtn, width: 'auto', padding: '12px 28px', margin: 0 }}
+              >
+                View My Report →
+              </button>
+            )}
+            <button
+              onClick={() => navigate('/')}
+              style={{ ...styles.primaryBtn, width: 'auto', padding: '12px 28px', margin: 0, background: '#888' }}
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ────────────────────────────────────────────
   // Render: Name Entry
   // ────────────────────────────────────────────
 
@@ -180,7 +307,8 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
         <div style={styles.card}>
           <div style={styles.logo}>
             <h1 style={{ margin: 0, fontSize: '1.8em', color: '#006D77' }}>Srichakra Academy</h1>
-            <p style={{ margin: '8px 0 0', color: '#666', fontSize: '1.1em' }}>Career Assessment</p>
+            <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.85em', fontStyle: 'italic' }}>(A Unit of SriKrpa Foundation Trust)</p>
+            <p style={{ margin: '8px 0 0', color: '#666', fontSize: '1.1em' }}>SCOPE - Student Career & Opportunity Pathway Evaluation</p>
           </div>
 
           <div style={{ margin: '40px 0' }}>
@@ -195,6 +323,12 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
             <p style={{ color: '#555', lineHeight: 1.7, fontSize: '1.0em' }}>
               Estimated time: <strong>25–35 minutes</strong>. Answer honestly for the best results.
             </p>
+            <div style={{ background: '#fff8f0', border: '1px solid #f0d8c0', borderRadius: 10, padding: '12px 16px', marginTop: 14 }}>
+              <p style={{ margin: 0, color: '#8B6914', fontSize: '0.93em', lineHeight: 1.6 }}>
+                ⚠️ <strong>Important:</strong> You can only take this assessment <strong>once</strong>.
+                If you leave mid-way, you can resume within <strong>3 days</strong>. After that, the assessment will expire.
+              </p>
+            </div>
           </div>
 
           <div style={{ marginTop: '30px' }}>
@@ -210,14 +344,14 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && studentName.trim()) {
-                  setPhase('aptitude');
+                  startAssessment();
                 }
               }}
             />
           </div>
 
           <button
-            onClick={() => setPhase('aptitude')}
+            onClick={() => startAssessment()}
             disabled={!studentName.trim()}
             style={{
               ...styles.primaryBtn,

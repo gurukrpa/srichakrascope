@@ -48,6 +48,7 @@ const AdminLogin: React.FC = () => {
           <div style={styles.shield}>🛡️</div>
           <h1 style={{ margin: 0, fontSize: '1.4em', color: '#fff' }}>Admin Portal</h1>
           <p style={{ margin: '4px 0 0', color: '#E29578', fontSize: '0.9em' }}>Srichakra Academy</p>
+          <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.75em', fontStyle: 'italic' }}>(A Unit of SriKrpa Foundation Trust)</p>
         </div>
 
         {/* Form */}

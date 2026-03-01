@@ -14,12 +14,14 @@
  * Access: Admin-only (requires login).
  */
 
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import app from '../firebase';
+
+// Connect to asia-south1 region (matches Cloud Function deployment)
+const functions = getFunctions(app, 'asia-south1');
 
 interface StudentRow {
   name: string;
@@ -38,6 +40,7 @@ function generatePassword(name: string, phone: string): string {
 const BulkRegistration: React.FC = () => {
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [students, setStudents] = useState<StudentRow[]>([
@@ -45,7 +48,14 @@ const BulkRegistration: React.FC = () => {
   ]);
   const [processing, setProcessing] = useState(false);
   const [orgName, setOrgName] = useState('');
+  const [registrationType, setRegistrationType] = useState<'school' | 'individual'>('school');
   const [summary, setSummary] = useState<{ total: number; success: number; failed: number } | null>(null);
+
+  // Pre-fill org name from URL query param (e.g. from Add Academic Partner flow)
+  useEffect(() => {
+    const org = searchParams.get('org');
+    if (org) setOrgName(org);
+  }, [searchParams]);
 
   // Guard
   if (!currentUser || !isAdmin) {
@@ -134,7 +144,7 @@ const BulkRegistration: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  // ── Register all ──
+  // ── Register all (via server-side Cloud Function — no rate limits) ──
   const handleRegisterAll = async () => {
     const valid = students.filter(
       (s) => s.name.trim() && s.email.trim() && s.status !== 'success'
@@ -146,63 +156,70 @@ const BulkRegistration: React.FC = () => {
 
     setProcessing(true);
     setSummary(null);
-    let successCount = 0;
-    let failCount = 0;
 
-    for (let i = 0; i < students.length; i++) {
-      const s = students[i];
-      if (!s.name.trim() || !s.email.trim() || s.status === 'success') continue;
+    // Mark all valid rows as registering
+    setStudents((prev) =>
+      prev.map((row) =>
+        row.name.trim() && row.email.trim() && row.status !== 'success'
+          ? { ...row, status: 'registering', message: 'Creating account...' }
+          : row
+      )
+    );
 
-      // Mark as registering
+    try {
+      // Build payload for Cloud Function
+      const studentPayload = valid.map((s) => ({
+        name: s.name.trim(),
+        email: s.email.trim(),
+        phone: s.phone.trim(),
+        password: generatePassword(s.name, s.phone),
+      }));
+
+      const bulkRegister = httpsCallable(functions, 'bulkRegisterStudents');
+      const result = await bulkRegister({
+        students: studentPayload,
+        organization: orgName.trim() || '',
+        registrationType,
+      });
+
+      const data = result.data as {
+        results: Array<{ email: string; success: boolean; error?: string; uid?: string }>;
+        total: number;
+        success: number;
+        failed: number;
+      };
+
+      // Map server results back to the UI rows
+      const resultMap = new Map(data.results.map((r) => [r.email.toLowerCase(), r]));
+
       setStudents((prev) =>
-        prev.map((row, idx) =>
-          idx === i ? { ...row, status: 'registering', message: 'Creating account...' } : row
-        )
+        prev.map((row) => {
+          const res = resultMap.get(row.email.trim().toLowerCase());
+          if (!res) return row; // not part of this batch
+          if (res.success) {
+            const pw = generatePassword(row.name, row.phone);
+            return { ...row, status: 'success', message: `✓ Registered (password: ${pw})` };
+          } else {
+            return { ...row, status: 'error', message: `✗ ${res.error || 'Unknown error'}` };
+          }
+        })
       );
 
-      try {
-        const password = generatePassword(s.name, s.phone);
-        const cred = await createUserWithEmailAndPassword(auth, s.email.trim(), password);
-        await updateProfile(cred.user, { displayName: s.name.trim() });
-        await setDoc(doc(db, 'students', cred.user.uid), {
-          name: s.name.trim(),
-          email: s.email.trim(),
-          phone: s.phone.trim(),
-          createdAt: serverTimestamp(),
-          assessmentCompleted: false,
-          registeredBy: currentUser.email || 'admin',
-          organization: orgName.trim() || undefined,
-          bulkRegistration: true,
-        });
-
-        setStudents((prev) =>
-          prev.map((row, idx) =>
-            idx === i
-              ? { ...row, status: 'success', message: `✓ Registered (password: ${password})` }
-              : row
-          )
-        );
-        successCount++;
-      } catch (err: any) {
-        const code = err?.code || '';
-        let msg = err?.message || 'Unknown error';
-        if (code === 'auth/email-already-in-use') msg = 'Email already registered';
-        else if (code === 'auth/invalid-email') msg = 'Invalid email format';
-        else if (code === 'auth/weak-password') msg = 'Password too weak (need 6+ chars)';
-
-        setStudents((prev) =>
-          prev.map((row, idx) =>
-            idx === i ? { ...row, status: 'error', message: `✗ ${msg}` } : row
-          )
-        );
-        failCount++;
-      }
-
-      // Small delay to avoid Firebase rate limits
-      await new Promise((r) => setTimeout(r, 300));
+      setSummary({ total: data.total, success: data.success, failed: data.failed });
+    } catch (err: any) {
+      console.error('Bulk registration failed:', err);
+      const msg = err?.message || 'Bulk registration failed. Please try again.';
+      // Mark all registering rows as error
+      setStudents((prev) =>
+        prev.map((row) =>
+          row.status === 'registering'
+            ? { ...row, status: 'error', message: `✗ ${msg}` }
+            : row
+        )
+      );
+      setSummary({ total: valid.length, success: 0, failed: valid.length });
     }
 
-    setSummary({ total: successCount + failCount, success: successCount, failed: failCount });
     setProcessing(false);
   };
 
@@ -234,7 +251,8 @@ const BulkRegistration: React.FC = () => {
           <ul style={{ margin: '8px 0 0', paddingLeft: 20, lineHeight: 1.8 }}>
             <li>Upload a CSV file or add students manually below</li>
             <li>Each student gets an account with a default password: <strong>first 4 chars of name + last 4 digits of phone</strong></li>
-            <li>Students can log in and take the assessment immediately</li>
+            <li>Students are registered with <strong>approved</strong> access and can take the assessment immediately</li>
+            <li>All accounts are created server-side in one batch — <strong>fast &amp; no rate limits</strong></li>
             <li>Example: "Rahul Kumar" + phone "9876543210" → password: <code>rahu3210</code></li>
           </ul>
         </div>
@@ -249,6 +267,50 @@ const BulkRegistration: React.FC = () => {
             placeholder="e.g. Delhi Public School, Coimbatore"
             style={{ ...st.input, maxWidth: 440 }}
           />
+        </div>
+
+        {/* Registration type selector */}
+        <div style={{ padding: '0 24px', marginTop: 12 }}>
+          <label style={st.label}>Registration Type</label>
+          <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+            <button
+              type="button"
+              onClick={() => setRegistrationType('school')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 8,
+                border: registrationType === 'school' ? '2px solid #006D77' : '1px solid #e2e8f0',
+                background: registrationType === 'school' ? '#f0fdfa' : '#fff',
+                color: registrationType === 'school' ? '#006D77' : '#718096',
+                fontWeight: registrationType === 'school' ? 700 : 500,
+                cursor: 'pointer',
+                fontSize: '0.92em',
+              }}
+            >
+              🏫 School / Partner
+            </button>
+            <button
+              type="button"
+              onClick={() => setRegistrationType('individual')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 8,
+                border: registrationType === 'individual' ? '2px solid #006D77' : '1px solid #e2e8f0',
+                background: registrationType === 'individual' ? '#f0fdfa' : '#fff',
+                color: registrationType === 'individual' ? '#006D77' : '#718096',
+                fontWeight: registrationType === 'individual' ? 700 : 500,
+                cursor: 'pointer',
+                fontSize: '0.92em',
+              }}
+            >
+              👤 Individual
+            </button>
+          </div>
+          <p style={{ margin: '6px 0 0', fontSize: '0.82em', color: '#999' }}>
+            {registrationType === 'school'
+              ? 'School-registered students — approve after collecting payment from school.'
+              : 'Individual students registered by admin — approve after collecting GPay/cash/bank payment.'}
+          </p>
         </div>
 
         {/* CSV upload + template */}

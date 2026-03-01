@@ -9,8 +9,11 @@
  * - Data flows IN, report HTML flows OUT
  */
 
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { generateFullReport, ReportData } from './reportTemplate';
+import { useAuth } from '../contexts/AuthContext';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 
 /**
  * Props accepted by CareerAssessment.
@@ -63,18 +66,34 @@ const CareerAssessment: React.FC<CareerAssessmentProps> = (props) => {
   const reportData = buildReportData(props);
   const reportHtml = generateFullReport(reportData);
 
-  // ── Download as HTML file (portable, print-to-PDF from browser) ──
-  const handleDownload = useCallback(() => {
-    const blob = new Blob([reportHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Career_Assessment_Report_${(props.studentName || 'Student').replace(/\s+/g, '_')}.html`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [reportHtml, props.studentName]);
+  // ── Auth context for student email ──
+  const { currentUser } = useAuth();
+  const studentEmail = currentUser?.email || '';
+
+  // ── Send report via email (saves request to Firestore) ──
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const handleSendEmail = useCallback(async () => {
+    if (!studentEmail) {
+      alert('No email address found for this student.');
+      return;
+    }
+    setEmailStatus('sending');
+    try {
+      await addDoc(collection(db, 'emailRequests'), {
+        to: studentEmail,
+        studentName: props.studentName || 'Student',
+        reportHtml,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+      setEmailStatus('sent');
+    } catch (err) {
+      console.error('Failed to queue email:', err);
+      setEmailStatus('error');
+      alert('Failed to send email. Please try again or use Print / Save PDF to download your report.');
+    }
+  }, [reportHtml, props.studentName, studentEmail]);
 
   // ── Print the iframe content (triggers browser print dialog / Save as PDF) ──
   const handlePrint = useCallback(() => {
@@ -98,14 +117,25 @@ const CareerAssessment: React.FC<CareerAssessmentProps> = (props) => {
         }}
       >
         <h2 style={{ margin: 0, fontSize: '1.1em' }}>
-          Career Assessment Report — {props.studentName}
+          SCOPE Report — {props.studentName}
         </h2>
         <div style={{ flex: 1 }} />
         <button onClick={handlePrint} style={toolbarBtnStyle}>
           Print / Save PDF
         </button>
-        <button onClick={handleDownload} style={toolbarBtnStyle}>
-          Download HTML
+        <button
+          onClick={handleSendEmail}
+          disabled={emailStatus === 'sending'}
+          style={{
+            ...toolbarBtnStyle,
+            ...(emailStatus === 'sent' ? { background: '#38a169', color: '#fff', border: '1px solid #38a169' } : {}),
+            ...(emailStatus === 'error' ? { background: '#e53e3e', color: '#fff', border: '1px solid #e53e3e' } : {}),
+          }}
+        >
+          {emailStatus === 'idle' && '📧 Send Report on Email'}
+          {emailStatus === 'sending' && 'Sending…'}
+          {emailStatus === 'sent' && '✓ Email Queued!'}
+          {emailStatus === 'error' && '✗ Failed — Retry'}
         </button>
       </div>
 
@@ -113,7 +143,7 @@ const CareerAssessment: React.FC<CareerAssessmentProps> = (props) => {
       <iframe
         ref={iframeRef}
         srcDoc={reportHtml}
-        title="Career Assessment Report Preview"
+        title="SCOPE Assessment Report Preview"
         style={{ flex: 1, border: 'none', width: '100%' }}
       />
     </div>

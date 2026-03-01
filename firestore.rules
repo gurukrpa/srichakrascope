@@ -3,10 +3,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Students collection: users can read/write their own doc; admins can read all
+    // Students collection: users can read/write their own doc; admins can read & update all
     match /students/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
     }
 
     // Assessments collection: users can read/write their own; admins can read all
@@ -15,10 +15,34 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
     }
 
+    // Payments collection: users can read their own; admins can read all; Cloud Functions write
+    match /payments/{orderId} {
+      allow read: if request.auth != null && resource.data.studentUid == request.auth.uid;
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      // Cloud Functions use admin SDK (bypasses rules), so no write rule needed for them
+    }
+
+    // Partners collection: admins can create & read
+    match /partners/{docId} {
+      allow read, write: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+    }
+
     // EOI submissions: anyone can create; admins can read all
     match /eoi_submissions/{docId} {
       allow create: if true;
       allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+    }
+
+    // Enquiries: anyone can create (public form); admins can read & update status
+    match /enquiries/{docId} {
+      allow create: if true;
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+    }
+
+    // Email requests: authenticated users can create; admins can read all
+    match /emailRequests/{docId} {
+      allow create: if request.auth != null;
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
     }
   }
 }
