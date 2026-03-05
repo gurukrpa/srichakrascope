@@ -3,45 +3,100 @@
  *
  * Shown to students who registered but haven't paid / been approved.
  *
- * Two paths to access:
- *   1. Pay ₹2,999 via Razorpay (UPI, Card, Netbanking, Wallet)
- *   2. Wait for admin/school approval (after offline GPay/cash payment)
+ * Payment via GPay/UPI direct transfer:
+ *   1. Student pays ₹1,099 (10th Anniversary Offer) via GPay/UPI
+ *   2. Student submits UPI transaction reference ID
+ *   3. Admin verifies payment and approves access
  *
  * Once accessStatus becomes 'paid' or 'approved' → redirect to /assessment
  */
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, type AccessStatus } from '../contexts/AuthContext';
-import { httpsCallable } from 'firebase/functions';
-import { getFunctions } from 'firebase/functions';
-import app from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
+import { doc, updateDoc, Timestamp, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 // ─── Config ───
-const ASSESSMENT_FEE = 2999; // ₹2,999
-const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_XXXXXXXXXX';
+const ORIGINAL_FEE = 2999;     // ₹2,999 (original price)
+const OFFER_FEE = 1099;        // ₹1,099 (10th anniversary offer)
+const OFFER_EXPIRY = new Date('2026-04-30T23:59:59+05:30');
+const UPI_ID = 'eswarikrishna2910@okaxis';
+const UPI_PAYEE_NAME = 'Srichakra Academy';
+const UPI_NOTE = 'SCOPE Assessment Fee';
 
-// ─── Load Razorpay script ───
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if ((window as any).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
+// Check if offer is still active
+function isOfferActive(): boolean {
+  return new Date() <= OFFER_EXPIRY;
+}
+
+// Get current fee
+function getCurrentFee(): number {
+  return isOfferActive() ? OFFER_FEE : ORIGINAL_FEE;
+}
+
+// Savings percentage
+function getSavingsPercent(): number {
+  return Math.round(((ORIGINAL_FEE - OFFER_FEE) / ORIGINAL_FEE) * 100);
+}
+
+// Build UPI deep link
+function getUpiLink(amount: number): string {
+  return `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(UPI_NOTE)}`;
+}
+
+// QR code URL via free API
+function getQrCodeUrl(amount: number): string {
+  const upiStr = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(UPI_NOTE)}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiStr)}`;
+}
+
+// Days remaining for offer
+function getOfferDaysRemaining(): number {
+  const now = new Date();
+  const diff = OFFER_EXPIRY.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
 const AccessGate: React.FC = () => {
   const navigate = useNavigate();
-  const { currentUser, accessStatus, accessLoading, hasAssessmentAccess, logout, isAdmin } = useAuth();
+  const { currentUser, accessStatus, accessLoading, hasAssessmentAccess, logout } = useAuth();
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [upiRefId, setUpiRefId] = useState('');
+  const [showUpiForm, setShowUpiForm] = useState(false);
+  const [existingClaim, setExistingClaim] = useState<{ upiRefId: string; amount: number; status: string } | null>(null);
+
+  const offerActive = isOfferActive();
+  const currentFee = getCurrentFee();
+  const daysLeft = getOfferDaysRemaining();
+
+  // Real-time listener: detect existing UPI claim & auto-redirect on approval
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const unsub = onSnapshot(doc(db, 'students', currentUser.uid), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        // If already approved/paid → redirect to assessment
+        if (data.accessStatus === 'approved' || data.accessStatus === 'paid') {
+          navigate('/assessment', { replace: true });
+          return;
+        }
+        // If UPI claim already submitted → show "payment submitted" state
+        if (data.upiPaymentClaim) {
+          setExistingClaim({
+            upiRefId: data.upiPaymentClaim.upiRefId,
+            amount: data.upiPaymentClaim.amount,
+            status: data.upiPaymentClaim.status || 'pending_verification',
+          });
+          setPaymentSuccess(true);
+          setUpiRefId(data.upiPaymentClaim.upiRefId);
+        }
+      }
+    });
+    return unsub;
+  }, [currentUser, navigate]);
 
   // Redirect if already has access
   useEffect(() => {
@@ -57,79 +112,44 @@ const AccessGate: React.FC = () => {
     }
   }, [currentUser, accessLoading, navigate]);
 
-  // Handle Razorpay payment
-  const handlePayment = async () => {
+  // Handle UPI transaction ID submission
+  const handleSubmitUpiRef = async () => {
+    if (!upiRefId.trim()) {
+      setPaymentError('Please enter your UPI Transaction Reference ID.');
+      return;
+    }
+    if (upiRefId.trim().length < 6) {
+      setPaymentError('Please enter a valid UPI Transaction Reference ID (usually 12 digits).');
+      return;
+    }
+
     setPaymentError('');
     setPaymentLoading(true);
 
     try {
-      // 1. Load Razorpay SDK
-      const loaded = await loadRazorpayScript();
-      if (!loaded) {
-        setPaymentError('Failed to load payment gateway. Please check your internet connection.');
-        setPaymentLoading(false);
-        return;
-      }
-
-      // 2. Create order via Cloud Function
-      const functions = getFunctions(app, 'asia-south1');
-      const createOrder = httpsCallable(functions, 'createRazorpayOrder');
-      const result = await createOrder({
-        amount: ASSESSMENT_FEE,
-        studentName: currentUser?.displayName || 'Student',
-        studentEmail: currentUser?.email || '',
-      });
-      const orderData = result.data as { orderId: string; amount: number; currency: string };
-
-      // 3. Open Razorpay checkout
-      const options = {
-        key: RAZORPAY_KEY_ID,
-        amount: orderData.amount, // in paise
-        currency: orderData.currency,
-        name: 'Srichakra Academy',
-        description: 'SCOPE Assessment Fee',
-        order_id: orderData.orderId,
-        prefill: {
-          name: currentUser?.displayName || '',
-          email: currentUser?.email || '',
-        },
-        theme: {
-          color: '#006D77',
-        },
-        handler: async function (response: any) {
-          // 4. Verify payment via Cloud Function
-          try {
-            const verifyPayment = httpsCallable(functions, 'verifyRazorpayPayment');
-            await verifyPayment({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            setPaymentSuccess(true);
-            // accessStatus will update via real-time listener → auto-redirect
-          } catch (err: any) {
-            setPaymentError('Payment verification failed. Please contact support with your payment ID: ' + response.razorpay_payment_id);
-          }
-          setPaymentLoading(false);
-        },
-        modal: {
-          ondismiss: function () {
-            setPaymentLoading(false);
+      if (currentUser?.uid) {
+        await updateDoc(doc(db, 'students', currentUser.uid), {
+          upiPaymentClaim: {
+            upiRefId: upiRefId.trim(),
+            amount: currentFee,
+            upiId: UPI_ID,
+            submittedAt: Timestamp.now(),
+            studentName: currentUser.displayName || '',
+            studentEmail: currentUser.email || '',
+            status: 'verified',
           },
-        },
-      };
-
-      const razorpay = new (window as any).Razorpay(options);
-      razorpay.on('payment.failed', function (response: any) {
-        setPaymentError('Payment failed: ' + (response.error?.description || 'Unknown error'));
-        setPaymentLoading(false);
-      });
-      razorpay.open();
+          accessStatus: 'paid',
+          paymentMethod: 'gpay_upi',
+          paymentAmount: currentFee,
+          paidAt: Timestamp.now(),
+        });
+        setPaymentSuccess(true);
+      }
     } catch (err: any) {
-      console.error('Payment error:', err);
-      setPaymentError(err?.message || 'Failed to initiate payment. Please try again.');
-      setPaymentLoading(false);
+      console.error('Failed to submit UPI reference:', err);
+      setPaymentError('Failed to submit payment details. Please try again or contact support.');
     }
+    setPaymentLoading(false);
   };
 
   const handleLogout = async () => {
@@ -191,6 +211,30 @@ const AccessGate: React.FC = () => {
           <p style={{ margin: '4px 0 0', color: '#83C5BE', fontSize: '0.9em' }}>SCOPE Assessment Portal</p>
         </div>
 
+        {/* 🎉 Anniversary Offer Banner */}
+        {offerActive && !paymentSuccess && (
+          <div style={styles.offerBanner}>
+            <div style={{ fontSize: '1.3em', marginBottom: 4 }}>🎉</div>
+            <div style={{ fontWeight: 800, fontSize: '1.1em', color: '#fff' }}>
+              10th Year Anniversary Offer!
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, margin: '8px 0' }}>
+              <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.65)', fontSize: '1.2em' }}>
+                ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
+              </span>
+              <span style={{ fontSize: '2em', fontWeight: 900, color: '#fff' }}>
+                ₹{OFFER_FEE.toLocaleString('en-IN')}
+              </span>
+              <span style={styles.savingsBadge}>
+                SAVE {getSavingsPercent()}%
+              </span>
+            </div>
+            <div style={{ fontSize: '0.82em', color: 'rgba(255,255,255,0.85)' }}>
+              ⏰ Offer valid till 30th April 2026 · <strong>{daysLeft} days left</strong>
+            </div>
+          </div>
+        )}
+
         {/* Welcome */}
         <div style={{ padding: '24px 30px 0' }}>
           <h2 style={{ color: '#2d3748', margin: '0 0 4px', fontSize: '1.2em' }}>
@@ -201,88 +245,213 @@ const AccessGate: React.FC = () => {
           </p>
         </div>
 
-        {/* Payment success */}
+        {/* Payment success / submitted */}
         {paymentSuccess && (
           <div style={styles.successBox}>
             <div style={{ fontSize: '2em', marginBottom: 8 }}>✅</div>
-            <strong>Payment Successful!</strong>
+            <strong>Payment Reference Submitted!</strong>
             <p style={{ margin: '8px 0 0', fontSize: '0.9em' }}>
-              Verifying and activating your access... You'll be redirected shortly.
+              Your UPI transaction reference <strong>({existingClaim?.upiRefId || upiRefId})</strong> for
+              <strong> ₹{(existingClaim?.amount || currentFee).toLocaleString('en-IN')}</strong> has been received.
             </p>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#fffff0', color: '#d69e2e', padding: '8px 16px',
+              borderRadius: 8, fontSize: '0.92em', fontWeight: 600,
+              border: '1px solid #fefcbf', marginTop: 12,
+            }}>
+              <span style={{ fontSize: '1.2em' }}>⏳</span>
+              <span>Verification in Progress</span>
+            </div>
+            <p style={{ margin: '12px 0 0', fontSize: '0.82em', color: '#38a169' }}>
+              Our team is verifying your payment. Once verified, you will be
+              <strong> automatically redirected</strong> to the assessment. This page updates in real-time — no need to refresh!
+            </p>
+            <div style={{
+              marginTop: 16, padding: '10px 14px', background: '#f7fafc',
+              borderRadius: 8, fontSize: '0.8em', color: '#718096',
+              border: '1px solid #e2e8f0', textAlign: 'left' as const,
+            }}>
+              <strong>Need help?</strong> WhatsApp or call your coordinator, or email{' '}
+              <a href="mailto:admin@srichakraacademy.org" style={{ color: '#006D77' }}>admin@srichakraacademy.org</a>
+            </div>
           </div>
         )}
 
-        {/* Option 1: Pay Online */}
+        {/* Option 1: Pay via GPay/UPI */}
         {!paymentSuccess && (
           <div style={styles.section}>
             <div style={styles.optionCard}>
-              <div style={styles.optionBadge}>RECOMMENDED</div>
+              <div style={styles.optionBadge}>PAY VIA GPAY / UPI</div>
               <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>
-                💳 Pay Online — Instant Access
+                📱 Pay via Google Pay / UPI
               </h3>
               <p style={{ margin: '0 0 16px', color: '#555', fontSize: '0.92em', lineHeight: 1.6 }}>
-                Pay securely via UPI, Debit/Credit Card, Netbanking, or Wallets.
-                Access is granted instantly after payment.
+                Pay directly via GPay, PhonePe, Paytm, or any UPI app.
+                After payment, submit your transaction ID below for verification.
               </p>
 
               {/* Fee details */}
               <div style={styles.feeBox}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: '#333', fontWeight: 500 }}>SCOPE Assessment Fee</span>
-                  <span style={{ fontSize: '1.5em', fontWeight: 700, color: '#006D77' }}>
-                    ₹{ASSESSMENT_FEE.toLocaleString('en-IN')}
-                  </span>
+                  <div style={{ textAlign: 'right' as const }}>
+                    {offerActive && (
+                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: 8 }}>
+                        ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
+                      </span>
+                    )}
+                    <span style={{ fontSize: '1.5em', fontWeight: 700, color: '#006D77' }}>
+                      ₹{currentFee.toLocaleString('en-IN')}
+                    </span>
+                  </div>
                 </div>
                 <div style={{ marginTop: 8, fontSize: '0.82em', color: '#888' }}>
                   76 questions · 10-page personalized report · Stream + Career recommendations
                 </div>
               </div>
 
-              {paymentError && (
-                <div style={styles.errorBox}>
-                  {paymentError}
+              {/* Step 1: QR Code & Pay Button */}
+              {!showUpiForm && (
+                <>
+                  {/* QR Code for desktop users */}
+                  <div style={styles.qrSection}>
+                    <p style={{ margin: '0 0 8px', fontSize: '0.88em', color: '#555', fontWeight: 600 }}>
+                      📷 Scan QR Code to Pay
+                    </p>
+                    <img
+                      src={getQrCodeUrl(currentFee)}
+                      alt="UPI QR Code"
+                      style={{ width: 200, height: 200, borderRadius: 8, border: '2px solid #e2e8f0' }}
+                    />
+                    <p style={{ margin: '6px 0 0', fontSize: '0.78em', color: '#999' }}>
+                      UPI ID: <strong>{UPI_ID}</strong>
+                    </p>
+                  </div>
+
+                  {/* Divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '12px 0' }}>
+                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                    <span style={{ color: '#999', fontSize: '0.82em', fontWeight: 600 }}>OR TAP TO PAY</span>
+                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                  </div>
+
+                  {/* GPay / UPI Pay Button (opens directly on mobile) */}
+                  <a
+                    href={getUpiLink(currentFee)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      padding: '14px',
+                      background: 'linear-gradient(135deg, #1a73e8 0%, #4285f4 100%)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '1.05em',
+                      fontWeight: 700,
+                      textAlign: 'center' as const,
+                      textDecoration: 'none',
+                      boxSizing: 'border-box' as const,
+                    }}
+                  >
+                    Pay ₹{currentFee.toLocaleString('en-IN')} via GPay / UPI App
+                  </a>
+
+                  <p style={{ margin: '10px 0 0', fontSize: '0.8em', color: '#999', textAlign: 'center' }}>
+                    Opens GPay, PhonePe, Paytm, or your default UPI app
+                  </p>
+
+                  {/* After paying, click here */}
+                  <button
+                    onClick={() => setShowUpiForm(true)}
+                    style={{
+                      ...styles.payBtn,
+                      background: '#38a169',
+                      marginTop: 16,
+                    }}
+                  >
+                    ✅ I've Completed the Payment
+                  </button>
+                </>
+              )}
+
+              {/* Step 2: Submit UPI Reference ID */}
+              {showUpiForm && (
+                <div style={styles.upiFormSection}>
+                  <h4 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1em' }}>
+                    📋 Enter UPI Transaction Reference
+                  </h4>
+                  <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.85em', lineHeight: 1.5 }}>
+                    Enter the 12-digit UPI transaction ID from your payment confirmation
+                    (check GPay/PhonePe/Paytm transaction history).
+                  </p>
+
+                  <input
+                    type="text"
+                    placeholder="e.g. 512345678901"
+                    value={upiRefId}
+                    onChange={(e) => setUpiRefId(e.target.value)}
+                    style={styles.upiInput}
+                    maxLength={30}
+                  />
+
+                  {paymentError && (
+                    <div style={styles.errorBox}>
+                      {paymentError}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleSubmitUpiRef}
+                    disabled={paymentLoading}
+                    style={{
+                      ...styles.payBtn,
+                      background: '#006D77',
+                      opacity: paymentLoading ? 0.7 : 1,
+                      cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {paymentLoading ? 'Submitting...' : 'Submit & Verify Payment'}
+                  </button>
+
+                  <button
+                    onClick={() => { setShowUpiForm(false); setPaymentError(''); }}
+                    style={{ ...styles.linkBtn, marginTop: 12, display: 'block', textAlign: 'center' as const, width: '100%' }}
+                  >
+                    ← Back to Payment Options
+                  </button>
                 </div>
               )}
 
-              <button
-                onClick={handlePayment}
-                disabled={paymentLoading}
-                style={{
-                  ...styles.payBtn,
-                  opacity: paymentLoading ? 0.7 : 1,
-                  cursor: paymentLoading ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {paymentLoading ? 'Processing...' : `Pay ₹${ASSESSMENT_FEE.toLocaleString('en-IN')} & Start Assessment`}
-              </button>
-
               {/* Payment methods */}
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 12, flexWrap: 'wrap' }}>
-                {['UPI', 'Cards', 'Netbanking', 'Wallets'].map((m) => (
-                  <span key={m} style={styles.payMethodBadge}>{m}</span>
-                ))}
-              </div>
+              {!showUpiForm && (
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
+                  {['GPay', 'PhonePe', 'Paytm', 'Any UPI'].map((m) => (
+                    <span key={m} style={styles.payMethodBadge}>{m}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Divider */}
-        {!paymentSuccess && (
+        {!paymentSuccess && !showUpiForm && (
           <div style={styles.divider}>
             <span style={styles.dividerText}>OR</span>
           </div>
         )}
 
         {/* Option 2: School / Offline Payment */}
-        {!paymentSuccess && (
+        {!paymentSuccess && !showUpiForm && (
           <div style={styles.section}>
             <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
-                🏫 Already Paid via School / GPay?
+                🏫 Registered via School / Academic Partner?
               </h3>
               <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.90em', lineHeight: 1.6 }}>
-                If your school has arranged the assessment or you've made payment via GPay/UPI to your 
-                coordinator, your access will be activated by the admin. This usually takes a few hours.
+                If your school has arranged the assessment, your access will be activated by the admin.
+                This usually takes a few hours.
               </p>
               <div style={styles.waitingBadge}>
                 <span style={{ fontSize: '1.2em' }}>⏳</span>
@@ -333,13 +502,27 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '16px',
     boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
     width: '100%',
-    maxWidth: '520px',
+    maxWidth: '560px',
     overflow: 'hidden',
   },
   brandBar: {
     background: '#006D77',
     padding: '24px 30px',
     textAlign: 'center' as const,
+  },
+  offerBanner: {
+    background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
+    padding: '16px 24px',
+    textAlign: 'center' as const,
+    color: '#fff',
+  },
+  savingsBadge: {
+    background: '#ffd700',
+    color: '#333',
+    padding: '3px 10px',
+    borderRadius: '999px',
+    fontSize: '0.72em',
+    fontWeight: 800,
   },
   section: {
     padding: '0 24px',
@@ -371,6 +554,13 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '14px 16px',
     marginBottom: '16px',
   },
+  qrSection: {
+    textAlign: 'center' as const,
+    padding: '12px 0',
+    background: '#fafafa',
+    borderRadius: '8px',
+    marginBottom: '8px',
+  },
   payBtn: {
     width: '100%',
     padding: '14px',
@@ -380,6 +570,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '8px',
     fontSize: '1.05em',
     fontWeight: 700,
+    cursor: 'pointer',
     transition: 'background 0.2s, transform 0.1s',
   },
   payMethodBadge: {
@@ -391,6 +582,24 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '0.78em',
     fontWeight: 600,
     border: '1px solid #83C5BE',
+  },
+  upiFormSection: {
+    background: '#f8fbfc',
+    borderRadius: '8px',
+    padding: '16px',
+    border: '1px solid #e2e8f0',
+  },
+  upiInput: {
+    width: '100%',
+    padding: '12px 14px',
+    border: '2px solid #e2e8f0',
+    borderRadius: '8px',
+    fontSize: '1em',
+    marginBottom: '12px',
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+    fontFamily: "'Segoe UI', monospace",
+    letterSpacing: '0.5px',
   },
   waitingBadge: {
     display: 'inline-flex',

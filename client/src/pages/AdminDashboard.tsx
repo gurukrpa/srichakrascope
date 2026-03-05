@@ -33,6 +33,15 @@ interface StudentRecord {
   paymentMethod?: string;
   paymentAmount?: number;
   paidAt?: any;
+  upiPaymentClaim?: {
+    upiRefId: string;
+    amount: number;
+    upiId: string;
+    submittedAt: any;
+    studentName: string;
+    studentEmail: string;
+    status: string;
+  };
 }
 
 interface AssessmentRecord {
@@ -665,6 +674,7 @@ const AdminDashboard: React.FC = () => {
                         <th style={s.th}>Phone</th>
                         <th style={s.th}>Type</th>
                         <th style={s.th}>Organization</th>
+                        <th style={s.th}>UPI Payment</th>
                         <th style={s.th}>Registered</th>
                         <th style={s.th}>Access Status</th>
                         <th style={s.th}>Actions</th>
@@ -702,6 +712,21 @@ const AdminDashboard: React.FC = () => {
                             </span>
                           </td>
                           <td style={s.td}>{stu.organization || '—'}</td>
+                          <td style={s.td}>
+                            {stu.upiPaymentClaim ? (
+                              <div style={{ fontSize: '0.82em', lineHeight: 1.5 }}>
+                                <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '999px', background: '#ebf8ff', color: '#2b6cb0', fontWeight: 600, fontSize: '0.9em', marginBottom: 2 }}>
+                                  💳 UPI Ref: {stu.upiPaymentClaim.upiRefId}
+                                </div>
+                                <div style={{ color: '#718096' }}>₹{stu.upiPaymentClaim.amount?.toLocaleString('en-IN')}</div>
+                                {stu.paymentMethod === 'gpay_upi' && (
+                                  <div style={{ color: '#38a169', fontSize: '0.85em' }}>via GPay/UPI</div>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{ color: '#ccc' }}>—</span>
+                            )}
+                          </td>
                           <td style={s.td}>
                             {stu.createdAt?.toDate
                               ? stu.createdAt.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })

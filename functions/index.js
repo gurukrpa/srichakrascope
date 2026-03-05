@@ -27,8 +27,11 @@ const gmailPassword = defineSecret("GMAIL_PASSWORD");
 const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
 
-// ─── Assessment fee in paise (₹2,999 = 299900 paise) ───
-const ASSESSMENT_FEE_PAISE = 299900;
+// ─── Assessment fee in paise ───
+// Original: ₹2,999 = 299900 paise
+// 10th Anniversary Offer: ₹1,099 = 109900 paise (valid till 30 Apr 2026)
+const ASSESSMENT_FEE_PAISE = 109900;
+const ORIGINAL_FEE_PAISE = 299900;
 
 // ────────────────────────────────────────────────────────
 // 1. Send Report Email
