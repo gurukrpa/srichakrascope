@@ -44,5 +44,14 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
     }
+
+    // UPI Transactions: used to prevent duplicate UPI ref IDs
+    // Any authenticated user can read (to check duplicates) and create (to reserve)
+    // No update/delete — once submitted, it's permanent
+    match /upiTransactions/{refId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.studentUid == request.auth.uid;
+      allow read, update, delete: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+    }
   }
 }

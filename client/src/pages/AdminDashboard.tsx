@@ -27,7 +27,7 @@ interface StudentRecord {
   phone: string;
   createdAt: any;
   assessmentCompleted: boolean;
-  accessStatus?: 'pending' | 'paid' | 'approved' | 'rejected';
+  accessStatus?: 'pending' | 'paid' | 'approved' | 'rejected' | 'pending_verification';
   registrationType?: 'individual' | 'school';
   organization?: string;
   paymentMethod?: string;
@@ -80,7 +80,7 @@ const AdminDashboard: React.FC = () => {
   const [enquiriesLoading, setEnquiriesLoading] = useState(false);
 
   // Access approval state
-  const [approvalFilter, setApprovalFilter] = useState<'all' | 'pending' | 'approved' | 'paid' | 'rejected'>('pending');
+  const [approvalFilter, setApprovalFilter] = useState<'all' | 'pending' | 'approved' | 'paid' | 'rejected' | 'pending_verification'>('pending');
   const [approvalLoading, setApprovalLoading] = useState<Record<string, boolean>>({});
   const [bulkApproveLoading, setBulkApproveLoading] = useState(false);
   const [selectedForApproval, setSelectedForApproval] = useState<Set<string>>(new Set());
@@ -396,12 +396,12 @@ const AdminDashboard: React.FC = () => {
   }
 
   // Derived: pending approval count
-  const pendingApprovalCount = students.filter(s => !s.accessStatus || s.accessStatus === 'pending').length;
+  const pendingApprovalCount = students.filter(s => !s.accessStatus || s.accessStatus === 'pending' || s.accessStatus === 'pending_verification').length;
 
   // Filter students for approval section (with search)
   const filteredForApproval = students.filter(s => {
     const statusMatch = approvalFilter === 'all' ? true :
-      approvalFilter === 'pending' ? (!s.accessStatus || s.accessStatus === 'pending') :
+      approvalFilter === 'pending' ? (!s.accessStatus || s.accessStatus === 'pending' || s.accessStatus === 'pending_verification') :
       s.accessStatus === approvalFilter;
     return statusMatch && matchesSearch(s);
   });
@@ -603,7 +603,7 @@ const AdminDashboard: React.FC = () => {
                   style={{ padding: '7px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: '0.9em', minWidth: 220, outline: 'none' }}
                 />
                 <div style={{ display: 'flex', gap: 8 }}>
-                  {(['pending', 'approved', 'paid', 'rejected', 'all'] as const).map(f => (
+                  {(['pending', 'pending_verification', 'approved', 'paid', 'rejected', 'all'] as const).map(f => (
                     <button
                       key={f}
                       onClick={() => setApprovalFilter(f)}
@@ -742,6 +742,9 @@ const AdminDashboard: React.FC = () => {
                             {stu.accessStatus === 'paid' && (
                               <span style={{ ...s.badgeComplete, background: '#f0fff4', color: '#276749' }}>💳 Paid</span>
                             )}
+                            {stu.accessStatus === 'pending_verification' && (
+                              <span style={{ ...s.badgePending, background: '#fffff0', color: '#b7791f' }}>🔍 UPI Pending</span>
+                            )}
                             {stu.accessStatus === 'rejected' && (
                               <span style={{ ...s.badgePending, background: '#fff5f5', color: '#e53e3e' }}>❌ Rejected</span>
                             )}
@@ -755,6 +758,24 @@ const AdminDashboard: React.FC = () => {
                                   style={{ ...s.viewBtn, background: '#38a169', fontSize: '0.8em', padding: '4px 10px' }}
                                 >
                                   {approvalLoading[stu.uid] ? '...' : '✓ Approve'}
+                                </button>
+                                <button
+                                  onClick={() => handleRejectStudent(stu.uid)}
+                                  disabled={approvalLoading[stu.uid]}
+                                  style={{ ...s.viewBtn, background: '#e53e3e', fontSize: '0.8em', padding: '4px 10px' }}
+                                >
+                                  ✕ Reject
+                                </button>
+                              </div>
+                            )}
+                            {stu.accessStatus === 'pending_verification' && (
+                              <div style={{ display: 'flex', gap: 4 }}>
+                                <button
+                                  onClick={() => handleApproveStudent(stu.uid)}
+                                  disabled={approvalLoading[stu.uid]}
+                                  style={{ ...s.viewBtn, background: '#38a169', fontSize: '0.8em', padding: '4px 10px' }}
+                                >
+                                  {approvalLoading[stu.uid] ? '...' : '✓ Verify & Approve'}
                                 </button>
                                 <button
                                   onClick={() => handleRejectStudent(stu.uid)}
@@ -958,6 +979,9 @@ const AdminDashboard: React.FC = () => {
                             )}
                             {stu.accessStatus === 'paid' && (
                               <span style={{ ...s.badgeComplete, background: '#f0fff4', color: '#276749' }}>💳 Paid</span>
+                            )}
+                            {stu.accessStatus === 'pending_verification' && (
+                              <span style={{ ...s.badgePending, background: '#fffff0', color: '#b7791f' }}>🔍 UPI Pending</span>
                             )}
                             {stu.accessStatus === 'rejected' && (
                               <span style={{ ...s.badgePending, background: '#fff5f5', color: '#e53e3e' }}>❌</span>

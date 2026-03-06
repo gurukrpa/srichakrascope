@@ -24,7 +24,7 @@ import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/fires
 import { auth, db } from '../firebase';
 
 /** Access status values */
-export type AccessStatus = 'pending' | 'paid' | 'approved' | 'rejected' | null;
+export type AccessStatus = 'pending' | 'paid' | 'approved' | 'rejected' | 'pending_verification' | null;
 
 interface AuthContextType {
   currentUser: User | null;

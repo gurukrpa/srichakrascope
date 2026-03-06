@@ -14,7 +14,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, updateDoc, Timestamp, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, Timestamp, onSnapshot, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 // ─── Config ───
@@ -128,6 +128,22 @@ const AccessGate: React.FC = () => {
 
     try {
       if (currentUser?.uid) {
+        // Check if this UPI ref ID has already been submitted by another student
+        const refDoc = await getDoc(doc(db, 'upiTransactions', upiRefId.trim()));
+        if (refDoc.exists() && refDoc.data().studentUid !== currentUser.uid) {
+          setPaymentError('This UPI Transaction Reference ID has already been used. Please enter a unique transaction ID from your payment.');
+          setPaymentLoading(false);
+          return;
+        }
+
+        // Reserve this UPI ref ID to prevent reuse
+        await setDoc(doc(db, 'upiTransactions', upiRefId.trim()), {
+          studentUid: currentUser.uid,
+          studentEmail: currentUser.email || '',
+          amount: currentFee,
+          submittedAt: Timestamp.now(),
+        });
+
         await updateDoc(doc(db, 'students', currentUser.uid), {
           upiPaymentClaim: {
             upiRefId: upiRefId.trim(),
@@ -136,9 +152,9 @@ const AccessGate: React.FC = () => {
             submittedAt: Timestamp.now(),
             studentName: currentUser.displayName || '',
             studentEmail: currentUser.email || '',
-            status: 'verified',
+            status: 'pending_verification',
           },
-          accessStatus: 'paid',
+          accessStatus: 'pending_verification',
           paymentMethod: 'gpay_upi',
           paymentAmount: currentFee,
           paidAt: Timestamp.now(),
