@@ -15,7 +15,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, updateDoc, Timestamp, onSnapshot, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { httpsCallable } from 'firebase/functions';
+import { db, functions } from '../firebase';
 
 // ─── Config ───
 const ORIGINAL_FEE = 2999;     // ₹2,999 (original price)
@@ -24,6 +25,15 @@ const OFFER_EXPIRY = new Date('2026-04-30T23:59:59+05:30');
 const UPI_ID = 'eswarikrishna2910@okaxis';
 const UPI_PAYEE_NAME = 'Srichakra Academy';
 const UPI_NOTE = 'SCOPE Assessment Fee';
+
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
+
+// Razorpay window type
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 // Check if offer is still active
 function isOfferActive(): boolean {
@@ -67,6 +77,7 @@ const AccessGate: React.FC = () => {
   const [upiRefId, setUpiRefId] = useState('');
   const [showUpiForm, setShowUpiForm] = useState(false);
   const [existingClaim, setExistingClaim] = useState<{ upiRefId: string; amount: number; status: string } | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'direct_upi' | null>(null);
 
   const offerActive = isOfferActive();
   const currentFee = getCurrentFee();
@@ -111,6 +122,71 @@ const AccessGate: React.FC = () => {
       navigate('/login', { replace: true });
     }
   }, [currentUser, accessLoading, navigate]);
+
+  // Handle Razorpay payment (automated verification)
+  const handleRazorpayPayment = async () => {
+    setPaymentError('');
+    setPaymentLoading(true);
+
+    try {
+      // 1. Create order on server
+      const createOrder = httpsCallable(functions, 'createRazorpayOrder');
+      const result = await createOrder({
+        studentName: currentUser?.displayName || '',
+        studentEmail: currentUser?.email || '',
+      });
+      const { orderId, amount, currency } = result.data as { orderId: string; amount: number; currency: string };
+
+      // 2. Open Razorpay checkout
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount,
+        currency,
+        name: 'Srichakra Academy',
+        description: 'SCOPE Career Assessment Fee',
+        order_id: orderId,
+        prefill: {
+          name: currentUser?.displayName || '',
+          email: currentUser?.email || '',
+        },
+        theme: {
+          color: '#006D77',
+        },
+        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          // 3. Verify payment on server (cryptographic verification)
+          try {
+            const verifyPayment = httpsCallable(functions, 'verifyRazorpayPayment');
+            await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            // Access is automatically granted — real-time listener will redirect
+          } catch (verifyErr: any) {
+            console.error('Payment verification failed:', verifyErr);
+            setPaymentError('Payment was received but verification failed. Please contact support with your payment ID: ' + response.razorpay_payment_id);
+          }
+          setPaymentLoading(false);
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        setPaymentError('Payment failed: ' + (response.error?.description || 'Please try again.'));
+        setPaymentLoading(false);
+      });
+      rzp.open();
+    } catch (err: any) {
+      console.error('Failed to initiate payment:', err);
+      setPaymentError('Failed to start payment. Please try again or use the direct UPI option below.');
+      setPaymentLoading(false);
+    }
+  };
 
   // Handle UPI transaction ID submission
   const handleSubmitUpiRef = async () => {
@@ -294,11 +370,109 @@ const AccessGate: React.FC = () => {
           </div>
         )}
 
-        {/* Option 1: Pay via GPay/UPI */}
-        {!paymentSuccess && (
+        {/* Option 1: Pay Online (Razorpay — automated) */}
+        {!paymentSuccess && !paymentMethod && (
           <div style={styles.section}>
             <div style={styles.optionCard}>
-              <div style={styles.optionBadge}>PAY VIA GPAY / UPI</div>
+              <div style={styles.optionBadge}>RECOMMENDED</div>
+              <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>
+                💳 Pay Online (UPI / Card / Net Banking)
+              </h3>
+              <p style={{ margin: '0 0 16px', color: '#555', fontSize: '0.92em', lineHeight: 1.6 }}>
+                Secure online payment with <strong>instant access</strong> — no waiting for admin approval.
+                Supports GPay, PhonePe, Paytm, UPI, cards, and net banking.
+              </p>
+
+              {/* Fee details */}
+              <div style={styles.feeBox}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: '#333', fontWeight: 500 }}>SCOPE Assessment Fee</span>
+                  <div style={{ textAlign: 'right' as const }}>
+                    {offerActive && (
+                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: 8 }}>
+                        ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
+                      </span>
+                    )}
+                    <span style={{ fontSize: '1.5em', fontWeight: 700, color: '#006D77' }}>
+                      ₹{currentFee.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ marginTop: 8, fontSize: '0.82em', color: '#888' }}>
+                  76 questions · 10-page personalized report · Stream + Career recommendations
+                </div>
+              </div>
+
+              <button
+                onClick={handleRazorpayPayment}
+                disabled={paymentLoading}
+                style={{
+                  ...styles.payBtn,
+                  background: 'linear-gradient(135deg, #006D77 0%, #0a8f9a 100%)',
+                  opacity: paymentLoading ? 0.7 : 1,
+                  cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {paymentLoading ? 'Processing...' : `Pay ₹${currentFee.toLocaleString('en-IN')} — Instant Access`}
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10 }}>
+                <span style={{ fontSize: '0.78em', color: '#38a169' }}>🔒 Secured by Razorpay</span>
+              </div>
+
+              {paymentError && (
+                <div style={{ ...styles.errorBox, marginTop: 12 }}>
+                  {paymentError}
+                </div>
+              )}
+
+              {/* Payment method logos */}
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
+                {['GPay', 'PhonePe', 'Paytm', 'UPI', 'Cards', 'Net Banking'].map((m) => (
+                  <span key={m} style={styles.payMethodBadge}>{m}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Divider */}
+        {!paymentSuccess && !paymentMethod && (
+          <div style={styles.divider}>
+            <span style={styles.dividerText}>OR</span>
+          </div>
+        )}
+
+        {/* Option 2: Direct UPI Transfer (manual verification) */}
+        {!paymentSuccess && !paymentMethod && (
+          <div style={styles.section}>
+            <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
+              <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
+                📱 Direct UPI Transfer
+              </h3>
+              <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.90em', lineHeight: 1.6 }}>
+                Pay directly via UPI to our account. Requires admin verification
+                before access is granted (may take a few hours).
+              </p>
+              <button
+                onClick={() => setPaymentMethod('direct_upi')}
+                style={{
+                  ...styles.payBtn,
+                  background: '#718096',
+                  fontSize: '0.95em',
+                }}
+              >
+                Pay via Direct UPI Transfer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Direct UPI Transfer Form */}
+        {!paymentSuccess && paymentMethod === 'direct_upi' && (
+          <div style={styles.section}>
+            <div style={styles.optionCard}>
+              <div style={styles.optionBadge}>DIRECT UPI</div>
               <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>
                 📱 Pay via Google Pay / UPI
               </h3>
@@ -447,19 +621,26 @@ const AccessGate: React.FC = () => {
                   ))}
                 </div>
               )}
+
+              <button
+                onClick={() => setPaymentMethod(null)}
+                style={{ ...styles.linkBtn, marginTop: 16, display: 'block', textAlign: 'center' as const, width: '100%' }}
+              >
+                ← Back to Payment Options
+              </button>
             </div>
           </div>
         )}
 
         {/* Divider */}
-        {!paymentSuccess && !showUpiForm && (
+        {!paymentSuccess && !paymentMethod && (
           <div style={styles.divider}>
             <span style={styles.dividerText}>OR</span>
           </div>
         )}
 
-        {/* Option 2: School / Offline Payment */}
-        {!paymentSuccess && !showUpiForm && (
+        {/* Option 3: School / Offline Payment */}
+        {!paymentSuccess && !paymentMethod && (
           <div style={styles.section}>
             <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
