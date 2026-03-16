@@ -72,7 +72,7 @@ const SERVICE_CARDS = [
     subtitle: 'Student Career & Opportunity Pathway Evaluation',
     image: '/images/career-assessment-1.jpg',
     description: 'Assessing Personality, Aptitude, Interests & Multiple Intelligences to Guide Stream Selection and Career Direction.',
-    features: ['76 scientifically designed questions', '10-page personalized report', 'Stream & course recommendations', 'Career cluster mapping'],
+    features: ['Scientifically designed questions', '10-page personalized report', 'Stream & course recommendations', 'Career cluster mapping'],
     isAssessment: true,
   },
   {
@@ -174,6 +174,17 @@ const Landing: React.FC = () => {
             >
               🏫 Academic Partner Login
             </button>
+            <a
+              href="https://lms.srichakraacademy.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...s.loginBtn, fontSize: '1em', padding: '13px 28px', borderColor: '#4CAF50', color: '#fff', background: '#4CAF50', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 8, fontWeight: 700, boxShadow: '0 3px 12px rgba(76,175,80,0.3)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#388E3C'; e.currentTarget.style.transform = 'scale(1.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#4CAF50'; e.currentTarget.style.transform = 'scale(1)'; }}
+              title="Access Srichakra Learning Portal (Moodle)"
+            >
+              🎓 Learning Portal
+            </a>
             <button
               style={{ ...s.loginBtn, fontSize: '0.92em', padding: '10px 16px', borderColor: '#83C5BE', color: '#83C5BE' }}
               onClick={() => navigate('/admin/login')}
@@ -239,16 +250,69 @@ const Landing: React.FC = () => {
           <p style={{ ...s.heroSubtitle, fontWeight: 500, fontSize: '1em', marginTop: 0, marginBottom: 18 }}>
             Data-driven career guidance and overseas admissions pathways after 10th, 12th, graduation or post-graduation.
           </p>
-          <a
-            href="https://wa.me/918590396662?text=Hi%20Srichakra%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20your%20services."
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ ...s.heroCta, textDecoration: 'none', display: 'inline-block', textAlign: 'center' as const }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1A8A94'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#fff'; }}
-          >
-            Get Started →
-          </a>
+          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' as const, justifyContent: 'center' }}>
+            <button
+              style={s.heroCtaPrimary}
+              onClick={() => navigate('/login')}
+              onMouseEnter={e => { e.currentTarget.style.background = '#148088'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#E29578'; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              📝 Click to Take Assessment
+            </button>
+            <a
+              href="https://lms.srichakraacademy.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...s.heroCta, textDecoration: 'none', display: 'inline-block', textAlign: 'center' as const, background: '#4CAF50', borderColor: '#4CAF50', color: '#fff', fontWeight: 700 }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#388E3C'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#4CAF50'; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              🎓 Learning Portal
+            </a>
+            <a
+              href="https://wa.me/918590396662?text=Hi%20Srichakra%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20your%20services."
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...s.heroCta, textDecoration: 'none', display: 'inline-block', textAlign: 'center' as const }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1A8A94'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#fff'; }}
+            >
+              Get Started →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ PROMOTION BANNER ══════════ */}
+      <section style={s.promoBanner}>
+        <div style={s.promoInner}>
+          <div style={s.promoContent}>
+            <div style={s.promoBadge}>🎉 LIMITED TIME OFFER</div>
+            <h2 style={s.promoTitle}>SCOPE Career Assessment</h2>
+            <p style={s.promoDesc}>
+              Discover your child's ideal career path with our scientifically designed assessment.
+              Get a comprehensive 10-page personalized report with stream recommendations & career cluster mapping.
+            </p>
+            <div style={s.promoPriceRow}>
+              <span style={s.promoNewPrice}>₹1099/-</span>
+            </div>
+            <button
+              style={s.promoBtn}
+              onClick={() => navigate('/login')}
+              onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#E29578'; e.currentTarget.style.transform = 'scale(1.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#E29578'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              Take Assessment Now →
+            </button>
+          </div>
+          <div style={s.promoFeatures}>
+            <div style={s.promoFeature}>✅ Scientifically Designed Questions</div>
+            <div style={s.promoFeature}>✅ 10-Page Personalized Report</div>
+            <div style={s.promoFeature}>✅ Stream & Course Recommendations</div>
+            <div style={s.promoFeature}>✅ Career Cluster Mapping</div>
+            <div style={s.promoFeature}>✅ Aptitude & Personality Analysis</div>
+            <div style={s.promoFeature}>✅ Instant Digital Report</div>
+          </div>
         </div>
       </section>
 
@@ -650,6 +714,22 @@ const s: Record<string, React.CSSProperties> = {
   heroTitle: { color: '#fff', fontSize: '3.4em', fontWeight: 800, textAlign: 'center' as const, margin: '0 0 16px', maxWidth: 850, lineHeight: 1.3, textShadow: '2px 2px 8px rgba(0,0,0,0.35)' },
   heroSubtitle: { color: 'rgba(255,255,255,0.95)', fontSize: '1.5em', textAlign: 'center' as const, margin: '0 0 28px', maxWidth: 700, lineHeight: 1.6, textShadow: '1px 1px 4px rgba(0,0,0,0.25)' },
   heroCta: { padding: '18px 48px', background: 'transparent', color: '#fff', border: '2px solid #fff', borderRadius: 10, fontSize: '1.35em', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s' },
+  heroCtaPrimary: { padding: '20px 52px', background: '#E29578', color: '#fff', border: '2px solid #E29578', borderRadius: 12, fontSize: '1.4em', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 6px 24px rgba(226,149,120,0.45)', letterSpacing: 0.5, animation: 'pulse 2s infinite' },
+
+  /* ── Promo banner ── */
+  promoBanner: { background: 'linear-gradient(135deg, #006D77 0%, #1A8A94 50%, #148088 100%)', padding: '48px 24px', position: 'relative' as const, overflow: 'hidden' },
+  promoInner: { maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap' as const },
+  promoContent: { flex: 1, minWidth: 300 },
+  promoBadge: { display: 'inline-block', background: '#E29578', color: '#fff', padding: '8px 20px', borderRadius: 24, fontSize: '0.95em', fontWeight: 700, marginBottom: 16, letterSpacing: 1 },
+  promoTitle: { color: '#fff', fontSize: '2.4em', fontWeight: 800, margin: '0 0 12px', lineHeight: 1.2 },
+  promoDesc: { color: 'rgba(255,255,255,0.9)', fontSize: '1.1em', lineHeight: 1.8, margin: '0 0 20px' },
+  promoPriceRow: { display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, flexWrap: 'wrap' as const },
+  promoOldPrice: { color: 'rgba(255,255,255,0.5)', fontSize: '1.6em', fontWeight: 600, textDecoration: 'line-through' },
+  promoNewPrice: { color: '#fff', fontSize: '2.8em', fontWeight: 800 },
+  promoSaveBadge: { background: '#ffd166', color: '#333', padding: '6px 16px', borderRadius: 20, fontSize: '1em', fontWeight: 700 },
+  promoBtn: { padding: '18px 48px', background: '#E29578', color: '#fff', border: '2px solid #E29578', borderRadius: 12, fontSize: '1.3em', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(226,149,120,0.4)' },
+  promoFeatures: { flex: '0 0 340px', display: 'flex', flexDirection: 'column' as const, gap: 14 },
+  promoFeature: { background: 'rgba(255,255,255,0.12)', color: '#fff', padding: '14px 20px', borderRadius: 12, fontSize: '1.08em', fontWeight: 600, backdropFilter: 'blur(4px)' },
 
   /* ── Service cards ── */
   cardsSection: { padding: '60px 24px', background: '#f8fbfc' },

@@ -196,6 +196,21 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // ── Log admin action for audit trail ──
+  const logAdminAction = async (action: string, targetUid: string, details?: Record<string, any>) => {
+    try {
+      await addDoc(collection(db, 'audit_logs'), {
+        action,
+        targetUid,
+        performedBy: currentUser?.email || 'unknown',
+        performedAt: Timestamp.now(),
+        ...details,
+      });
+    } catch (err) {
+      console.error('Failed to write audit log:', err);
+    }
+  };
+
   // ── Approve a student (grant assessment access) ──
   const handleApproveStudent = async (uid: string) => {
     setApprovalLoading(prev => ({ ...prev, [uid]: true }));
@@ -205,6 +220,7 @@ const AdminDashboard: React.FC = () => {
         approvedAt: Timestamp.now(),
         approvedBy: currentUser?.email || 'admin',
       });
+      await logAdminAction('approve_student', uid);
       setStudents(prev => prev.map(s => s.uid === uid ? { ...s, accessStatus: 'approved' } : s));
     } catch (err) {
       console.error('Failed to approve student:', err);
@@ -223,6 +239,7 @@ const AdminDashboard: React.FC = () => {
         rejectedAt: Timestamp.now(),
         rejectedBy: currentUser?.email || 'admin',
       });
+      await logAdminAction('reject_student', uid);
       setStudents(prev => prev.map(s => s.uid === uid ? { ...s, accessStatus: 'rejected' } : s));
     } catch (err) {
       console.error('Failed to reject student:', err);
@@ -250,6 +267,10 @@ const AdminDashboard: React.FC = () => {
           });
         });
         await batch.commit();
+      }
+      // Audit log for bulk approve
+      for (const uid of uids) {
+        await logAdminAction('bulk_approve_student', uid);
       }
       setStudents(prev => prev.map(s =>
         selectedForApproval.has(s.uid) ? { ...s, accessStatus: 'approved' as const } : s

@@ -260,12 +260,21 @@ exports.bulkRegisterStudents = onCall(
 
     const db = admin.firestore();
     const results = [];
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     for (const stu of studentList) {
       try {
         const { name, email, phone, password } = stu;
         if (!name || !email || !password) {
           results.push({ email: email || "unknown", success: false, error: "Missing required fields" });
+          continue;
+        }
+        if (typeof name !== "string" || name.length > 100) {
+          results.push({ email, success: false, error: "Invalid name" });
+          continue;
+        }
+        if (!emailRegex.test(email)) {
+          results.push({ email, success: false, error: "Invalid email format" });
           continue;
         }
 

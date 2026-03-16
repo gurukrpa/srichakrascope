@@ -31,8 +31,12 @@ const StudentLogin: React.FC = () => {
 
     if (isRegister) {
       if (!name.trim()) return setError('Please enter your name');
+      if (name.trim().length > 100) return setError('Name is too long');
       if (!phone.trim()) return setError('Please enter your phone number');
-      if (password.length < 6) return setError('Password must be at least 6 characters');
+      if (!/^\d{10,15}$/.test(phone.replace(/\D/g, ''))) return setError('Please enter a valid phone number (10-15 digits)');
+      if (password.length < 8) return setError('Password must be at least 8 characters');
+      if (!/[A-Z]/.test(password)) return setError('Password must include at least one uppercase letter');
+      if (!/[0-9]/.test(password)) return setError('Password must include at least one number');
       if (password !== confirmPassword) return setError('Passwords do not match');
     }
 
@@ -123,7 +127,7 @@ const StudentLogin: React.FC = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={isRegister ? 'Create a password (min 6 chars)' : 'Enter your password'}
+            placeholder={isRegister ? 'Min 8 chars, 1 uppercase, 1 number' : 'Enter your password'}
             style={styles.input}
             required
           />

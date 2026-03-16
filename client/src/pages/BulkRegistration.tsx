@@ -146,11 +146,19 @@ const BulkRegistration: React.FC = () => {
 
   // ── Register all (via server-side Cloud Function — no rate limits) ──
   const handleRegisterAll = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const valid = students.filter(
       (s) => s.name.trim() && s.email.trim() && s.status !== 'success'
     );
     if (valid.length === 0) {
       alert('No valid students to register. Ensure Name and Email are filled.');
+      return;
+    }
+    const invalid = valid.filter(
+      (s) => !emailRegex.test(s.email.trim()) || s.name.trim().length > 100
+    );
+    if (invalid.length > 0) {
+      alert(`${invalid.length} student(s) have invalid email or name (too long). Please fix before registering.`);
       return;
     }
 

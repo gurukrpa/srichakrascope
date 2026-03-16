@@ -3,10 +3,10 @@
  *
  * Shown to students who registered but haven't paid / been approved.
  *
- * Payment via GPay/UPI direct transfer:
- *   1. Student pays ₹1,099 (10th Anniversary Offer) via GPay/UPI
- *   2. Student submits UPI transaction reference ID
- *   3. Admin verifies payment and approves access
+ * Payment via Razorpay (automated):
+ *   1. Student pays ₹1,099 (10th Anniversary Offer) via Razorpay
+ *   2. Payment is verified server-side (HMAC-SHA256)
+ *   3. Access is granted instantly — no admin intervention needed
  *
  * Once accessStatus becomes 'paid' or 'approved' → redirect to /assessment
  */
@@ -14,7 +14,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, updateDoc, Timestamp, onSnapshot, getDoc, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '../firebase';
 
@@ -22,9 +22,6 @@ import { db, functions } from '../firebase';
 const ORIGINAL_FEE = 2999;     // ₹2,999 (original price)
 const OFFER_FEE = 1099;        // ₹1,099 (10th anniversary offer)
 const OFFER_EXPIRY = new Date('2026-04-30T23:59:59+05:30');
-const UPI_ID = 'eswarikrishna2910@okaxis';
-const UPI_PAYEE_NAME = 'Srichakra Academy';
-const UPI_NOTE = 'SCOPE Assessment Fee';
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
 
@@ -50,17 +47,6 @@ function getSavingsPercent(): number {
   return Math.round(((ORIGINAL_FEE - OFFER_FEE) / ORIGINAL_FEE) * 100);
 }
 
-// Build UPI deep link
-function getUpiLink(amount: number): string {
-  return `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(UPI_NOTE)}`;
-}
-
-// QR code URL via free API
-function getQrCodeUrl(amount: number): string {
-  const upiStr = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(UPI_NOTE)}`;
-  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiStr)}`;
-}
-
 // Days remaining for offer
 function getOfferDaysRemaining(): number {
   const now = new Date();
@@ -73,11 +59,6 @@ const AccessGate: React.FC = () => {
   const { currentUser, accessStatus, accessLoading, hasAssessmentAccess, logout } = useAuth();
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState('');
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [upiRefId, setUpiRefId] = useState('');
-  const [showUpiForm, setShowUpiForm] = useState(false);
-  const [existingClaim, setExistingClaim] = useState<{ upiRefId: string; amount: number; status: string } | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'direct_upi' | null>(null);
 
   const offerActive = isOfferActive();
   const currentFee = getCurrentFee();
@@ -93,16 +74,6 @@ const AccessGate: React.FC = () => {
         if (data.accessStatus === 'approved' || data.accessStatus === 'paid') {
           navigate('/assessment', { replace: true });
           return;
-        }
-        // If UPI claim already submitted → show "payment submitted" state
-        if (data.upiPaymentClaim) {
-          setExistingClaim({
-            upiRefId: data.upiPaymentClaim.upiRefId,
-            amount: data.upiPaymentClaim.amount,
-            status: data.upiPaymentClaim.status || 'pending_verification',
-          });
-          setPaymentSuccess(true);
-          setUpiRefId(data.upiPaymentClaim.upiRefId);
         }
       }
     });
@@ -183,65 +154,10 @@ const AccessGate: React.FC = () => {
       rzp.open();
     } catch (err: any) {
       console.error('Failed to initiate payment:', err);
-      setPaymentError('Failed to start payment. Please try again or use the direct UPI option below.');
+      const msg = err?.message || err?.code || 'Unknown error';
+      setPaymentError(`Failed to start payment: ${msg}. Please try again.`);
       setPaymentLoading(false);
     }
-  };
-
-  // Handle UPI transaction ID submission
-  const handleSubmitUpiRef = async () => {
-    if (!upiRefId.trim()) {
-      setPaymentError('Please enter your UPI Transaction Reference ID.');
-      return;
-    }
-    if (upiRefId.trim().length < 6) {
-      setPaymentError('Please enter a valid UPI Transaction Reference ID (usually 12 digits).');
-      return;
-    }
-
-    setPaymentError('');
-    setPaymentLoading(true);
-
-    try {
-      if (currentUser?.uid) {
-        // Check if this UPI ref ID has already been submitted by another student
-        const refDoc = await getDoc(doc(db, 'upiTransactions', upiRefId.trim()));
-        if (refDoc.exists() && refDoc.data().studentUid !== currentUser.uid) {
-          setPaymentError('This UPI Transaction Reference ID has already been used. Please enter a unique transaction ID from your payment.');
-          setPaymentLoading(false);
-          return;
-        }
-
-        // Reserve this UPI ref ID to prevent reuse
-        await setDoc(doc(db, 'upiTransactions', upiRefId.trim()), {
-          studentUid: currentUser.uid,
-          studentEmail: currentUser.email || '',
-          amount: currentFee,
-          submittedAt: Timestamp.now(),
-        });
-
-        await updateDoc(doc(db, 'students', currentUser.uid), {
-          upiPaymentClaim: {
-            upiRefId: upiRefId.trim(),
-            amount: currentFee,
-            upiId: UPI_ID,
-            submittedAt: Timestamp.now(),
-            studentName: currentUser.displayName || '',
-            studentEmail: currentUser.email || '',
-            status: 'pending_verification',
-          },
-          accessStatus: 'pending_verification',
-          paymentMethod: 'gpay_upi',
-          paymentAmount: currentFee,
-          paidAt: Timestamp.now(),
-        });
-        setPaymentSuccess(true);
-      }
-    } catch (err: any) {
-      console.error('Failed to submit UPI reference:', err);
-      setPaymentError('Failed to submit payment details. Please try again or contact support.');
-    }
-    setPaymentLoading(false);
   };
 
   const handleLogout = async () => {
@@ -304,7 +220,7 @@ const AccessGate: React.FC = () => {
         </div>
 
         {/* 🎉 Anniversary Offer Banner */}
-        {offerActive && !paymentSuccess && (
+        {offerActive && (
           <div style={styles.offerBanner}>
             <div style={{ fontSize: '1.3em', marginBottom: 4 }}>🎉</div>
             <div style={{ fontWeight: 800, fontSize: '1.1em', color: '#fff' }}>
@@ -337,49 +253,15 @@ const AccessGate: React.FC = () => {
           </p>
         </div>
 
-        {/* Payment success / submitted */}
-        {paymentSuccess && (
-          <div style={styles.successBox}>
-            <div style={{ fontSize: '2em', marginBottom: 8 }}>✅</div>
-            <strong>Payment Reference Submitted!</strong>
-            <p style={{ margin: '8px 0 0', fontSize: '0.9em' }}>
-              Your UPI transaction reference <strong>({existingClaim?.upiRefId || upiRefId})</strong> for
-              <strong> ₹{(existingClaim?.amount || currentFee).toLocaleString('en-IN')}</strong> has been received.
-            </p>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: '#fffff0', color: '#d69e2e', padding: '8px 16px',
-              borderRadius: 8, fontSize: '0.92em', fontWeight: 600,
-              border: '1px solid #fefcbf', marginTop: 12,
-            }}>
-              <span style={{ fontSize: '1.2em' }}>⏳</span>
-              <span>Verification in Progress</span>
-            </div>
-            <p style={{ margin: '12px 0 0', fontSize: '0.82em', color: '#38a169' }}>
-              Our team is verifying your payment. Once verified, you will be
-              <strong> automatically redirected</strong> to the assessment. This page updates in real-time — no need to refresh!
-            </p>
-            <div style={{
-              marginTop: 16, padding: '10px 14px', background: '#f7fafc',
-              borderRadius: 8, fontSize: '0.8em', color: '#718096',
-              border: '1px solid #e2e8f0', textAlign: 'left' as const,
-            }}>
-              <strong>Need help?</strong> WhatsApp or call your coordinator, or email{' '}
-              <a href="mailto:admin@srichakraacademy.org" style={{ color: '#006D77' }}>admin@srichakraacademy.org</a>
-            </div>
-          </div>
-        )}
-
-        {/* Option 1: Pay Online (Razorpay — automated) */}
-        {!paymentSuccess && !paymentMethod && (
-          <div style={styles.section}>
+        {/* Pay Online (Razorpay — automated, instant access) */}
+        <div style={styles.section}>
             <div style={styles.optionCard}>
               <div style={styles.optionBadge}>RECOMMENDED</div>
               <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>
                 💳 Pay Online (UPI / Card / Net Banking)
               </h3>
               <p style={{ margin: '0 0 16px', color: '#555', fontSize: '0.92em', lineHeight: 1.6 }}>
-                Secure online payment with <strong>instant access</strong> — no waiting for admin approval.
+                Secure online payment with <strong>instant access</strong>.
                 Supports GPay, PhonePe, Paytm, UPI, cards, and net banking.
               </p>
 
@@ -434,232 +316,22 @@ const AccessGate: React.FC = () => {
               </div>
             </div>
           </div>
-        )}
 
-        {/* Divider */}
-        {!paymentSuccess && !paymentMethod && (
-          <div style={styles.divider}>
-            <span style={styles.dividerText}>OR</span>
-          </div>
-        )}
-
-        {/* Option 2: Direct UPI Transfer (manual verification) */}
-        {!paymentSuccess && !paymentMethod && (
-          <div style={styles.section}>
-            <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
-                📱 Direct UPI Transfer
-              </h3>
-              <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.90em', lineHeight: 1.6 }}>
-                Pay directly via UPI to our account. Requires admin verification
-                before access is granted (may take a few hours).
-              </p>
-              <button
-                onClick={() => setPaymentMethod('direct_upi')}
-                style={{
-                  ...styles.payBtn,
-                  background: '#718096',
-                  fontSize: '0.95em',
-                }}
-              >
-                Pay via Direct UPI Transfer
-              </button>
+        {/* School / Offline Payment */}
+        <div style={styles.section}>
+          <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
+              🏫 Registered via School / Academic Partner?
+            </h3>
+            <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.90em', lineHeight: 1.6 }}>
+              If your school has arranged the assessment, your access will be activated by the admin.
+            </p>
+            <div style={styles.waitingBadge}>
+              <span style={{ fontSize: '1.2em' }}>⏳</span>
+              <span>Waiting for Approval</span>
             </div>
           </div>
-        )}
-
-        {/* Direct UPI Transfer Form */}
-        {!paymentSuccess && paymentMethod === 'direct_upi' && (
-          <div style={styles.section}>
-            <div style={styles.optionCard}>
-              <div style={styles.optionBadge}>DIRECT UPI</div>
-              <h3 style={{ margin: '0 0 8px', color: '#006D77', fontSize: '1.1em' }}>
-                📱 Pay via Google Pay / UPI
-              </h3>
-              <p style={{ margin: '0 0 16px', color: '#555', fontSize: '0.92em', lineHeight: 1.6 }}>
-                Pay directly via GPay, PhonePe, Paytm, or any UPI app.
-                After payment, submit your transaction ID below for verification.
-              </p>
-
-              {/* Fee details */}
-              <div style={styles.feeBox}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: '#333', fontWeight: 500 }}>SCOPE Assessment Fee</span>
-                  <div style={{ textAlign: 'right' as const }}>
-                    {offerActive && (
-                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: 8 }}>
-                        ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
-                      </span>
-                    )}
-                    <span style={{ fontSize: '1.5em', fontWeight: 700, color: '#006D77' }}>
-                      ₹{currentFee.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                </div>
-                <div style={{ marginTop: 8, fontSize: '0.82em', color: '#888' }}>
-                  76 questions · 10-page personalized report · Stream + Career recommendations
-                </div>
-              </div>
-
-              {/* Step 1: QR Code & Pay Button */}
-              {!showUpiForm && (
-                <>
-                  {/* QR Code for desktop users */}
-                  <div style={styles.qrSection}>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.88em', color: '#555', fontWeight: 600 }}>
-                      📷 Scan QR Code to Pay
-                    </p>
-                    <img
-                      src={getQrCodeUrl(currentFee)}
-                      alt="UPI QR Code"
-                      style={{ width: 200, height: 200, borderRadius: 8, border: '2px solid #e2e8f0' }}
-                    />
-                    <p style={{ margin: '6px 0 0', fontSize: '0.78em', color: '#999' }}>
-                      UPI ID: <strong>{UPI_ID}</strong>
-                    </p>
-                  </div>
-
-                  {/* Divider */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '12px 0' }}>
-                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-                    <span style={{ color: '#999', fontSize: '0.82em', fontWeight: 600 }}>OR TAP TO PAY</span>
-                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-                  </div>
-
-                  {/* GPay / UPI Pay Button (opens directly on mobile) */}
-                  <a
-                    href={getUpiLink(currentFee)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '14px',
-                      background: 'linear-gradient(135deg, #1a73e8 0%, #4285f4 100%)',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '1.05em',
-                      fontWeight: 700,
-                      textAlign: 'center' as const,
-                      textDecoration: 'none',
-                      boxSizing: 'border-box' as const,
-                    }}
-                  >
-                    Pay ₹{currentFee.toLocaleString('en-IN')} via GPay / UPI App
-                  </a>
-
-                  <p style={{ margin: '10px 0 0', fontSize: '0.8em', color: '#999', textAlign: 'center' }}>
-                    Opens GPay, PhonePe, Paytm, or your default UPI app
-                  </p>
-
-                  {/* After paying, click here */}
-                  <button
-                    onClick={() => setShowUpiForm(true)}
-                    style={{
-                      ...styles.payBtn,
-                      background: '#38a169',
-                      marginTop: 16,
-                    }}
-                  >
-                    ✅ I've Completed the Payment
-                  </button>
-                </>
-              )}
-
-              {/* Step 2: Submit UPI Reference ID */}
-              {showUpiForm && (
-                <div style={styles.upiFormSection}>
-                  <h4 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1em' }}>
-                    📋 Enter UPI Transaction Reference
-                  </h4>
-                  <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.85em', lineHeight: 1.5 }}>
-                    Enter the 12-digit UPI transaction ID from your payment confirmation
-                    (check GPay/PhonePe/Paytm transaction history).
-                  </p>
-
-                  <input
-                    type="text"
-                    placeholder="e.g. 512345678901"
-                    value={upiRefId}
-                    onChange={(e) => setUpiRefId(e.target.value)}
-                    style={styles.upiInput}
-                    maxLength={30}
-                  />
-
-                  {paymentError && (
-                    <div style={styles.errorBox}>
-                      {paymentError}
-                    </div>
-                  )}
-
-                  <button
-                    onClick={handleSubmitUpiRef}
-                    disabled={paymentLoading}
-                    style={{
-                      ...styles.payBtn,
-                      background: '#006D77',
-                      opacity: paymentLoading ? 0.7 : 1,
-                      cursor: paymentLoading ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {paymentLoading ? 'Submitting...' : 'Submit & Verify Payment'}
-                  </button>
-
-                  <button
-                    onClick={() => { setShowUpiForm(false); setPaymentError(''); }}
-                    style={{ ...styles.linkBtn, marginTop: 12, display: 'block', textAlign: 'center' as const, width: '100%' }}
-                  >
-                    ← Back to Payment Options
-                  </button>
-                </div>
-              )}
-
-              {/* Payment methods */}
-              {!showUpiForm && (
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
-                  {['GPay', 'PhonePe', 'Paytm', 'Any UPI'].map((m) => (
-                    <span key={m} style={styles.payMethodBadge}>{m}</span>
-                  ))}
-                </div>
-              )}
-
-              <button
-                onClick={() => setPaymentMethod(null)}
-                style={{ ...styles.linkBtn, marginTop: 16, display: 'block', textAlign: 'center' as const, width: '100%' }}
-              >
-                ← Back to Payment Options
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Divider */}
-        {!paymentSuccess && !paymentMethod && (
-          <div style={styles.divider}>
-            <span style={styles.dividerText}>OR</span>
-          </div>
-        )}
-
-        {/* Option 3: School / Offline Payment */}
-        {!paymentSuccess && !paymentMethod && (
-          <div style={styles.section}>
-            <div style={{ ...styles.optionCard, background: '#f8f9fa', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 8px', color: '#2d3748', fontSize: '1.05em' }}>
-                🏫 Registered via School / Academic Partner?
-              </h3>
-              <p style={{ margin: '0 0 12px', color: '#666', fontSize: '0.90em', lineHeight: 1.6 }}>
-                If your school has arranged the assessment, your access will be activated by the admin.
-                This usually takes a few hours.
-              </p>
-              <div style={styles.waitingBadge}>
-                <span style={{ fontSize: '1.2em' }}>⏳</span>
-                <span>Waiting for Approval</span>
-              </div>
-              <p style={{ margin: '12px 0 0', color: '#999', fontSize: '0.83em' }}>
-                You'll be notified once your access is activated. You can check back here anytime.
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Help & Actions */}
         <div style={styles.footer}>
@@ -751,13 +423,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '14px 16px',
     marginBottom: '16px',
   },
-  qrSection: {
-    textAlign: 'center' as const,
-    padding: '12px 0',
-    background: '#fafafa',
-    borderRadius: '8px',
-    marginBottom: '8px',
-  },
+
   payBtn: {
     width: '100%',
     padding: '14px',
@@ -780,24 +446,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     border: '1px solid #83C5BE',
   },
-  upiFormSection: {
-    background: '#f8fbfc',
-    borderRadius: '8px',
-    padding: '16px',
-    border: '1px solid #e2e8f0',
-  },
-  upiInput: {
-    width: '100%',
-    padding: '12px 14px',
-    border: '2px solid #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '1em',
-    marginBottom: '12px',
-    outline: 'none',
-    boxSizing: 'border-box' as const,
-    fontFamily: "'Segoe UI', monospace",
-    letterSpacing: '0.5px',
-  },
+
   waitingBadge: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -810,20 +459,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     border: '1px solid #fefcbf',
   },
-  divider: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 30px',
-    gap: '16px',
-  },
-  dividerText: {
-    flex: 1,
-    textAlign: 'center' as const,
-    color: '#bbb',
-    fontSize: '0.85em',
-    fontWeight: 600,
-    position: 'relative' as const,
-  },
+
   errorBox: {
     background: '#fff3f3',
     color: '#d32f2f',
@@ -833,15 +469,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '12px',
     border: '1px solid #ffcdd2',
   },
-  successBox: {
-    background: '#f0fff4',
-    color: '#276749',
-    padding: '20px',
-    margin: '20px 24px',
-    borderRadius: '12px',
-    textAlign: 'center' as const,
-    border: '1px solid #c6f6d5',
-  },
+
   footer: {
     textAlign: 'center' as const,
     padding: '16px 24px 24px',

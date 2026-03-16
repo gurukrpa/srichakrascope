@@ -2,12 +2,14 @@
  * Firebase Configuration & Initialization
  * 
  * Services: Auth (email/password) + Firestore (student data & reports)
+ * App Check: reCAPTCHA v3 for request verification
  */
 
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBTMNRw4GunDNynbIbMkwVJuLx6rgKabc8",
@@ -20,6 +22,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// Initialize App Check with reCAPTCHA v3 to protect backend resources
+if (typeof window !== 'undefined') {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LeVyIssAAAAADODSLKv1vamOxsCKsWWTxpfsYRU'),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

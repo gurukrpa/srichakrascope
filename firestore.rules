@@ -53,5 +53,11 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.studentUid == request.auth.uid;
       allow read, update, delete: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
     }
+
+    // Audit logs: admins can create and read; nobody can update or delete
+    match /audit_logs/{logId} {
+      allow create: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+    }
   }
 }
