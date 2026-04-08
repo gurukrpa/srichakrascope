@@ -6,43 +6,43 @@ service cloud.firestore {
     // Students collection: users can read/write their own doc; admins can read & update all
     match /students/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // Assessments collection: users can read/write their own; admins can read all
     match /assessments/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // Payments collection: users can read their own; admins can read all; Cloud Functions write
     match /payments/{orderId} {
       allow read: if request.auth != null && resource.data.studentUid == request.auth.uid;
-      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
       // Cloud Functions use admin SDK (bypasses rules), so no write rule needed for them
     }
 
     // Partners collection: admins can create & read
     match /partners/{docId} {
-      allow read, write: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, write: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // EOI submissions: anyone can create; admins can read all
     match /eoi_submissions/{docId} {
       allow create: if true;
-      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // Enquiries: anyone can create (public form); admins can read & update status
     match /enquiries/{docId} {
       allow create: if true;
-      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // Email requests: authenticated users can create; admins can read all
     match /emailRequests/{docId} {
       allow create: if request.auth != null;
-      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // UPI Transactions: used to prevent duplicate UPI ref IDs
@@ -51,13 +51,25 @@ service cloud.firestore {
     match /upiTransactions/{refId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.studentUid == request.auth.uid;
-      allow read, update, delete: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow read, update, delete: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
 
     // Audit logs: admins can create and read; nobody can update or delete
     match /audit_logs/{logId} {
-      allow create: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
-      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org'];
+      allow create: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
+
+    // Vinayagar Agaval enrollments: public create; admins can read & update
+    match /agaval_enrollments/{docId} {
+      allow create: if true;
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
+
+    // Agaval progress tracking: users read/write own doc by phone; admins can read all
+    match /agaval_progress/{docId} {
+      allow read, write: if request.auth != null;
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
   }
 }

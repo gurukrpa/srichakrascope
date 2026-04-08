@@ -3,11 +3,11 @@
   "description": "Cloud Functions for Srichakra Academy",
   "main": "index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "dependencies": {
     "firebase-admin": "^13.7.0",
-    "firebase-functions": "^7.1.0",
+    "firebase-functions": "^7.2.3",
     "nodemailer": "^6.9.8",
     "razorpay": "^2.9.6"
   }

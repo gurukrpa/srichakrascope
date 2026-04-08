@@ -8,12 +8,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../firebase';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMsg, setResetMsg] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -29,15 +35,34 @@ const AdminLogin: React.FC = () => {
       navigate('/admin');
     } catch (err: any) {
       const code = err?.code || '';
-      if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') {
-        setError('Invalid admin credentials');
-      } else if (code === 'auth/wrong-password') {
-        setError('Incorrect password');
+      if (code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/wrong-password') {
+        setError('Invalid email or password');
       } else {
-        setError(err?.message || 'Login failed. Please try again.');
+        setError('Login failed. Please try again.');
       }
     }
     setLoading(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetMsg('');
+    setError('');
+    if (!resetEmail) { setError('Please enter your admin email'); return; }
+    setResetLoading(true);
+    try {
+      const sendReset = httpsCallable(functions, 'sendPasswordReset');
+      const result: any = await sendReset({ email: resetEmail });
+      setResetMsg(result.data?.message || 'Password reset email sent! Check your inbox (and spam folder).');
+    } catch (err: any) {
+      const msg = err?.message || '';
+      if (msg.includes('not-found') || msg.includes('No account')) {
+        setError('If an account exists with this email, a reset link has been sent.');
+      } else {
+        setError('Failed to send reset email. Try again.');
+      }
+    }
+    setResetLoading(false);
   };
 
   return (
@@ -51,34 +76,72 @@ const AdminLogin: React.FC = () => {
           <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.6)', fontSize: '0.75em', fontStyle: 'italic' }}>(A Unit of SriKrpa Foundation Trust)</p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>Admin Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@srichakraacademy.org"
-            style={styles.input}
-            required
-          />
+        {showForgot ? (
+          /* Forgot Password Form */
+          <form onSubmit={handleForgotPassword} style={styles.form}>
+            <h2 style={{ margin: '0 0 8px', fontSize: '1.15em', color: '#2C3E50' }}>Reset Password</h2>
+            <p style={{ margin: '0 0 16px', color: '#666', fontSize: '0.9em' }}>
+              Enter your admin email and we'll send a password reset link.
+            </p>
+            <label style={styles.label}>Admin Email</label>
+            <input
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="Enter admin email"
+              style={styles.input}
+              required
+            />
 
-          <label style={styles.label}>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter admin password"
-            style={styles.input}
-            required
-          />
+            {error && <div style={styles.error}>{error}</div>}
+            {resetMsg && <div style={styles.success}>{resetMsg}</div>}
 
-          {error && <div style={styles.error}>{error}</div>}
+            <button type="submit" style={styles.submitBtn} disabled={resetLoading}>
+              {resetLoading ? 'Sending...' : 'Send Reset Link'}
+            </button>
 
-          <button type="submit" style={styles.submitBtn} disabled={loading}>
-            {loading ? 'Authenticating...' : 'Login as Admin'}
-          </button>
-        </form>
+            <div style={{ textAlign: 'center' as const, marginTop: '14px' }}>
+              <button type="button" onClick={() => { setShowForgot(false); setError(''); setResetMsg(''); }} style={styles.linkBtn}>
+                ← Back to Login
+              </button>
+            </div>
+          </form>
+        ) : (
+          /* Login Form */
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <label style={styles.label}>Admin Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter admin email"
+              style={styles.input}
+              required
+            />
+
+            <label style={styles.label}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter admin password"
+              style={styles.input}
+              required
+            />
+
+            {error && <div style={styles.error}>{error}</div>}
+
+            <button type="submit" style={styles.submitBtn} disabled={loading}>
+              {loading ? 'Authenticating...' : 'Login as Admin'}
+            </button>
+
+            <div style={{ textAlign: 'center' as const, marginTop: '14px' }}>
+              <button type="button" onClick={() => { setShowForgot(true); setResetEmail(''); setError(''); setResetMsg(''); }} style={styles.linkBtn}>
+                Forgot Password?
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* Back */}
         <div style={{ textAlign: 'center' as const, padding: '0 0 24px' }}>
@@ -165,6 +228,15 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     fontSize: '0.95em',
     textDecoration: 'underline',
+  },
+  success: {
+    background: '#e8f5e9',
+    color: '#2e7d32',
+    padding: '10px 14px',
+    borderRadius: '8px',
+    fontSize: '0.9em',
+    marginTop: '14px',
+    border: '1px solid #a5d6a7',
   },
 };
 

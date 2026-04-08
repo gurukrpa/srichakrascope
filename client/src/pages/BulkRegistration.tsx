@@ -8,7 +8,7 @@
  *   2. Manual Entry — add students row by row in a table
  *
  * Each student gets a Firebase Auth account + Firestore profile.
- * Default password: first 4 chars of name (lowercase) + last 4 digits of phone.
+ * Default password generated server-side and communicated privately.
  * Students can change their password after first login.
  *
  * Access: Admin-only (requires login).
@@ -205,8 +205,7 @@ const BulkRegistration: React.FC = () => {
           const res = resultMap.get(row.email.trim().toLowerCase());
           if (!res) return row; // not part of this batch
           if (res.success) {
-            const pw = generatePassword(row.name, row.phone);
-            return { ...row, status: 'success', message: `✓ Registered (password: ${pw})` };
+            return { ...row, status: 'success', message: `✓ Registered — password sent to coordinator` };
           } else {
             return { ...row, status: 'error', message: `✗ ${res.error || 'Unknown error'}` };
           }

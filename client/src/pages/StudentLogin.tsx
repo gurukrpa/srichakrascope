@@ -50,12 +50,10 @@ const StudentLogin: React.FC = () => {
       navigate('/access-gate');
     } catch (err: any) {
       const code = err?.code || '';
-      if (code === 'auth/email-already-in-use') setError('An account with this email already exists');
+      if (code === 'auth/email-already-in-use') setError('An account with this email already exists. Try logging in instead.');
       else if (code === 'auth/invalid-email') setError('Invalid email address');
-      else if (code === 'auth/user-not-found') setError('No account found with this email');
-      else if (code === 'auth/wrong-password') setError('Incorrect password');
-      else if (code === 'auth/invalid-credential') setError('Invalid email or password');
-      else setError(err?.message || 'Something went wrong. Please try again.');
+      else if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') setError('Invalid email or password');
+      else setError('Something went wrong. Please try again.');
     }
     setLoading(false);
   };
@@ -202,9 +200,8 @@ const StudentLogin: React.FC = () => {
                       setResetMessage('✓ Password reset email sent! Check your inbox and spam/junk folder. It may take a minute to arrive.');
                     } catch (err: any) {
                       const code = err?.code || '';
-                      if (code === 'auth/user-not-found') setResetMessage('No account found with this email.');
-                      else if (code === 'auth/invalid-email') setResetMessage('Invalid email address.');
-                      else setResetMessage(err?.message || 'Failed to send reset email. Try again.');
+                      if (code === 'auth/invalid-email') setResetMessage('Invalid email address.');
+                      else setResetMessage('If an account exists with this email, a reset link has been sent.');
                     }
                   }}
                   style={{ ...styles.submitBtn, flex: 1, marginTop: 0 }}

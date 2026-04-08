@@ -99,7 +99,72 @@ exports.sendReportEmail = onDocumentCreated(
 );
 
 // ────────────────────────────────────────────────────────
-// 2. Create Razorpay Order
+// Admin emails list
+// ────────────────────────────────────────────────────────
+const ADMIN_EMAILS = [
+  "admin@srichakraacademy.org",
+  "eswari.srichakra@gmail.com",
+];
+
+// ────────────────────────────────────────────────────────
+// 2. Send Password Reset Email (bypasses App Check)
+// ────────────────────────────────────────────────────────
+exports.sendPasswordReset = onCall(
+  { region: "asia-south1", secrets: [gmailEmail, gmailPassword] },
+  async (request) => {
+    const { email } = request.data;
+    if (!email || typeof email !== "string") {
+      throw new HttpsError("invalid-argument", "Email is required.");
+    }
+
+    try {
+      // Verify the user exists
+      await admin.auth().getUserByEmail(email);
+      // Generate the reset link (Admin SDK bypasses App Check)
+      const link = await admin.auth().generatePasswordResetLink(email);
+
+      // Send via nodemailer
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: gmailEmail.value(),
+          pass: gmailPassword.value(),
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Srichakra Academy" <${gmailEmail.value()}>`,
+        to: email,
+        subject: "Password Reset — Srichakra Academy",
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #006D77;">Srichakra Academy — Password Reset</h2>
+            <p>You requested a password reset for your account.</p>
+            <p>Click the button below to set a new password:</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${link}" style="background: #006D77; color: #fff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">Reset Password</a>
+            </p>
+            <p style="color: #666; font-size: 13px;">If you didn't request this, you can safely ignore this email.</p>
+            <p style="color: #999; font-size: 12px;">— Srichakra Academy Team</p>
+          </div>
+        `,
+      });
+
+      console.log(`Password reset email sent to ${email}`);
+      return { success: true, message: "Password reset email sent. Check your inbox and spam folder." };
+    } catch (err) {
+      console.error("Password reset error:", err);
+      if (err.code === "auth/user-not-found") {
+        // Don't reveal whether the email exists — return same success message
+        return { success: true, message: "If an account exists with this email, a reset link has been sent." };
+      }
+      throw new HttpsError("internal", "Failed to send reset email. Please try again.");
+    }
+  }
+);
+
+// ────────────────────────────────────────────────────────
+// 3. Create Razorpay Order
 // ────────────────────────────────────────────────────────
 exports.createRazorpayOrder = onCall(
   {
@@ -245,7 +310,7 @@ exports.bulkRegisterStudents = onCall(
 
     // Admin check
     const callerEmail = request.auth.token.email || "";
-    if (callerEmail !== "admin@srichakraacademy.org") {
+    if (!ADMIN_EMAILS.includes(callerEmail)) {
       throw new HttpsError("permission-denied", "Only admins can bulk register students.");
     }
 

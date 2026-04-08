@@ -134,8 +134,7 @@ const AccessGate: React.FC = () => {
             });
             // Access is automatically granted — real-time listener will redirect
           } catch (verifyErr: any) {
-            console.error('Payment verification failed:', verifyErr);
-            setPaymentError('Payment was received but verification failed. Please contact support with your payment ID: ' + response.razorpay_payment_id);
+            setPaymentError('Payment was received but verification failed. Please contact support.');
           }
           setPaymentLoading(false);
         },
@@ -153,9 +152,8 @@ const AccessGate: React.FC = () => {
       });
       rzp.open();
     } catch (err: any) {
-      console.error('Failed to initiate payment:', err);
-      const msg = err?.message || err?.code || 'Unknown error';
-      setPaymentError(`Failed to start payment: ${msg}. Please try again.`);
+      const msg = err?.code || 'Unknown error';
+      setPaymentError(`Failed to start payment. Please try again.`);
       setPaymentLoading(false);
     }
   };

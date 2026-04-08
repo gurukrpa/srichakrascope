@@ -34,12 +34,10 @@ const SchoolLogin: React.FC = () => {
       navigate('/access-gate');
     } catch (err: any) {
       const code = err?.code || '';
-      if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') {
-        setError('Invalid credentials. Please check the email and password provided by your school.');
-      } else if (code === 'auth/wrong-password') {
-        setError('Incorrect password. Use the password given by your school coordinator.');
+      if (code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/wrong-password') {
+        setError('Invalid email or password. Please check the credentials provided by your school.');
       } else {
-        setError(err?.message || 'Login failed. Please try again.');
+        setError('Login failed. Please try again.');
       }
     }
     setLoading(false);
@@ -64,7 +62,7 @@ const SchoolLogin: React.FC = () => {
             Use the email and password provided by your school coordinator.
             <br />
             <span style={{ fontSize: '0.88em', color: '#888' }}>
-              Default password: first 4 letters of your name (lowercase) + last 4 digits of your phone number.
+              Forgot your password? Use the "Forgot Password" link below.
             </span>
           </p>
         </div>
@@ -148,9 +146,9 @@ const SchoolLogin: React.FC = () => {
                       setResetMessage('\u2713 Password reset email sent! Check your inbox and spam/junk folder. It may take a minute to arrive.');
                     } catch (err: any) {
                       const code = err?.code || '';
-                      if (code === 'auth/user-not-found') setResetMessage('No account found with this email.');
+                      if (code === 'auth/user-not-found') setResetMessage('If an account exists with this email, a reset link has been sent.');
                       else if (code === 'auth/invalid-email') setResetMessage('Invalid email address.');
-                      else setResetMessage(err?.message || 'Failed to send reset email. Try again.');
+                      else setResetMessage('Failed to send reset email. Try again.');
                     }
                   }}
                   style={{ ...styles.submitBtn, flex: 1, marginTop: 0 }}

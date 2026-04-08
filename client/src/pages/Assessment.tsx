@@ -47,6 +47,19 @@ interface AssessmentProps {
 
 const PROGRESS_KEY = 'srichakra_assessment_progress';
 
+// Encode/decode localStorage to prevent trivial reading/manipulation
+function encodeProgress(data: object): string {
+  return btoa(encodeURIComponent(JSON.stringify(data)));
+}
+function decodeProgress(encoded: string): object {
+  try {
+    return JSON.parse(decodeURIComponent(atob(encoded)));
+  } catch {
+    // Fallback: try plain JSON for backward compatibility
+    try { return JSON.parse(encoded); } catch { return {}; }
+  }
+}
+
 const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -103,7 +116,9 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   // ── Restore saved progress (survives page refresh) ──
   const [_saved] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      if (!raw) return {};
+      return decodeProgress(raw) as Record<string, any>;
     } catch {
       return {};
     }
@@ -123,7 +138,7 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   // ── Persist progress on every change ──
   useEffect(() => {
     if (phase !== 'submitting') {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      localStorage.setItem(PROGRESS_KEY, encodeProgress({
         phase, studentName, currentIndex, aptitudeAnswers, preferenceAnswers,
       }));
     }
