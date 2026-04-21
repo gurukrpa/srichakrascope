@@ -15,6 +15,7 @@ import {
   type PreferenceDomain,
 } from '../data/questionBank';
 import type { ReportData } from '../pages/reportTemplate';
+import { CAREER_CLUSTERS, scoreClusterMatch } from '../data/careerClusters';
 
 // ────────────────────────────────────────────
 // Types
@@ -281,26 +282,29 @@ function deriveCourseFamilies(
 ) {
   const getApt = (domain: string) =>
     aptitude.find((a) => a.domain === domain)?.score || 0;
-  const getPref = (domain: string) =>
-    prefScores.find((p) => p.domain === domain)?.score || 2.5;
 
-  const num = getApt('Numerical Reasoning');
-  const log = getApt('Logical Reasoning');
-  const ver = getApt('Verbal Ability');
-  const spa = getApt('Spatial Intelligence');
+  // Define domain groupings for the 50/30/20 split
+  const interestDomains = ['Creative', 'Technical', 'Naturalistic', 'Musical', 'Entrepreneurial'];
+  const personalityMiDomains = ['Analytical', 'Verbal', 'Social', 'Executive', 'Conscientiousness'];
 
-  const analytical = getPref('Analytical');
-  const technical = getPref('Technical');
-  const creative = getPref('Creative');
-  const social = getPref('Social');
-  const executive = getPref('Executive');
-  const verbal = getPref('Verbal');
+  // Helper to get average score for a set of preference domains
+  const getPrefAvg = (domains: string[]) => {
+    const scores = prefScores.filter(p => domains.includes(p.domain)).map(p => p.score);
+    if (scores.length === 0) return 2.5; // Return neutral score if no domains match
+    return scores.reduce((a, b) => a + b, 0) / scores.length;
+  };
 
-  // 60% aptitude + 40% preference (normalized to 100)
-  const calcScore = (aptScores: number[], prefScores: number[]) => {
-    const aptAvg = aptScores.reduce((a, b) => a + b, 0) / aptScores.length;
-    const prefAvg = prefScores.reduce((a, b) => a + b, 0) / prefScores.length;
-    return Math.round(aptAvg * 0.6 + (prefAvg / 5) * 100 * 0.4);
+  // 50% Aptitude, 30% Personality/MI, 20% Interest
+  const calcScore = (aptDomains: string[], persDomains: string[], intDomains: string[]) => {
+    const aptAvg = aptDomains.length > 0 ? aptDomains.reduce((sum, d) => sum + getApt(d), 0) / aptDomains.length : 0;
+    const persAvg = getPrefAvg(persDomains);
+    const intAvg = getPrefAvg(intDomains);
+
+    const aptComponent = aptAvg * 0.5;
+    const persComponent = (persAvg / 5) * 100 * 0.3;
+    const intComponent = (intAvg / 5) * 100 * 0.2;
+
+    return Math.round(aptComponent + persComponent + intComponent);
   };
 
   const getAlignment = (score: number) =>
@@ -310,7 +314,7 @@ function deriveCourseFamilies(
     {
       family: 'Engineering / Technology',
       strengths: 'Numerical, Logical, Spatial',
-      score: calcScore([num, log, spa], [analytical, technical]),
+      score: calcScore(['Numerical Reasoning', 'Logical Reasoning', 'Spatial Intelligence'], ['Analytical'], ['Technical']),
       alignment: '',
       guidance: 'Requires strong quantitative and logical base.',
       courses: ['Computer Science', 'Electronics', 'Mechanical', 'Civil'],
@@ -319,7 +323,7 @@ function deriveCourseFamilies(
     {
       family: 'Data Science & Analytics',
       strengths: 'Numerical, Logical',
-      score: calcScore([num, log], [analytical, technical]),
+      score: calcScore(['Numerical Reasoning', 'Logical Reasoning'], ['Analytical'], ['Technical']),
       alignment: '',
       guidance: 'Demands analytical precision and pattern recognition.',
       courses: ['Statistics', 'Data Engineering', 'AI/ML', 'Business Analytics'],
@@ -328,7 +332,7 @@ function deriveCourseFamilies(
     {
       family: 'Medicine / Life Sciences',
       strengths: 'Numerical, Logical, Verbal',
-      score: calcScore([num, log, ver], [analytical, social]),
+      score: calcScore(['Numerical Reasoning', 'Logical Reasoning', 'Verbal Ability'], ['Analytical', 'Social'], ['Naturalistic']),
       alignment: '',
       guidance: 'Requires analytical precision and communication.',
       courses: ['MBBS', 'BDS', 'Pharmacy', 'Biotech'],
@@ -337,7 +341,7 @@ function deriveCourseFamilies(
     {
       family: 'Business / Commerce',
       strengths: 'Numerical, Verbal, Logical',
-      score: calcScore([num, ver, log], [executive, analytical]),
+      score: calcScore(['Numerical Reasoning', 'Verbal Ability', 'Logical Reasoning'], ['Executive', 'Analytical'], ['Entrepreneurial']),
       alignment: '',
       guidance: 'Balances quantitative analysis with communication.',
       courses: ['BBA', 'B.Com', 'Economics', 'CA'],
@@ -346,7 +350,7 @@ function deriveCourseFamilies(
     {
       family: 'Law / Social Sciences',
       strengths: 'Verbal, Logical',
-      score: calcScore([ver, log], [verbal, social]),
+      score: calcScore(['Verbal Ability', 'Logical Reasoning'], ['Verbal', 'Social'], []),
       alignment: '',
       guidance: 'Requires strong argumentation and critical reading.',
       courses: ['BA LLB', 'Political Science', 'Sociology', 'Psychology'],
@@ -355,7 +359,7 @@ function deriveCourseFamilies(
     {
       family: 'Arts / Design / Media',
       strengths: 'Spatial, Verbal, Creative',
-      score: calcScore([spa, ver], [creative, verbal]),
+      score: calcScore(['Spatial Intelligence', 'Verbal Ability'], ['Verbal'], ['Creative', 'Musical']),
       alignment: '',
       guidance: 'Values visual thinking and creative expression.',
       courses: ['B.Des', 'BFA', 'Mass Communication', 'Animation'],
@@ -373,7 +377,7 @@ function deriveCourseFamilies(
 }
 
 // ────────────────────────────────────────────
-// Derived: Career Clusters
+// Derived: Career Clusters (from full repository)
 // ────────────────────────────────────────────
 
 function deriveCareerClusters(
@@ -385,64 +389,77 @@ function deriveCareerClusters(
   const getPref = (domain: string) =>
     prefScores.find((p) => p.domain === domain)?.score || 2.5;
 
-  const num = getApt('Numerical Reasoning');
-  const log = getApt('Logical Reasoning');
-  const ver = getApt('Verbal Ability');
-  const spa = getApt('Spatial Intelligence');
+  // Build aptitude/preference lookup arrays for scoreClusterMatch
+  const aptScores = aptitude.map((a) => ({ domain: a.domain, score: a.score }));
+  const prefWithMax = prefScores.map((p) => ({ domain: p.domain, score: p.score, maxScore: 5 }));
 
-  const clusters = [
-    {
-      name: 'STEM & Technology',
-      icon: '🔬',
-      roles: ['Software Developer', 'Data Scientist', 'Systems Architect', 'AI Engineer', 'Cybersecurity Analyst'],
-      whyFits: `Strong logical (${log}%) and numerical (${num}%) aptitude with ${getPref('Analytical') >= 3.5 ? 'high' : 'moderate'} analytical interest`,
-      skills: 'Analytical thinking, problem-solving, technical proficiency',
-      matchScore: Math.round((num + log) / 2 * 0.6 + (getPref('Analytical') / 5) * 100 * 0.4),
-    },
-    {
-      name: 'Engineering & Design',
-      icon: '⚙️',
-      roles: ['Design Engineer', 'Project Manager', 'Civil Engineer', 'Robotics Engineer', 'Architect'],
-      whyFits: `Spatial intelligence (${spa}%) combined with logical reasoning (${log}%) and technical interest`,
-      skills: 'Technical drawing, system design, project management',
-      matchScore: Math.round((spa + log + num) / 3 * 0.6 + (getPref('Technical') / 5) * 100 * 0.4),
-    },
-    {
-      name: 'Business, Finance & Management',
-      icon: '📊',
-      roles: ['Financial Analyst', 'Marketing Manager', 'Entrepreneur', 'Chartered Accountant', 'HR Manager'],
-      whyFits: `Numerical ability (${num}%) with ${getPref('Executive') >= 3.5 ? 'strong' : 'developing'} leadership and organizational interests`,
-      skills: 'Quantitative analysis, communication, leadership',
-      matchScore: Math.round((num + ver) / 2 * 0.6 + (getPref('Executive') / 5) * 100 * 0.4),
-    },
-    {
-      name: 'Healthcare & Life Sciences',
-      icon: '🏥',
-      roles: ['Doctor', 'Pharmacist', 'Physiotherapist', 'Clinical Researcher', 'Public Health Specialist'],
-      whyFits: `Analytical aptitude combined with ${getPref('Social') >= 3.5 ? 'strong' : 'moderate'} social and helping motivation`,
-      skills: 'Attention to detail, empathy, scientific reasoning',
-      matchScore: Math.round((num + log + ver) / 3 * 0.6 + (getPref('Social') / 5) * 100 * 0.4),
-    },
-    {
-      name: 'Creative Arts & Media',
-      icon: '🎨',
-      roles: ['Graphic Designer', 'Content Creator', 'Animator', 'Film Director', 'UX Designer'],
-      whyFits: `Spatial ability (${spa}%) with ${getPref('Creative') >= 3.5 ? 'strong' : 'developing'} creative interests`,
-      skills: 'Visual thinking, originality, storytelling, design sense',
-      matchScore: Math.round(spa * 0.6 + (getPref('Creative') / 5) * 100 * 0.4),
-    },
-    {
-      name: 'Social Sciences & Education',
-      icon: '📚',
-      roles: ['Teacher', 'Psychologist', 'Social Worker', 'Policy Analyst', 'Journalist'],
-      whyFits: `Verbal strength (${ver}%) with ${getPref('Social') >= 3.5 ? 'strong' : 'moderate'} social and investigative interests`,
-      skills: 'Communication, critical thinking, empathy, writing',
-      matchScore: Math.round(ver * 0.6 + (getPref('Social') / 5) * 100 * 0.4),
-    },
-  ];
+  // Score all 18 clusters from the repository
+  const scored = CAREER_CLUSTERS.map((cluster) => {
+    const matchScore = scoreClusterMatch(cluster, aptScores, prefWithMax);
 
-  return clusters.sort((a, b) => b.matchScore - a.matchScore);
+    // Build a dynamic "whyFits" explanation from the cluster's aptitude/preference domains
+    const aptParts = cluster.aptitudeFit
+      .map((d) => `${d} (${getApt(d)}%)`)
+      .join(', ');
+    const topPref = cluster.preferenceFit[0];
+    const prefLevel = topPref && getPref(topPref) >= 3.5 ? 'strong' : 'moderate';
+    const prefLabel = topPref ? ` with ${prefLevel} ${topPref.toLowerCase()} interest` : '';
+
+    return {
+      name: cluster.name,
+      icon: cluster.icon,
+      roles: cluster.pathways.slice(0, 5).map((p) => p.role),
+      whyFits: `${aptParts}${prefLabel}`,
+      skills: cluster.keySkills.join(', '),
+      matchScore,
+      streams: cluster.streams,
+      pathways: cluster.pathways,
+    };
+  });
+
+  return scored.sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
 }
+
+// ────────────────────────────────────────────
+// NEW: Consistency & Reliability Check
+// ────────────────────────────────────────────
+
+function checkConsistency(answers: Record<number, number>): {
+  level: 'High' | 'Medium' | 'Low';
+  flags: string[];
+} {
+  const flags: string[] = [];
+  let contradictions = 0;
+
+  // Pair 1: Teamwork vs. Solo work (IDs 361, 362)
+  const answer1A = answers[361] || 3;
+  const answer1B = answers[362] || 3;
+  // Contradiction if user agrees/disagrees with both
+  if ((answer1A >= 4 && answer1B >= 4) || (answer1A <= 2 && answer1B <= 2)) {
+    contradictions++;
+    flags.push('Contradictory answers on teamwork vs. solo work preference.');
+  }
+
+  // Pair 2: Schedule vs. Spontaneity (IDs 363, 364)
+  const answer2A = answers[363] || 3;
+  const answer2B = answers[364] || 3;
+  if ((answer2A >= 4 && answer2B >= 4) || (answer2A <= 2 && answer2B <= 2)) {
+    contradictions++;
+    flags.push('Contradictory answers on preference for schedule vs. spontaneity.');
+  }
+
+  // Pair 3: Creative vs. Practical (IDs 365, 366)
+  const answer3A = answers[365] || 3;
+  const answer3B = answers[366] || 3;
+  if ((answer3A >= 4 && answer3B >= 4) || (answer3A <= 2 && answer3B <= 2)) {
+    contradictions++;
+    flags.push('Contradictory answers on creative brainstorming vs. practical tasks.');
+  }
+
+  const level = contradictions === 0 ? 'High' : contradictions === 1 ? 'Medium' : 'Low';
+  return { level, flags };
+}
+
 
 // ────────────────────────────────────────────
 // MAIN: Build ReportData from raw answers
@@ -457,10 +474,11 @@ export function buildReportFromAnswers(raw: RawAnswers): ReportData {
   const streams = deriveStreamRecommendations(aptitudeResults);
   const families = deriveCourseFamilies(aptitudeResults, prefResults);
   const clusters = deriveCareerClusters(aptitudeResults, prefResults);
+  const consistency = checkConsistency(raw.preference);
 
   const totalAnswered =
     Object.keys(raw.aptitude).length + Object.keys(raw.preference).length;
-  const completionRate = Math.round((totalAnswered / 76) * 100);
+  const completionRate = Math.round((totalAnswered / 98) * 100); // Updated from 76 to 98
 
   return {
     studentName: raw.studentName,
@@ -478,5 +496,6 @@ export function buildReportFromAnswers(raw: RawAnswers): ReportData {
     careerClusters: clusters,
     totalAnswered,
     completionRate,
+    consistency,
   };
 }

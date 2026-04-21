@@ -28,7 +28,8 @@ export type PreferenceDomain =
   | 'LearningStyle'
   | 'Naturalistic'
   | 'Musical'
-  | 'Entrepreneurial';
+  | 'Entrepreneurial'
+  | 'Consistency'; // For internal validation
 
 export interface AptitudeQuestion {
   id: number;
@@ -203,6 +204,146 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     options: ['4', '6', '8', '12'],
     correctIndex: 2, // C) 8
   },
+  // 🟢 NEW NUMERICAL REASONING (4)
+  {
+    id: 217,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'A train travels 150 km in 2 hours. How many kilometers will it travel in 5 hours?',
+    options: ['300 km', '350 km', '375 km', '400 km'],
+    correctIndex: 2, // C) 375 km
+  },
+  {
+    id: 218,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'If a shirt costs ₹500 and is sold for ₹650, what is the percentage profit?',
+    options: ['20%', '25%', '30%', '35%'],
+    correctIndex: 2, // C) 30%
+  },
+  {
+    id: 219,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'The ratio of boys to girls in a class is 3:5. If there are 40 students in total, how many are boys?',
+    options: ['12', '15', '18', '20'],
+    correctIndex: 1, // B) 15
+  },
+  {
+    id: 220,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'What is 15% of 400?',
+    options: ['40', '50', '60', '75'],
+    correctIndex: 2, // C) 60
+  },
+
+  // 🟢 NEW LOGICAL REASONING (4)
+  {
+    id: 221,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'Tree is to Forest as Soldier is to ?',
+    options: ['Gun', 'Army', 'Battle', 'Uniform'],
+    correctIndex: 1, // B) Army
+  },
+  {
+    id: 222,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'If FRIEND is coded as HUMJTK, how is CANDLE coded?',
+    options: ['DEQJQM', 'EDRIRL', 'ESFJSF', 'FYOBOC'],
+    correctIndex: 1, // B) EDRIRL (+2 pattern)
+  },
+  {
+    id: 223,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'Pointing to a photograph, a man said, "I have no brother or sister, but that man\'s father is my father\'s son." Whose photograph was it?',
+    options: ['His own', 'His son\'s', 'His father\'s', 'His nephew\'s'],
+    correctIndex: 1, // B) His son's
+  },
+  {
+    id: 224,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'Which word does not belong with the others?',
+    options: ['Carrot', 'Potato', 'Tomato', 'Ginger'],
+    correctIndex: 2, // C) Tomato (it's a fruit, others are root vegetables)
+  },
+
+  // 🟢 NEW VERBAL REASONING (4)
+  {
+    id: 225,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Choose the word that is the necessary part of "school".',
+    options: ['Student', 'Report Card', 'Test', 'Playground'],
+    correctIndex: 0, // A) Student
+  },
+  {
+    id: 226,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'The manager’s decision was met with both approval and ______ from the team.',
+    options: ['praise', 'derision', 'indifference', 'confusion'],
+    correctIndex: 1, // B) derision (means contempt or ridicule)
+  },
+  {
+    id: 227,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Choose the word most similar to "Ubiquitous".',
+    options: ['Rare', 'Scarce', 'Everywhere', 'Hidden'],
+    correctIndex: 2, // C) Everywhere
+  },
+  {
+    id: 228,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Which sentence is grammatically correct?',
+    options: [
+      'The team are playing well.',
+      'The team is playing well.',
+      'The team is playing good.',
+      'The team are playing good.',
+    ],
+    correctIndex: 1, // B)
+  },
+
+  // 🟢 NEW SPATIAL / PATTERN (4)
+  {
+    id: 229,
+    type: 'aptitude',
+    domain: 'Spatial Intelligence',
+    question: 'Which of the following is a 3D shape?',
+    options: ['Circle', 'Triangle', 'Sphere', 'Square'],
+    correctIndex: 2, // C) Sphere
+  },
+  {
+    id: 230,
+    type: 'aptitude',
+    domain: 'Spatial Intelligence',
+    question: 'Imagine a paper is folded in half and a hole is punched through the middle. How many holes will there be when you unfold it?',
+    options: ['1', '2', '3', '4'],
+    correctIndex: 1, // B) 2
+  },
+  {
+    id: 231,
+    type: 'aptitude',
+    domain: 'Spatial Intelligence',
+    question: 'If you look at a dice, which number is on the opposite face of 3?',
+    options: ['1', '2', '4', '5'],
+    correctIndex: 2, // C) 4 (opposite faces of a standard die add up to 7)
+  },
+  {
+    id: 232,
+    type: 'aptitude',
+    domain: 'Spatial Intelligence',
+    question: 'Which shape cannot be created by joining two triangles together?',
+    options: ['Square', 'Diamond (Rhombus)', 'Larger Triangle', 'Circle'],
+    correctIndex: 3, // D) Circle
+  },
 ];
 
 // ────────────────────────────────────────────
@@ -291,6 +432,16 @@ export const PREFERENCE_QUESTIONS: PreferenceQuestion[] = [
   { id: 358, type: 'preference', domain: 'Entrepreneurial', question: 'I like planning finances.' },
   { id: 359, type: 'preference', domain: 'Entrepreneurial', question: 'I think about starting something of my own.' },
   { id: 360, type: 'preference', domain: 'Entrepreneurial', question: 'I enjoy risk-taking in ideas.' },
+
+  // CONSISTENCY CHECKS (3 pairs) - For internal validation only
+  { id: 361, type: 'preference', domain: 'Consistency', question: 'I enjoy being part of a team.' }, // Mirror of 362
+  { id: 362, type: 'preference', domain: 'Consistency', question: 'I prefer working alone.' },
+
+  { id: 363, type: 'preference', domain: 'Consistency', question: 'I like having a clear, predictable schedule.' }, // Mirror of 364
+  { id: 364, type: 'preference', domain: 'Consistency', question: 'I enjoy flexibility and spontaneous tasks.' },
+
+  { id: 365, type: 'preference', domain: 'Consistency', question: 'I am more of a creative, ideas person.' }, // Mirror of 366
+  { id: 366, type: 'preference', domain: 'Consistency', question: 'I prefer practical, hands-on tasks over brainstorming.' },
 ];
 
 // ────────────────────────────────────────────
@@ -302,9 +453,9 @@ export const ALL_QUESTIONS: Question[] = [
   ...PREFERENCE_QUESTIONS,
 ];
 
-export const TOTAL_APTITUDE = APTITUDE_QUESTIONS.length; // 16
-export const TOTAL_PREFERENCE = PREFERENCE_QUESTIONS.length; // 60
-export const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 76
+export const TOTAL_APTITUDE = APTITUDE_QUESTIONS.length; // 32
+export const TOTAL_PREFERENCE = PREFERENCE_QUESTIONS.length; // 66
+export const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 98
 
 /** Likert scale labels for preference questions */
 export const LIKERT_LABELS = [
