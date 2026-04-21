@@ -38,6 +38,9 @@ export interface AptitudeQuestion {
   question: string;
   options: string[];
   correctIndex: number; // 0-based index
+  // IRT Parameters
+  difficulty: number; // b-parameter: 0-1 (Easy -> Hard)
+  discrimination: number; // a-parameter: 0-1 (Low -> High)
 }
 
 export interface PreferenceQuestion {
@@ -55,14 +58,16 @@ export type Question = AptitudeQuestion | PreferenceQuestion;
 // ────────────────────────────────────────────
 
 export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
-  // 🟢 NUMERICAL REASONING (4)
+  // 🟢 NUMERICAL REASONING (6 Questions - Balanced Difficulty)
   {
-    id: 201,
+    id: 220,
     type: 'aptitude',
     domain: 'Numerical Reasoning',
-    question: 'What is the next number in the sequence: 2, 6, 12, 20, ?',
-    options: ['24', '28', '30', '32'],
-    correctIndex: 2, // C) 30
+    question: 'What is 15% of 400?',
+    options: ['40', '50', '60', '75'],
+    correctIndex: 2, // C) 60
+    difficulty: 0.2,
+    discrimination: 0.9,
   },
   {
     id: 202,
@@ -71,6 +76,8 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'If 40% of a number is 120, what is the number?',
     options: ['200', '250', '300', '320'],
     correctIndex: 2, // C) 300
+    difficulty: 0.3,
+    discrimination: 0.9,
   },
   {
     id: 203,
@@ -79,25 +86,41 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'A book costs ₹240 after a 20% discount. What was the original price?',
     options: ['₹260', '₹280', '₹300', '₹320'],
     correctIndex: 2, // C) ₹300
+    difficulty: 0.5,
+    discrimination: 0.85,
   },
   {
-    id: 204,
+    id: 219,
     type: 'aptitude',
     domain: 'Numerical Reasoning',
-    question: 'Which fraction is the largest?',
-    options: ['3/4', '5/8', '7/10', '9/12'],
-    correctIndex: 0, // A) 3/4
+    question: 'The ratio of boys to girls in a class is 3:5. If there are 40 students in total, how many are boys?',
+    options: ['12', '15', '18', '20'],
+    correctIndex: 1, // B) 15
+    difficulty: 0.5,
+    discrimination: 0.75,
+  },
+  {
+    id: 237,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'The simple interest on a sum for 5 years is half the sum. What is the rate of interest per annum?',
+    options: ['5%', '8%', '10%', '12%'],
+    correctIndex: 2, // C) 10%
+    difficulty: 0.7,
+    discrimination: 0.8,
+  },
+  {
+    id: 233,
+    type: 'aptitude',
+    domain: 'Numerical Reasoning',
+    question: 'A shopkeeper mixes two varieties of tea, one costing ₹150/kg and another costing ₹250/kg, in the ratio 5:3. If he sells the mixture at ₹210/kg, what is his profit percentage?',
+    options: ['12%', '15%', '18%', '20%'],
+    correctIndex: 0, // A) 12%
+    difficulty: 0.8,
+    discrimination: 0.8,
   },
 
-  // 🟢 LOGICAL REASONING (4)
-  {
-    id: 205,
-    type: 'aptitude',
-    domain: 'Logical Reasoning',
-    question: 'Which number does not belong?\n27, 64, 125, 144',
-    options: ['27', '64', '125', '144'],
-    correctIndex: 3, // D) 144 (others are cubes)
-  },
+  // 🟢 LOGICAL REASONING (6 Questions - Balanced Difficulty)
   {
     id: 206,
     type: 'aptitude',
@@ -105,19 +128,18 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: '3 → 9\n5 → 25\n7 → ?',
     options: ['42', '49', '56', '64'],
     correctIndex: 1, // B) 49
+    difficulty: 0.2,
+    discrimination: 0.9,
   },
   {
-    id: 207,
+    id: 221,
     type: 'aptitude',
     domain: 'Logical Reasoning',
-    question: 'All cats are animals.\nSome animals are wild.\nWhich statement is definitely true?',
-    options: [
-      'All cats are wild',
-      'Some cats may be wild',
-      'No cats are wild',
-      'All wild animals are cats',
-    ],
-    correctIndex: 1, // B) Some cats may be wild
+    question: 'Tree is to Forest as Soldier is to ?',
+    options: ['Gun', 'Army', 'Battle', 'Uniform'],
+    correctIndex: 1, // B) Army
+    difficulty: 0.3,
+    discrimination: 0.85,
   },
   {
     id: 208,
@@ -126,26 +148,41 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'Which comes next?\nA, C, F, J, O, ?',
     options: ['S', 'T', 'U', 'V'],
     correctIndex: 2, // C) U (+2, +3, +4, +5, +6)
+    difficulty: 0.5,
+    discrimination: 0.8,
+  },
+  {
+    id: 222,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'If FRIEND is coded as HUMJTK, how is CANDLE coded?',
+    options: ['DEQJQM', 'EDRIRL', 'ESFJSF', 'FYOBOC'],
+    correctIndex: 1, // B) EDRIRL (+2 pattern)
+    difficulty: 0.6,
+    discrimination: 0.75,
+  },
+  {
+    id: 223,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'Pointing to a photograph, a man said, "I have no brother or sister, but that man\'s father is my father\'s son." Whose photograph was it?',
+    options: ['His own', 'His son\'s', 'His father\'s', 'His nephew\'s'],
+    correctIndex: 1, // B) His son's
+    difficulty: 0.7,
+    discrimination: 0.7,
+  },
+  {
+    id: 234,
+    type: 'aptitude',
+    domain: 'Logical Reasoning',
+    question: 'Find the missing term: 4, 10, ?, 82, 244, 730',
+    options: ['24', '28', '30', '26'],
+    correctIndex: 3, // D) 26 (Pattern is x*3 - 2)
+    difficulty: 0.85,
+    discrimination: 0.75,
   },
 
-  // 🟢 VERBAL REASONING (4)
-  {
-    id: 209,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question:
-      'The scientist was known for her ______ approach to problem solving.',
-    options: ['careless', 'systematic', 'accidental', 'hurried'],
-    correctIndex: 1, // B) systematic
-  },
-  {
-    id: 210,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question: 'Choose the word most similar to "Reluctant".',
-    options: ['Eager', 'Unwilling', 'Excited', 'Ready'],
-    correctIndex: 1, // B) Unwilling
-  },
+  // 🟢 VERBAL ABILITY (6 Questions - Balanced Difficulty)
   {
     id: 211,
     type: 'aptitude',
@@ -153,6 +190,8 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'Choose the opposite of "Transparent".',
     options: ['Clear', 'Bright', 'Opaque', 'Thin'],
     correctIndex: 2, // C) Opaque
+    difficulty: 0.3,
+    discrimination: 0.9,
   },
   {
     id: 212,
@@ -166,17 +205,60 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
       'She not like maths.',
     ],
     correctIndex: 2, // C)
+    difficulty: 0.4,
+    discrimination: 0.8,
+  },
+  {
+    id: 239,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Choose the correctly spelled word.',
+    options: ['Accomodate', 'Acomodate', 'Accommodate', 'Acomoddate'],
+    correctIndex: 2,
+    difficulty: 0.6,
+    discrimination: 0.9,
+  },
+  {
+    id: 227,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Choose the word most similar to "Ubiquitous".',
+    options: ['Rare', 'Scarce', 'Everywhere', 'Hidden'],
+    correctIndex: 2, // C) Everywhere
+    difficulty: 0.6,
+    discrimination: 0.8,
+  },
+  {
+    id: 226,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'The manager’s decision was met with both approval and ______ from the team.',
+    options: ['praise', 'derision', 'indifference', 'confusion'],
+    correctIndex: 1, // B) derision (means contempt or ridicule)
+    difficulty: 0.7,
+    discrimination: 0.75,
+  },
+  {
+    id: 235,
+    type: 'aptitude',
+    domain: 'Verbal Ability',
+    question: 'Read the passage and answer: "The treaty was a pyrrhic victory. Though the army won the battle, they lost so many soldiers that they could not sustain the war." What does "pyrrhic victory" mean?',
+    options: ['A decisive victory', 'A victory with no losses', 'A victory that comes at too great a cost', 'A temporary truce'],
+    correctIndex: 2,
+    difficulty: 0.75,
+    discrimination: 0.85,
   },
 
-  // 🟢 SPATIAL / PATTERN (4)
+  // 🟢 SPATIAL INTELLIGENCE (6 Questions - Balanced Difficulty)
   {
-    id: 213,
+    id: 229,
     type: 'aptitude',
     domain: 'Spatial Intelligence',
-    question:
-      'If a square is rotated 90° clockwise, how many sides remain in the same position?',
-    options: ['0', '1', '2', '4'],
-    correctIndex: 0, // A) 0
+    question: 'Which of the following is a 3D shape?',
+    options: ['Circle', 'Triangle', 'Sphere', 'Square'],
+    correctIndex: 2, // C) Sphere
+    difficulty: 0.1,
+    discrimination: 0.95,
   },
   {
     id: 214,
@@ -186,6 +268,8 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
       'Which shape completes the pattern?\n\n■  ▲  ■  ▲  ■  ?',
     options: ['■ Square', '▲ Triangle', '● Circle', '▬ Rectangle'],
     correctIndex: 1, // B) Triangle
+    difficulty: 0.2,
+    discrimination: 0.9,
   },
   {
     id: 215,
@@ -195,138 +279,8 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
       'You are facing North. You turn right, then left, then right. Which direction are you facing now?',
     options: ['North', 'East', 'South', 'West'],
     correctIndex: 1, // B) East
-  },
-  {
-    id: 216,
-    type: 'aptitude',
-    domain: 'Spatial Intelligence',
-    question: 'How many small cubes make up a 2 × 2 × 2 cube?',
-    options: ['4', '6', '8', '12'],
-    correctIndex: 2, // C) 8
-  },
-  // 🟢 NEW NUMERICAL REASONING (4)
-  {
-    id: 217,
-    type: 'aptitude',
-    domain: 'Numerical Reasoning',
-    question: 'A train travels 150 km in 2 hours. How many kilometers will it travel in 5 hours?',
-    options: ['300 km', '350 km', '375 km', '400 km'],
-    correctIndex: 2, // C) 375 km
-  },
-  {
-    id: 218,
-    type: 'aptitude',
-    domain: 'Numerical Reasoning',
-    question: 'If a shirt costs ₹500 and is sold for ₹650, what is the percentage profit?',
-    options: ['20%', '25%', '30%', '35%'],
-    correctIndex: 2, // C) 30%
-  },
-  {
-    id: 219,
-    type: 'aptitude',
-    domain: 'Numerical Reasoning',
-    question: 'The ratio of boys to girls in a class is 3:5. If there are 40 students in total, how many are boys?',
-    options: ['12', '15', '18', '20'],
-    correctIndex: 1, // B) 15
-  },
-  {
-    id: 220,
-    type: 'aptitude',
-    domain: 'Numerical Reasoning',
-    question: 'What is 15% of 400?',
-    options: ['40', '50', '60', '75'],
-    correctIndex: 2, // C) 60
-  },
-
-  // 🟢 NEW LOGICAL REASONING (4)
-  {
-    id: 221,
-    type: 'aptitude',
-    domain: 'Logical Reasoning',
-    question: 'Tree is to Forest as Soldier is to ?',
-    options: ['Gun', 'Army', 'Battle', 'Uniform'],
-    correctIndex: 1, // B) Army
-  },
-  {
-    id: 222,
-    type: 'aptitude',
-    domain: 'Logical Reasoning',
-    question: 'If FRIEND is coded as HUMJTK, how is CANDLE coded?',
-    options: ['DEQJQM', 'EDRIRL', 'ESFJSF', 'FYOBOC'],
-    correctIndex: 1, // B) EDRIRL (+2 pattern)
-  },
-  {
-    id: 223,
-    type: 'aptitude',
-    domain: 'Logical Reasoning',
-    question: 'Pointing to a photograph, a man said, "I have no brother or sister, but that man\'s father is my father\'s son." Whose photograph was it?',
-    options: ['His own', 'His son\'s', 'His father\'s', 'His nephew\'s'],
-    correctIndex: 1, // B) His son's
-  },
-  {
-    id: 224,
-    type: 'aptitude',
-    domain: 'Logical Reasoning',
-    question: 'Which word does not belong with the others?',
-    options: ['Carrot', 'Potato', 'Tomato', 'Ginger'],
-    correctIndex: 2, // C) Tomato (it's a fruit, others are root vegetables)
-  },
-
-  // 🟢 NEW VERBAL REASONING (4)
-  {
-    id: 225,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question: 'Choose the word that is the necessary part of "school".',
-    options: ['Student', 'Report Card', 'Test', 'Playground'],
-    correctIndex: 0, // A) Student
-  },
-  {
-    id: 226,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question: 'The manager’s decision was met with both approval and ______ from the team.',
-    options: ['praise', 'derision', 'indifference', 'confusion'],
-    correctIndex: 1, // B) derision (means contempt or ridicule)
-  },
-  {
-    id: 227,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question: 'Choose the word most similar to "Ubiquitous".',
-    options: ['Rare', 'Scarce', 'Everywhere', 'Hidden'],
-    correctIndex: 2, // C) Everywhere
-  },
-  {
-    id: 228,
-    type: 'aptitude',
-    domain: 'Verbal Ability',
-    question: 'Which sentence is grammatically correct?',
-    options: [
-      'The team are playing well.',
-      'The team is playing well.',
-      'The team is playing good.',
-      'The team are playing good.',
-    ],
-    correctIndex: 1, // B)
-  },
-
-  // 🟢 NEW SPATIAL / PATTERN (4)
-  {
-    id: 229,
-    type: 'aptitude',
-    domain: 'Spatial Intelligence',
-    question: 'Which of the following is a 3D shape?',
-    options: ['Circle', 'Triangle', 'Sphere', 'Square'],
-    correctIndex: 2, // C) Sphere
-  },
-  {
-    id: 230,
-    type: 'aptitude',
-    domain: 'Spatial Intelligence',
-    question: 'Imagine a paper is folded in half and a hole is punched through the middle. How many holes will there be when you unfold it?',
-    options: ['1', '2', '3', '4'],
-    correctIndex: 1, // B) 2
+    difficulty: 0.4,
+    discrimination: 0.8,
   },
   {
     id: 231,
@@ -335,6 +289,8 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'If you look at a dice, which number is on the opposite face of 3?',
     options: ['1', '2', '4', '5'],
     correctIndex: 2, // C) 4 (opposite faces of a standard die add up to 7)
+    difficulty: 0.5,
+    discrimination: 0.75,
   },
   {
     id: 232,
@@ -343,97 +299,90 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
     question: 'Which shape cannot be created by joining two triangles together?',
     options: ['Square', 'Diamond (Rhombus)', 'Larger Triangle', 'Circle'],
     correctIndex: 3, // D) Circle
+    difficulty: 0.6,
+    discrimination: 0.7,
+  },
+  {
+    id: 236,
+    type: 'aptitude',
+    domain: 'Spatial Intelligence',
+    question: 'A cube is painted blue on all faces. It is then cut into 64 smaller, equal cubes. How many small cubes have exactly one face painted?',
+    options: ['8', '12', '24', '36'],
+    correctIndex: 2, // C) 24
+    difficulty: 0.8,
+    discrimination: 0.8,
   },
 ];
 
 // ────────────────────────────────────────────
-// PART 2 — Self-Report Preferences (60 Questions)
+// PART 2 — Self-Report Preferences (50 Questions)
 // ────────────────────────────────────────────
 
 export const PREFERENCE_QUESTIONS: PreferenceQuestion[] = [
-  // ANALYTICAL (6)
+  // ANALYTICAL (4)
   { id: 301, type: 'preference', domain: 'Analytical', question: 'I enjoy solving complex problems.' },
   { id: 302, type: 'preference', domain: 'Analytical', question: 'I like working with numbers and data.' },
   { id: 303, type: 'preference', domain: 'Analytical', question: 'I notice patterns quickly.' },
-  { id: 304, type: 'preference', domain: 'Analytical', question: 'I enjoy logical reasoning tasks.' },
-  { id: 305, type: 'preference', domain: 'Analytical', question: 'I like analyzing news or research articles.' },
   { id: 306, type: 'preference', domain: 'Analytical', question: 'I enjoy strategy games or puzzles.' },
 
-  // VERBAL (6)
+  // VERBAL (4)
   { id: 307, type: 'preference', domain: 'Verbal', question: 'I enjoy reading regularly.' },
-  { id: 308, type: 'preference', domain: 'Verbal', question: 'I like writing essays or articles.' },
   { id: 309, type: 'preference', domain: 'Verbal', question: 'I feel confident expressing ideas in words.' },
   { id: 310, type: 'preference', domain: 'Verbal', question: 'I enjoy public speaking.' },
-  { id: 311, type: 'preference', domain: 'Verbal', question: 'I like debating ideas respectfully.' },
   { id: 312, type: 'preference', domain: 'Verbal', question: 'I enjoy learning new languages.' },
 
-  // CREATIVE (6)
+  // CREATIVE (4)
   { id: 313, type: 'preference', domain: 'Creative', question: 'I enjoy designing or drawing.' },
   { id: 314, type: 'preference', domain: 'Creative', question: 'I think of new ideas often.' },
   { id: 315, type: 'preference', domain: 'Creative', question: 'I prefer creative freedom in work.' },
-  { id: 316, type: 'preference', domain: 'Creative', question: 'I like visual storytelling.' },
-  { id: 317, type: 'preference', domain: 'Creative', question: 'I enjoy imagining new solutions.' },
   { id: 318, type: 'preference', domain: 'Creative', question: 'I enjoy brainstorming sessions.' },
 
-  // TECHNICAL (6)
+  // TECHNICAL (4)
   { id: 319, type: 'preference', domain: 'Technical', question: 'I enjoy understanding how machines work.' },
   { id: 320, type: 'preference', domain: 'Technical', question: 'I like coding or working with computers.' },
-  { id: 321, type: 'preference', domain: 'Technical', question: 'I enjoy fixing gadgets.' },
   { id: 322, type: 'preference', domain: 'Technical', question: 'I prefer hands-on practical work.' },
-  { id: 323, type: 'preference', domain: 'Technical', question: 'I enjoy experimenting with tools or software.' },
   { id: 324, type: 'preference', domain: 'Technical', question: 'I like building models or prototypes.' },
 
-  // SOCIAL (6)
+  // SOCIAL (4)
   { id: 325, type: 'preference', domain: 'Social', question: 'I enjoy helping others learn.' },
   { id: 326, type: 'preference', domain: 'Social', question: 'I feel energized by teamwork.' },
-  { id: 327, type: 'preference', domain: 'Social', question: 'I like mentoring or guiding people.' },
-  { id: 328, type: 'preference', domain: 'Social', question: 'I enjoy working with diverse groups.' },
   { id: 329, type: 'preference', domain: 'Social', question: 'I feel motivated by helping a cause.' },
   { id: 330, type: 'preference', domain: 'Social', question: 'I like interacting with new people.' },
 
-  // EXECUTIVE / LEADERSHIP (6)
+  // EXECUTIVE / LEADERSHIP (4)
   { id: 331, type: 'preference', domain: 'Executive', question: 'I like organizing events.' },
   { id: 332, type: 'preference', domain: 'Executive', question: 'I enjoy planning and scheduling.' },
-  { id: 333, type: 'preference', domain: 'Executive', question: 'I like setting goals and tracking progress.' },
   { id: 334, type: 'preference', domain: 'Executive', question: 'I stay calm under pressure.' },
-  { id: 335, type: 'preference', domain: 'Executive', question: 'I prefer measurable outcomes.' },
   { id: 336, type: 'preference', domain: 'Executive', question: 'I take initiative when needed.' },
 
-  // CONSCIENTIOUSNESS (6)
+  // CONSCIENTIOUSNESS (4)
   { id: 337, type: 'preference', domain: 'Conscientiousness', question: 'I am organized and detail-oriented.' },
   { id: 338, type: 'preference', domain: 'Conscientiousness', question: 'I pay attention to small mistakes.' },
-  { id: 339, type: 'preference', domain: 'Conscientiousness', question: 'I value stability and structure.' },
   { id: 340, type: 'preference', domain: 'Conscientiousness', question: 'I follow through on commitments.' },
-  { id: 341, type: 'preference', domain: 'Conscientiousness', question: 'I manage my time well.' },
   { id: 342, type: 'preference', domain: 'Conscientiousness', question: 'I prefer clear rules and processes.' },
 
-  // LEARNING STYLE (6)
+  // LEARNING STYLE (4)
   { id: 343, type: 'preference', domain: 'LearningStyle', question: 'I prefer visual learning (charts, diagrams).' },
   { id: 344, type: 'preference', domain: 'LearningStyle', question: 'I prefer listening to explanations.' },
   { id: 345, type: 'preference', domain: 'LearningStyle', question: 'I prefer hands-on learning.' },
-  { id: 346, type: 'preference', domain: 'LearningStyle', question: 'I reflect on mistakes to improve.' },
-  { id: 347, type: 'preference', domain: 'LearningStyle', question: 'I prefer step-by-step instructions.' },
   { id: 348, type: 'preference', domain: 'LearningStyle', question: 'I learn best by teaching others.' },
 
-  // NATURALISTIC (4)
+  // NATURALISTIC (3)
   { id: 349, type: 'preference', domain: 'Naturalistic', question: 'I enjoy learning about nature.' },
-  { id: 350, type: 'preference', domain: 'Naturalistic', question: 'I notice environmental patterns.' },
   { id: 351, type: 'preference', domain: 'Naturalistic', question: 'I enjoy outdoor exploration.' },
   { id: 352, type: 'preference', domain: 'Naturalistic', question: 'I like studying biology or geography.' },
 
-  // MUSICAL (4)
+  // MUSICAL (3)
   { id: 353, type: 'preference', domain: 'Musical', question: 'I enjoy music deeply.' },
   { id: 354, type: 'preference', domain: 'Musical', question: 'I can identify rhythms easily.' },
-  { id: 355, type: 'preference', domain: 'Musical', question: 'I enjoy creating music.' },
   { id: 356, type: 'preference', domain: 'Musical', question: 'I notice sound patterns.' },
 
-  // ENTREPRENEURIAL (4)
+  // ENTREPRENEURIAL (3)
   { id: 357, type: 'preference', domain: 'Entrepreneurial', question: 'I get excited by business ideas.' },
   { id: 358, type: 'preference', domain: 'Entrepreneurial', question: 'I like planning finances.' },
   { id: 359, type: 'preference', domain: 'Entrepreneurial', question: 'I think about starting something of my own.' },
-  { id: 360, type: 'preference', domain: 'Entrepreneurial', question: 'I enjoy risk-taking in ideas.' },
 
-  // CONSISTENCY CHECKS (3 pairs) - For internal validation only
+  // CONSISTENCY CHECKS (5 pairs) - For internal validation only
   { id: 361, type: 'preference', domain: 'Consistency', question: 'I enjoy being part of a team.' }, // Mirror of 362
   { id: 362, type: 'preference', domain: 'Consistency', question: 'I prefer working alone.' },
 
@@ -442,6 +391,12 @@ export const PREFERENCE_QUESTIONS: PreferenceQuestion[] = [
 
   { id: 365, type: 'preference', domain: 'Consistency', question: 'I am more of a creative, ideas person.' }, // Mirror of 366
   { id: 366, type: 'preference', domain: 'Consistency', question: 'I prefer practical, hands-on tasks over brainstorming.' },
+
+  { id: 367, type: 'preference', domain: 'Consistency', question: 'I make decisions quickly based on my gut feeling.' }, // Mirror of 368
+  { id: 368, type: 'preference', domain: 'Consistency', question: 'I prefer to analyze all data before making a choice.' },
+
+  { id: 373, type: 'preference', domain: 'Consistency', question: 'I find it easy to talk to new people.' }, // Mirror of 374
+  { id: 374, type: 'preference', domain: 'Consistency', question: 'I am usually quiet in a room full of strangers.' },
 ];
 
 // ────────────────────────────────────────────
@@ -453,9 +408,9 @@ export const ALL_QUESTIONS: Question[] = [
   ...PREFERENCE_QUESTIONS,
 ];
 
-export const TOTAL_APTITUDE = APTITUDE_QUESTIONS.length; // 32
-export const TOTAL_PREFERENCE = PREFERENCE_QUESTIONS.length; // 66
-export const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 98
+export const TOTAL_APTITUDE = APTITUDE_QUESTIONS.length; // 24
+export const TOTAL_PREFERENCE = PREFERENCE_QUESTIONS.length; // 50
+export const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 74
 
 /** Likert scale labels for preference questions */
 export const LIKERT_LABELS = [

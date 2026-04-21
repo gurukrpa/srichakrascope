@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI & Learning Style Report — Srichakra Academy</title>
+    <style>
+        /* ═══════════════ GLOBAL ═══════════════ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #F0F4F8;
+            color: #2D3436;
+            line-height: 1.5;
+        }
+
+        /* ═══════════════ CONTROLS (screen only) ═══════════════ */
+        .controls {
+            text-align: center; padding: 30px 20px 10px;
+            background: linear-gradient(135deg, #006D77, #83C5BE);
+            color: white;
+        }
+        .controls h2 { font-size: 1.6em; margin-bottom: 4px; }
+        .controls p { opacity: 0.9; margin-bottom: 14px; }
+        .controls button {
+            padding: 12px 36px; font-size: 1.05em; font-weight: 700;
+            border: none; border-radius: 30px; cursor: pointer;
+            background: white; color: #006D77;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .controls button:hover { transform: scale(1.05); }
+
+        /* ─── Per-student download button ─── */
+        .download-btn {
+            position: absolute; top: 10px; right: 16px; z-index: 10;
+            padding: 7px 18px; font-size: 0.82em; font-weight: 700;
+            border: 2px solid rgba(255,255,255,0.6); border-radius: 20px;
+            background: rgba(255,255,255,0.2); color: white;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .download-btn:hover { background: rgba(255,255,255,0.4); }
+
+        /* ═══════════════ REPORT PAGE ═══════════════ */
+        .report-page {
+            width: 210mm; margin: 30px auto;
+            background: white; box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+            overflow: hidden; position: relative;
+        }
+        .report-inner { padding: 0; }
+
+        /* ─── Header Banner ─── */
+        .header-banner {
+            background: linear-gradient(135deg, #006D77 0%, #009B8D 50%, #83C5BE 100%);
+            color: white; padding: 14px 30px; display: flex; align-items: center; gap: 18px;
+        }
+        .logo-circle {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.6);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.2em; letter-spacing: 1px; flex-shrink: 0;
+        }
+        .header-text h1 { font-size: 1.35em; font-weight: 700; letter-spacing: 0.3px; }
+        .header-text p { font-size: 0.82em; opacity: 0.9; }
+        .header-text .sub { font-size: 0.72em; opacity: 0.7; font-style: italic; }
+
+        /* ─── Student Info Bar ─── */
+        .student-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #F8FFFE; border-bottom: 2px solid #E0F2F1;
+            padding: 10px 30px; font-size: 0.92em;
+        }
+        .student-bar span { font-weight: 600; }
+        .student-bar .name { color: #006D77; font-size: 1.1em; }
+
+        /* ─── Chart Section (two columns) ─── */
+        .chart-section {
+            display: flex; gap: 10px; padding: 8px 24px 4px;
+            align-items: flex-start;
+        }
+        .radar-container { flex: 0 0 270px; }
+        .radar-container svg { width: 100%; height: auto; }
+        .bars-container { flex: 1; padding-top: 4px; }
+
+        /* ─── MI Bars ─── */
+        .mi-bar-row {
+            display: flex; align-items: center; margin-bottom: 5px; font-size: 0.82em;
+        }
+        .mi-bar-label {
+            width: 105px; font-weight: 600; text-align: right;
+            padding-right: 10px; white-space: nowrap; font-size: 0.85em;
+        }
+        .mi-bar-track {
+            flex: 1; height: 20px; background: #F0F0F0; border-radius: 10px;
+            overflow: hidden; position: relative;
+        }
+        .mi-bar-fill {
+            height: 100%; border-radius: 10px;
+            transition: width 1.2s ease-out;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 8px; font-weight: 700; color: white; font-size: 0.8em;
+            min-width: 38px;
+        }
+        .mi-bar-score {
+            width: 48px; text-align: center; font-weight: 600; font-size: 0.85em; color: #555;
+        }
+        .mi-bar-level {
+            width: 85px; font-size: 0.72em; font-weight: 600; padding-left: 4px;
+        }
+
+        /* ─── Section Headers ─── */
+        .section-title {
+            font-size: 1em; font-weight: 700; color: #006D77;
+            padding: 6px 30px 4px; border-bottom: 2px solid #E0F2F1;
+            margin: 0 0 6px; display: flex; align-items: center; gap: 8px;
+        }
+        .section-title .icon { font-size: 1.15em; }
+
+        /* ─── Top Strengths ─── */
+        .strengths-row {
+            display: flex; gap: 12px; padding: 0 30px 6px; justify-content: center;
+        }
+        .strength-card {
+            flex: 1; max-width: 200px; border-radius: 12px;
+            padding: 12px 10px; text-align: center;
+            color: white; position: relative; overflow: hidden;
+        }
+        .strength-card .rank {
+            position: absolute; top: 6px; left: 10px; font-size: 0.72em;
+            background: rgba(255,255,255,0.3); border-radius: 10px; padding: 1px 8px;
+            font-weight: 700;
+        }
+        .strength-card .s-icon { font-size: 1.8em; margin-bottom: 4px; }
+        .strength-card .s-name { font-weight: 700; font-size: 0.88em; }
+        .strength-card .s-score { font-size: 1.5em; font-weight: 800; }
+        .strength-card .s-label { font-size: 0.7em; opacity: 0.9; }
+
+        /* ─── Learning Styles ─── */
+        .ls-section { padding: 0 30px 10px; }
+        .ls-bar-row {
+            display: flex; align-items: center; margin-bottom: 7px;
+        }
+        .ls-icon { font-size: 1.4em; width: 36px; text-align: center; }
+        .ls-info { width: 95px; }
+        .ls-info .ls-name { font-weight: 700; font-size: 0.88em; }
+        .ls-info .ls-score-text { font-size: 0.75em; color: #888; }
+        .ls-track {
+            flex: 1; height: 26px; background: #F0F0F0; border-radius: 13px;
+            overflow: hidden; margin: 0 10px; position: relative;
+        }
+        .ls-fill {
+            height: 100%; border-radius: 13px; transition: width 1.2s ease-out;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px; font-weight: 700; color: white; font-size: 0.85em;
+        }
+        .ls-level-badge {
+            font-size: 0.78em; font-weight: 700; padding: 3px 10px;
+            border-radius: 12px; white-space: nowrap;
+        }
+        .ls-insight {
+            background: #FFF8E1; border-left: 4px solid #FFB300;
+            padding: 8px 14px; border-radius: 0 8px 8px 0;
+            font-size: 0.85em; margin-top: 6px; color: #5D4037;
+        }
+
+        /* ═══════════════ PAGE 2: Guidance ═══════════════ */
+        .guidance-page {
+            /* page-break handled via print styles */
+        }
+        .guidance-banner {
+            background: linear-gradient(135deg, #006D77, #83C5BE);
+            color: white; padding: 10px 30px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .guidance-banner h2 { font-size: 1.05em; }
+        .guidance-banner .sub { font-size: 0.78em; opacity: 0.85; }
+
+        /* ─── Intelligence Detail Cards ─── */
+        .intel-details { padding: 8px 26px 2px; }
+        .intel-card {
+            display: flex; gap: 10px; padding: 8px 10px;
+            border-radius: 10px; margin-bottom: 6px;
+            border-left: 5px solid;
+        }
+        .intel-card .ic-icon { font-size: 1.6em; flex-shrink: 0; }
+        .intel-card .ic-name { font-weight: 700; font-size: 0.88em; }
+        .intel-card .ic-aka { font-size: 0.72em; color: #888; font-style: italic; }
+        .intel-card .ic-desc { font-size: 0.78em; margin-top: 2px; line-height: 1.4; }
+
+        /* ─── Tips Section ─── */
+        .tips-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            padding: 4px 26px 6px;
+        }
+        .tip-box {
+            border-radius: 10px; padding: 10px; font-size: 0.78em;
+        }
+        .tip-box h3 { font-size: 0.88em; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .tip-box ul { padding-left: 16px; margin: 0; }
+        .tip-box li { margin-bottom: 2px; line-height: 1.4; }
+
+        .parent-tips { background: #E8F5E9; border: 1px solid #A5D6A7; }
+        .parent-tips h3 { color: #2E7D32; }
+        .school-tips { background: #E3F2FD; border: 1px solid #90CAF9; }
+        .school-tips h3 { color: #1565C0; }
+        .ls-tips { background: #FFF3E0; border: 1px solid #FFCC80; }
+        .ls-tips h3 { color: #E65100; }
+        .general-tips { background: #F3E5F5; border: 1px solid #CE93D8; }
+        .general-tips h3 { color: #7B1FA2; }
+
+        /* ─── Footer ─── */
+        .report-footer {
+            background: #F8FFFE; border-top: 2px solid #E0F2F1;
+            padding: 8px 30px; text-align: center; font-size: 0.72em;
+            color: #888;
+        }
+        .report-footer strong { color: #006D77; }
+
+        /* ═══════════════ PRINT STYLES ═══════════════ */
+        @media print {
+            @page { size: A4; margin: 6mm; }
+            body { background: white; }
+            .no-print { display: none !important; }
+            .download-btn { display: none !important; }
+            .report-page {
+                box-shadow: none; margin: 0;
+                page-break-inside: avoid;
+                page-break-after: always;
+                width: 100%;
+                min-height: auto;
+            }
+            .report-page:last-child { page-break-after: auto; }
+            .report-page.hide-for-print { display: none !important; }
+            .guidance-page { page-break-before: always; }
+            .guidance-page.hide-for-print { display: none !important; }
+            .mi-bar-fill, .ls-fill { transition: none; }
+        }
+
+        /* ═══════════════ BAR ANIMATION ═══════════════ */
+        .mi-bar-fill, .ls-fill { width: 0; }
+    </style>
+</head>
+<body>
+
+<div class="controls no-print">
+    <h2>📊 Multiple Intelligence &amp; Learning Style Reports</h2>
+    <p>Srichakra Academy — The School To Identify Your Child's Divine Gift!</p>
+    <button onclick="window.print()">🖨️ Print All Reports</button>
+</div>
+
+<div id="reports"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  CONFIGURATION — Adjust max scores here if your test scale differs
+// ═══════════════════════════════════════════════════════════════════
+const MI_MAX = 25;   // Maximum possible MI score per intelligence
+const LS_MAX = 10;   // Maximum possible Learning Style score
+
+// ═══════════════════════════════════════════════════════════════════
+//  STUDENT DATA  — Add / edit students here
+// ═══════════════════════════════════════════════════════════════════
+const students = [
+    {
+        sno: 1, doa: '13/04/2026', name: 'Nandinee', grade: '6',
+        mi: [15, 20, 16, 24, 22, 25, 14],
+        ls: [7, 7, 7]
+    },
+    {
+        sno: 2, doa: '13/04/2026', name: 'Yashika', grade: '6',
+        mi: [15, 17, 19, 13, 14, 12, 18],
+        ls: [5, 6, 7]
+    },
+    {
+        sno: 3, doa: '13/04/2026', name: 'Moumitha', grade: '6',
+        mi: [18, 17, 22, 21, 18, 19, 16],
+        ls: [6, 10, 6]
+    },
+    {
+        sno: 4, doa: '13/04/2026', name: 'Hanvitha', grade: '6',
+        mi: [15, 10, 14, 16, 12, 15, 12],
+        ls: [8, 7, 8]
+    }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+//  INTELLIGENCE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════
+const MI_KEYS = [
+    'linguistic', 'logicalMath', 'musical',
+    'bodilyKinesthetic', 'visualSpatial', 'interpersonal', 'intrapersonal'
+];
+
+const MI_DEF = {
+    linguistic: {
+        name: 'Linguistic', short: 'Ling.', aka: 'Word Smart',
+        icon: '📖', color: '#E63946',
+        desc: 'Excels in reading, writing, storytelling, and verbal expression. Enjoys word play, books, and communicating through language.',
+        parentTips: [
+            'Encourage daily reading of diverse genres',
+            'Provide journals and encourage creative writing',
+            'Play word games — Scrabble, crosswords, word puzzles',
+            'Encourage participation in debates and storytelling'
+        ],
+        schoolTips: [
+            'Assign creative writing and verbal presentations',
+            'Encourage participation in literary clubs and debates',
+            'Allow oral expression alongside written work'
+        ]
+    },
+    logicalMath: {
+        name: 'Logical-Math', short: 'Logic', aka: 'Number/Logic Smart',
+        icon: '🧮', color: '#457B9D',
+        desc: 'Strong in reasoning, problem-solving, patterns, and calculations. Enjoys logical challenges, experiments, and finding structure in information.',
+        parentTips: [
+            'Provide puzzles, Sudoku, and chess',
+            'Encourage science experiments at home',
+            'Explore beginner-friendly coding activities',
+            'Discuss cause-and-effect in everyday situations'
+        ],
+        schoolTips: [
+            'Challenge with advanced problem-solving tasks',
+            'Assign investigative and analytical projects',
+            'Introduce logic and coding clubs'
+        ]
+    },
+    musical: {
+        name: 'Musical', short: 'Music', aka: 'Music Smart',
+        icon: '🎵', color: '#F4A261',
+        desc: 'Natural sensitivity to rhythm, melody, tone, and sound patterns. May enjoy singing, playing instruments, or noticing musical elements others miss.',
+        parentTips: [
+            'Explore music lessons — vocal or instrumental',
+            'Sing together and attend musical events',
+            'Use songs and rhymes to aid memorization',
+            'Allow background music during study time'
+        ],
+        schoolTips: [
+            'Integrate rhythmic mnemonics into lessons',
+            'Encourage participation in school music programs',
+            'Use audio-based learning resources'
+        ]
+    },
+    bodilyKinesthetic: {
+        name: 'Bodily-Kinesthetic', short: 'Body-K', aka: 'Body Smart',
+        icon: '⚽', color: '#2A9D8F',
+        desc: 'Learns through movement, touch, and physical coordination. Excels in sports, dance, crafts, and hands-on activities.',
+        parentTips: [
+            'Encourage sports, dance, or martial arts',
+            'Provide hands-on craft and building activities',
+            'Allow movement breaks during homework',
+            'Try gardening, cooking, or model-building together'
+        ],
+        schoolTips: [
+            'Include movement-based activities in lessons',
+            'Offer hands-on lab work and physical demonstrations',
+            'Encourage participation in sports and drama'
+        ]
+    },
+    visualSpatial: {
+        name: 'Visual-Spatial', short: 'Visual', aka: 'Picture Smart',
+        icon: '🎨', color: '#9B59B6',
+        desc: 'Thinks in pictures and understands spatial relationships well. Enjoys drawing, building, maps, and visualizing concepts.',
+        parentTips: [
+            'Provide art supplies, sketch books, and building kits',
+            'Use mind maps and diagrams for study topics',
+            'Encourage jigsaw puzzles and LEGO building',
+            'Visit museums, art galleries, and nature trails'
+        ],
+        schoolTips: [
+            'Use diagrams, charts, and visual aids in teaching',
+            'Assign art-based and design projects',
+            'Encourage map-making and spatial reasoning tasks'
+        ]
+    },
+    interpersonal: {
+        name: 'Interpersonal', short: 'Inter-P', aka: 'People Smart',
+        icon: '🤝', color: '#E76F51',
+        desc: 'Socially intelligent — understands and connects well with others. Excels in teamwork, leadership, empathy, and group activities.',
+        parentTips: [
+            'Encourage group activities and team sports',
+            'Discuss different perspectives and feelings of others',
+            'Involve in community service or group volunteering',
+            'Allow collaborative study with friends'
+        ],
+        schoolTips: [
+            'Assign group leadership and collaborative roles',
+            'Encourage peer tutoring and mentoring',
+            'Create opportunities for team-based projects'
+        ]
+    },
+    intrapersonal: {
+        name: 'Intrapersonal', short: 'Intra-P', aka: 'Self Smart',
+        icon: '🧘', color: '#264653',
+        desc: 'Strong self-awareness and capacity for deep reflection. Understands own emotions, strengths, and motivations well.',
+        parentTips: [
+            'Provide a personal journal or diary',
+            'Encourage goal-setting and self-reflection time',
+            'Allow independent study and quiet time',
+            'Discuss emotions openly and support self-expression'
+        ],
+        schoolTips: [
+            'Allow independent study and self-paced work',
+            'Provide reflection journals and self-assessment tasks',
+            'Respect preference for individual over group work'
+        ]
+    }
+};
+
+const LS_KEYS = ['visual', 'auditory', 'kinesthetic'];
+const LS_DEF = {
+    visual: {
+        name: 'Visual', icon: '👁️', color: '#9B59B6',
+        desc: 'Learns best through seeing — diagrams, charts, videos, colours, and written instructions.',
+        tips: [
+            'Use colourful notes, highlighters, and mind maps',
+            'Watch educational videos and visual tutorials',
+            'Draw diagrams and flowcharts while studying',
+            'Use flashcards with images for revision'
+        ]
+    },
+    auditory: {
+        name: 'Auditory', icon: '👂', color: '#3498DB',
+        desc: 'Learns best through hearing — discussions, lectures, audio, and verbal explanations.',
+        tips: [
+            'Read lessons aloud and discuss topics verbally',
+            'Use audiobooks, podcasts, and recorded notes',
+            'Encourage group discussions about study topics',
+            'Set information to songs or rhythmic patterns'
+        ]
+    },
+    kinesthetic: {
+        name: 'Kinesthetic', icon: '✋', color: '#2ECC71',
+        desc: 'Learns best through doing — hands-on activities, experiments, movement, and touch.',
+        tips: [
+            'Use hands-on experiments and physical models',
+            'Take short movement breaks while studying',
+            'Act out concepts through role play or drama',
+            'Use manipulatives for math and science learning'
+        ]
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+//  HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
+function pct(score, max) { return Math.round((score / max) * 100); }
+
+function miLevel(score) {
+    const p = pct(score, MI_MAX);
+    if (p >= 80) return { label: 'Dominant', color: '#27AE60', bg: '#E8F5E9' };
+    if (p >= 60) return { label: 'Strong', color: '#2980B9', bg: '#E3F2FD' };
+    if (p >= 40) return { label: 'Developing', color: '#F39C12', bg: '#FFF8E1' };
+    return { label: 'Emerging', color: '#E74C3C', bg: '#FFEBEE' };
+}
+
+function lsLevel(score) {
+    const p = pct(score, LS_MAX);
+    if (p >= 80) return { label: 'Dominant', color: '#27AE60', bg: '#E8F5E9' };
+    if (p >= 60) return { label: 'Strong', color: '#2980B9', bg: '#E3F2FD' };
+    if (p >= 40) return { label: 'Moderate', color: '#F39C12', bg: '#FFF8E1' };
+    return { label: 'Low', color: '#E74C3C', bg: '#FFEBEE' };
+}
+
+function getTopMI(miScores) {
+    const indexed = miScores.map((s, i) => ({ key: MI_KEYS[i], score: s, index: i }));
+    indexed.sort((a, b) => b.score - a.score);
+    return indexed.slice(0, 3);
+}
+
+function getDominantLS(lsScores) {
+    const indexed = lsScores.map((s, i) => ({ key: LS_KEYS[i], score: s }));
+    indexed.sort((a, b) => b.score - a.score);
+    const max = indexed[0].score;
+    const min = indexed[indexed.length - 1].score;
+    const isBalanced = (max - min) <= 1;
+    return { sorted: indexed, isBalanced };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SVG RADAR CHART
+// ═══════════════════════════════════════════════════════════════════
+function createRadarChart(scores) {
+    const size = 340;
+    const cx = size / 2, cy = size / 2;
+    const R = 110;
+    const n = 7;
+
+    function pt(i, val) {
+        const a = (2 * Math.PI / n) * i - Math.PI / 2;
+        const r = (val / MI_MAX) * R;
+        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    }
+
+    let svg = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Segoe UI',sans-serif;">`;
+
+    // Background circle fill
+    svg += `<circle cx="${cx}" cy="${cy}" r="${R + 8}" fill="#FAFCFD"/>`;
+
+    // Grid polygons (5 levels)
+    for (let level = 1; level <= 5; level++) {
+        const frac = level / 5;
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+            const p = pt(i, MI_MAX * frac);
+            pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+        }
+        svg += `<polygon points="${pts.join(' ')}" fill="${level === 5 ? 'none' : 'none'}" stroke="#E0E8EC" stroke-width="${level === 5 ? 1.2 : 0.6}" stroke-dasharray="${level < 5 ? '3,3' : 'none'}"/>`;
+        // Level percentage label
+        if (level < 5) {
+            const lp = pt(0, MI_MAX * frac);
+            svg += `<text x="${lp.x + 3}" y="${lp.y - 3}" font-size="7.5" fill="#B0BEC5">${level * 20}%</text>`;
+        }
+    }
+
+    // Axis lines
+    for (let i = 0; i < n; i++) {
+        const p = pt(i, MI_MAX);
+        svg += `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="#D5DEE3" stroke-width="0.6"/>`;
+    }
+
+    // Data polygon  
+    const dataPoints = scores.map((s, i) => pt(i, s));
+    const poly = dataPoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    svg += `<polygon points="${poly}" fill="rgba(0,109,119,0.15)" stroke="#006D77" stroke-width="2.2" stroke-linejoin="round"/>`;
+
+    // Data points + score labels
+    dataPoints.forEach((p, i) => {
+        const def = MI_DEF[MI_KEYS[i]];
+        svg += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="${def.color}" stroke="white" stroke-width="2"/>`;
+        // Score value near point
+        const a = (2 * Math.PI / n) * i - Math.PI / 2;
+        const lx = p.x + 10 * Math.cos(a);
+        const ly = p.y + 10 * Math.sin(a);
+        svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" fill="${def.color}">${scores[i]}</text>`;
+    });
+
+    // Labels
+    for (let i = 0; i < n; i++) {
+        const a = (2 * Math.PI / n) * i - Math.PI / 2;
+        const lr = R + 32;
+        const x = cx + lr * Math.cos(a);
+        const y = cy + lr * Math.sin(a);
+        const cosA = Math.cos(a);
+        let anchor = 'middle';
+        if (cosA > 0.25) anchor = 'start';
+        else if (cosA < -0.25) anchor = 'end';
+        const def = MI_DEF[MI_KEYS[i]];
+        svg += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" font-weight="700" fill="${def.color}">${def.icon} ${def.short}</text>`;
+    }
+
+    svg += '</svg>';
+    return svg;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  REPORT GENERATION
+// ═══════════════════════════════════════════════════════════════════
+function generateReport(st) {
+    const top3 = getTopMI(st.mi);
+    const lsResult = getDominantLS(st.ls);
+    const uid = 'bars-' + st.sno;
+
+    // ──── PAGE 1: Score Dashboard ────
+    let html = `<div class="report-page" id="student-${st.sno}"><div class="report-inner">`;
+
+    // Header
+    html += `
+    <div class="header-banner">
+        <div class="logo-circle">SA</div>
+        <div class="header-text">
+            <h1>Multiple Intelligence &amp; Learning Style Profile</h1>
+            <p>Srichakra Academy — The School To Identify Your Child's Divine Gift!</p>
+            <span class="sub">(A Unit of SriKrpa Foundation Trust)</span>
+        </div>
+        <button class="download-btn no-print" onclick="downloadSingle(${st.sno})">⬇ Download PDF</button>
+    </div>`;
+
+    // Student bar
+    html += `
+    <div class="student-bar">
+        <span class="name">👤 ${st.name}</span>
+        <span>Grade: ${st.grade}</span>
+        <span>Date: ${st.doa}</span>
+    </div>`;
+
+    // Chart section: radar + bars
+    html += `<div class="chart-section">`;
+    html += `<div class="radar-container">${createRadarChart(st.mi)}</div>`;
+    html += `<div class="bars-container">`;
+
+    // MI Bars
+    st.mi.forEach((score, i) => {
+        const def = MI_DEF[MI_KEYS[i]];
+        const p = pct(score, MI_MAX);
+        const lv = miLevel(score);
+        html += `
+        <div class="mi-bar-row">
+            <div class="mi-bar-label" style="color:${def.color}">${def.icon} ${def.name}</div>
+            <div class="mi-bar-track">
+                <div class="mi-bar-fill" data-width="${p}%" style="background:linear-gradient(90deg, ${def.color}CC, ${def.color})">${p}%</div>
+            </div>
+            <div class="mi-bar-score">${score}/${MI_MAX}</div>
+            <div class="mi-bar-level" style="color:${lv.color}">${lv.label}</div>
+        </div>`;
+    });
+
+    html += `</div></div>`; // close bars-container & chart-section
+
+    // Top 3 Strengths
+    html += `<div class="section-title"><span class="icon">🏆</span> Top 3 Dominant Intelligences</div>`;
+    html += `<div class="strengths-row">`;
+    top3.forEach((item, rank) => {
+        const def = MI_DEF[item.key];
+        const p = pct(item.score, MI_MAX);
+        html += `
+        <div class="strength-card" style="background: linear-gradient(135deg, ${def.color}, ${def.color}DD);">
+            <div class="rank">#${rank + 1}</div>
+            <div class="s-icon">${def.icon}</div>
+            <div class="s-name">${def.name}</div>
+            <div class="s-score">${p}%</div>
+            <div class="s-label">${def.aka}</div>
+        </div>`;
+    });
+    html += `</div>`;
+
+    // Learning Styles
+    html += `<div class="section-title"><span class="icon">📚</span> Learning Style Profile</div>`;
+    html += `<div class="ls-section">`;
+    st.ls.forEach((score, i) => {
+        const def = LS_DEF[LS_KEYS[i]];
+        const p = pct(score, LS_MAX);
+        const lv = lsLevel(score);
+        html += `
+        <div class="ls-bar-row">
+            <div class="ls-icon">${def.icon}</div>
+            <div class="ls-info">
+                <div class="ls-name">${def.name}</div>
+                <div class="ls-score-text">${score}/${LS_MAX}</div>
+            </div>
+            <div class="ls-track">
+                <div class="ls-fill" data-width="${p}%" style="background: linear-gradient(90deg, ${def.color}CC, ${def.color})">${p}%</div>
+            </div>
+            <div class="ls-level-badge" style="color:${lv.color}; background:${lv.bg}">${lv.label}</div>
+        </div>`;
+    });
+
+    // Learning style insight
+    if (lsResult.isBalanced) {
+        html += `<div class="ls-insight">🌟 <strong>Balanced Learner!</strong> ${st.name} adapts well across Visual, Auditory, and Kinesthetic modes. Use a mix of learning methods for best results.</div>`;
+    } else {
+        const dom = lsResult.sorted[0];
+        const domDef = LS_DEF[dom.key];
+        html += `<div class="ls-insight">🌟 <strong>Primarily a ${domDef.name} Learner</strong> — ${domDef.desc}</div>`;
+    }
+
+    html += `</div>`; // close ls-section
+
+    // Footer page 1
+    html += `
+    <div class="report-footer">
+        <strong>Srichakra Academy</strong> — Comprehensive Psychometric Profile &nbsp;|&nbsp; Page 1 of 2
+    </div>`;
+    html += `</div></div>`; // close report-inner & report-page
+
+    // ──── PAGE 2: Guidance & Tips ────
+    html += `<div class="report-page guidance-page"><div class="report-inner">`;
+
+    html += `
+    <div class="guidance-banner">
+        <div class="logo-circle">SA</div>
+        <div>
+            <h2>Understanding ${st.name}'s Unique Strengths</h2>
+            <span class="sub">Personalised guidance for parents and teachers</span>
+        </div>
+    </div>`;
+
+    // Student bar (mini)
+    html += `
+    <div class="student-bar">
+        <span class="name">👤 ${st.name} — Grade ${st.grade}</span>
+        <span>Assessment: ${st.doa}</span>
+    </div>`;
+
+    // Intelligence detail cards for top 3
+    html += `<div class="section-title"><span class="icon">🧠</span> Your Child's Top Intelligence Areas</div>`;
+    html += `<div class="intel-details">`;
+    top3.forEach((item, rank) => {
+        const def = MI_DEF[item.key];
+        const p = pct(item.score, MI_MAX);
+        html += `
+        <div class="intel-card" style="border-color:${def.color}; background: ${def.color}08;">
+            <div class="ic-icon">${def.icon}</div>
+            <div>
+                <div class="ic-name">${def.name} Intelligence <span style="color:${def.color}; font-size:0.85em;">(${p}%)</span></div>
+                <div class="ic-aka">${def.aka}</div>
+                <div class="ic-desc">${def.desc}</div>
+            </div>
+        </div>`;
+    });
+    html += `</div>`;
+
+    // Tips grid: Parent Tips + School Tips + Learning Tips + General
+    html += `<div class="section-title"><span class="icon">💡</span> Actionable Recommendations</div>`;
+    html += `<div class="tips-grid">`;
+
+    // Parent tips (from top intelligences)
+    const parentTips = top3.flatMap(item => {
+        const def = MI_DEF[item.key];
+        return def.parentTips.slice(0, 1).map(t => `${def.icon} ${t}`);
+    });
+    html += `
+    <div class="tip-box parent-tips">
+        <h3>🏠 Tips for Parents</h3>
+        <ul>${parentTips.map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`;
+
+    // School tips
+    const schoolTips = top3.flatMap(item => {
+        const def = MI_DEF[item.key];
+        return def.schoolTips.slice(0, 1).map(t => `${def.icon} ${t}`);
+    });
+    html += `
+    <div class="tip-box school-tips">
+        <h3>🏫 Tips for School</h3>
+        <ul>${schoolTips.map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`;
+
+    // Learning style tips
+    const domLS = lsResult.sorted[0];
+    const domLSDef = LS_DEF[domLS.key];
+    html += `
+    <div class="tip-box ls-tips">
+        <h3>${domLSDef.icon} Learning Style Tips</h3>
+        <ul>${domLSDef.tips.slice(0, 3).map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`;
+
+    // General tips
+    html += `
+    <div class="tip-box general-tips">
+        <h3>✨ General Guidance</h3>
+        <ul>
+            <li>Every intelligence can be nurtured with the right environment</li>
+            <li>Focus on strengths while gently developing other areas</li>
+            <li>Avoid comparing — each child has a unique intelligence profile</li>
+        </ul>
+    </div>`;
+
+    html += `</div>`; // close tips-grid
+
+    // Footer page 2
+    html += `
+    <div class="report-footer">
+        <strong>Srichakra Academy</strong> — (A Unit of SriKrpa Foundation Trust)<br>
+        Based on Howard Gardner's Theory of Multiple Intelligences &nbsp;|&nbsp; This report is a guidance tool, not a definitive assessment. &nbsp;|&nbsp; Page 2 of 2
+    </div>`;
+
+    html += `</div></div>`; // close report-inner & report-page (page 2)
+
+    return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  INITIALIZE
+// ═══════════════════════════════════════════════════════════════════
+const container = document.getElementById('reports');
+container.innerHTML = students.map(s => generateReport(s)).join('');
+
+// Download single student report
+function downloadSingle(sno) {
+    // Hide all other students' pages
+    document.querySelectorAll('.report-page').forEach(el => {
+        if (!el.id.includes('student-' + sno) && !el.dataset.student) {
+            el.classList.add('hide-for-print');
+        }
+    });
+    // Tag guidance pages by student number
+    // Each student has 2 divs: report-page#student-N and the next report-page.guidance-page
+    const allPages = document.querySelectorAll('.report-page');
+    let found = false;
+    allPages.forEach(el => {
+        const isMain = el.id === 'student-' + sno;
+        if (isMain) { found = true; el.classList.remove('hide-for-print'); return; }
+        if (found && el.classList.contains('guidance-page')) {
+            el.classList.remove('hide-for-print');
+            found = false; return;
+        }
+        found = false;
+        el.classList.add('hide-for-print');
+    });
+
+    window.print();
+
+    // Restore all pages after print dialog
+    setTimeout(() => {
+        document.querySelectorAll('.report-page').forEach(el => {
+            el.classList.remove('hide-for-print');
+        });
+    }, 500);
+}
+
+// Animate bars on load
+setTimeout(() => {
+    document.querySelectorAll('.mi-bar-fill, .ls-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width;
+    });
+}, 150);
+</script>
+
+</body>
+</html>

@@ -9,6 +9,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import BulkRegistration from './pages/BulkRegistration';
 import SchoolLogin from './pages/SchoolLogin';
 import AccessGate from './pages/AccessGate';
+import VinayagarAgavalEnroll from './pages/VinayagarAgavalEnroll';
+import VinayagarAgavalDashboard from './pages/VinayagarAgavalDashboard';
+import DMITCapture from './pages/DMITCapture';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import type { ReportData } from './pages/reportTemplate';
 
@@ -197,47 +200,31 @@ const DEMO_DATA = {
     },
   ],
 
-  /* ─── Career exploration clusters ─── */
+  /* ─── Career exploration clusters (top 3 from 18-cluster repository) ─── */
   careerClusters: [
     {
-      name: 'STEM & Technology',
-      icon: '🔬',
-      roles: ['Software Developer', 'Data Scientist', 'Systems Architect', 'AI Engineer', 'Cybersecurity Analyst'],
-      whyFits: 'Strong numerical and logical aptitude combined with investigative interests',
-      skills: 'Analytical thinking, problem-solving, technical proficiency',
-      matchScore: 90,
+      name: 'Engineering & Technology',
+      icon: '⚙️',
+      roles: ['Software Developer', 'Data Scientist / AI Engineer', 'Mechanical Engineer', 'Cybersecurity Analyst', 'Robotics Engineer'],
+      whyFits: 'Numerical Reasoning (78%), Logical Reasoning (72%), Spatial Intelligence (65%) with strong analytical interest',
+      skills: 'Problem-solving, Mathematical modelling, Systems thinking, Programming, Technical communication',
+      matchScore: 85,
     },
     {
-      name: 'Engineering & Design',
-      icon: '⚙️',
-      roles: ['Design Engineer', 'Project Manager', 'Quality Analyst', 'Civil Engineer', 'Robotics Engineer'],
-      whyFits: 'Combines spatial intelligence with logical reasoning and realistic interests',
-      skills: 'Technical drawing, system design, project management',
+      name: 'Pure Sciences & Research',
+      icon: '🔬',
+      roles: ['Research Scientist', 'Mathematician / Statistician', 'Biotechnologist', 'Space Scientist'],
+      whyFits: 'Numerical Reasoning (78%), Logical Reasoning (72%) with strong analytical interest',
+      skills: 'Research methodology, Quantitative analysis, Critical thinking, Scientific writing, Lab techniques',
       matchScore: 78,
     },
     {
-      name: 'Business, Finance & Management',
-      icon: '📊',
-      roles: ['Financial Analyst', 'Marketing Manager', 'Entrepreneur', 'Chartered Accountant', 'HR Manager'],
-      whyFits: 'Leverages numerical ability with enterprising and organizational interests',
-      skills: 'Quantitative analysis, communication, leadership',
-      matchScore: 70,
-    },
-    {
-      name: 'Healthcare & Life Sciences',
-      icon: '🏥',
-      roles: ['Doctor', 'Pharmacist', 'Physiotherapist', 'Clinical Researcher', 'Public Health Specialist'],
-      whyFits: 'Combines scientific aptitude with social and helping motivations',
-      skills: 'Attention to detail, empathy, scientific reasoning',
-      matchScore: 60,
-    },
-    {
-      name: 'Social Sciences & Education',
-      icon: '📚',
-      roles: ['Teacher', 'Psychologist', 'Social Worker', 'Policy Analyst', 'Journalist'],
-      whyFits: 'Matches strong verbal ability with social and investigative interests',
-      skills: 'Communication, critical thinking, empathy, writing',
-      matchScore: 50,
+      name: 'Finance & Accounting',
+      icon: '💰',
+      roles: ['Chartered Accountant (CA)', 'Financial Analyst', 'Company Secretary (CS)', 'Tax Consultant'],
+      whyFits: 'Numerical Reasoning (78%), Logical Reasoning (72%) with moderate conscientiousness interest',
+      skills: 'Numerical accuracy, Financial analysis, Regulatory knowledge, Attention to detail',
+      matchScore: 72,
     },
   ],
 
@@ -342,6 +329,13 @@ function App() {
             path="/career-assessment"
             element={<CareerAssessment {...DEMO_DATA} />}
           />
+
+          {/* Vinayagar Agaval — My Friend Ganesha Learning Program */}
+          <Route path="/agaval" element={<VinayagarAgavalEnroll />} />
+          <Route path="/agaval/learn" element={<VinayagarAgavalDashboard />} />
+
+          {/* DMIT — Fingerprint Capture & Assessment */}
+          <Route path="/dmit/capture" element={<DMITCapture />} />
         </Routes>
         </ErrorBoundary>
       </AuthProvider>

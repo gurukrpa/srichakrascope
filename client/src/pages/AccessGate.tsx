@@ -145,6 +145,12 @@ const AccessGate: React.FC = () => {
         },
       };
 
+      if (typeof window.Razorpay !== 'function') {
+        setPaymentError('Payment gateway failed to load. Please refresh the page and try again.');
+        setPaymentLoading(false);
+        return;
+      }
+
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', (response: any) => {
         setPaymentError('Payment failed: ' + (response.error?.description || 'Please try again.'));
@@ -152,8 +158,9 @@ const AccessGate: React.FC = () => {
       });
       rzp.open();
     } catch (err: any) {
-      const msg = err?.code || 'Unknown error';
-      setPaymentError(`Failed to start payment. Please try again.`);
+      const msg = err?.message || err?.code || 'Unknown error';
+      console.error('Razorpay payment error:', err);
+      setPaymentError(`Payment failed: ${msg}. Please try again or contact support.`);
       setPaymentLoading(false);
     }
   };

@@ -71,5 +71,16 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
       allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
+
+    // MI Assessments: admins only (create, read, delete)
+    match /mi_assessments/{docId} {
+      allow read, write: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
+
+    // DMIT submissions: public create; admins can read & update
+    match /dmit_submissions/{docId} {
+      allow create: if true;
+      allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
   }
 }

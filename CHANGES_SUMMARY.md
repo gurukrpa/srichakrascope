@@ -201,6 +201,74 @@ Page 4:
 
 ---
 
+## Admin Portal & Password Reset Changes
+
+### Date: April 7, 2026
+### Files Modified:
+- `client/src/pages/AdminLogin.tsx`
+- `client/src/contexts/AuthContext.tsx`
+- `functions/index.js`
+
+---
+
+### 1. ✅ "Forgot Password?" Feature Added to Admin Login
+**File:** `client/src/pages/AdminLogin.tsx`
+
+**Added:**
+- "Forgot Password?" link below the login button
+- Toggles to a **Reset Password form** with email input
+- Calls the `sendPasswordReset` Cloud Function (server-side)
+- Shows green success message or red error message
+- "Back to Login" link to return to the login form
+- Placeholder updated to `eswari.srichakra@gmail.com`
+
+---
+
+### 2. ✅ New Admin Email Added
+**File:** `client/src/contexts/AuthContext.tsx`
+
+**Changed:**
+- `ADMIN_EMAILS` array now includes both:
+  - `admin@srichakraacademy.org` (original — no real mailbox)
+  - `eswari.srichakra@gmail.com` (new — real Gmail inbox)
+
+**Note:** `admin@srichakraacademy.org` has no actual email inbox. Use `eswari.srichakra@gmail.com` for login to receive password reset emails.
+
+---
+
+### 3. ✅ `sendPasswordReset` Cloud Function Created
+**File:** `functions/index.js`
+
+**Added:**
+- New callable Cloud Function `sendPasswordReset`
+- Region: `asia-south1`
+- Uses Firebase Admin SDK to generate password reset link (bypasses App Check)
+- Sends the reset link via nodemailer/Gmail with a branded HTML email
+- Uses `GMAIL_EMAIL` and `GMAIL_PASSWORD` secrets
+- Error handling for missing users and invalid inputs
+
+**Why Cloud Function?** Firebase App Check was blocking client-side `sendPasswordResetEmail()` calls, so the reset is routed through a server-side function that bypasses App Check.
+
+---
+
+### 4. ✅ Admin Email Check Updated in Cloud Functions
+**File:** `functions/index.js`
+
+**Changed:**
+- Added `ADMIN_EMAILS` array at the top of the file
+- `bulkRegisterStudents` function now checks against `ADMIN_EMAILS` array instead of a hardcoded single email
+- Both `admin@srichakraacademy.org` and `eswari.srichakra@gmail.com` can perform admin-only operations
+
+---
+
+### Admin Access Summary
+| Email | Login | Forgot Password | Bulk Register |
+|---|---|---|---|
+| `admin@srichakraacademy.org` | ✅ | ❌ (no mailbox) | ✅ |
+| `eswari.srichakra@gmail.com` | ✅ | ✅ (Gmail inbox) | ✅ |
+
+---
+
 ## Technical Notes
 
 - **File Backup:** Original saved as `CareerAssessment.tsx.backup`

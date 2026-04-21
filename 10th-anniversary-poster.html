@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Srichakra Academy - 10th Anniversary Thank You</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: #e8e8e8;
+    font-family: 'Poppins', sans-serif;
+    padding: 30px 20px;
+  }
+
+  .download-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .download-btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+  }
+
+  .download-btn.primary { background: linear-gradient(135deg, #8B1A2B, #6B1520); }
+  .download-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,26,43,0.4); }
+  .download-btn.secondary { background: linear-gradient(135deg, #006D77, #004D55); }
+  .download-btn.secondary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,109,119,0.4); }
+
+  .size-info {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  /* === POSTER === */
+  .poster {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+
+  /* Subtle corner glows */
+  .poster::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 250px; height: 250px;
+    background: radial-gradient(circle at top left, rgba(139,26,43,0.05) 0%, transparent 70%);
+  }
+
+  .poster::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 250px; height: 250px;
+    background: radial-gradient(circle at bottom right, rgba(0,109,119,0.05) 0%, transparent 70%);
+  }
+
+  /* Accent bars */
+  .accent-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #006D77, #C5982A, #8B1A2B);
+  }
+
+  .accent-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #8B1A2B, #C5982A, #006D77);
+  }
+
+  /* Gold border */
+  .border-frame {
+    position: absolute;
+    top: 14px; left: 14px; right: 14px; bottom: 14px;
+    border: 2.5px solid #C5982A;
+    border-radius: 4px;
+  }
+
+  .border-frame::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(197,152,42,0.3);
+    border-radius: 3px;
+  }
+
+  /* Corner ornaments */
+  .corner { position: absolute; width: 50px; height: 50px; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner-tl { top: 22px; left: 22px; }
+  .corner-tr { top: 22px; right: 22px; transform: scaleX(-1); }
+  .corner-bl { bottom: 22px; left: 22px; transform: scaleY(-1); }
+  .corner-br { bottom: 22px; right: 22px; transform: scale(-1,-1); }
+
+  /* Content */
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 44px 60px 38px;
+    text-align: center;
+  }
+
+  /* Logo */
+  .logo-container img {
+    width: 90px;
+    height: auto;
+  }
+
+  /* Anniversary badge */
+  .anniversary-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 6px 0 4px;
+  }
+
+  .badge-line {
+    width: 90px; height: 1.5px;
+    background: linear-gradient(90deg, transparent, #C5982A, transparent);
+  }
+
+  .badge-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: 34px;
+    color: #8B1A2B;
+  }
+
+  /* Years */
+  .years {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #006D77;
+    letter-spacing: 6px;
+  }
+
+  .years span { color: #B8860B; font-size: 24px; }
+
+  /* Decade */
+  .decade-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 130px;
+    font-weight: 900;
+    background: linear-gradient(180deg, #D4AF37 0%, #B8860B 50%, #8B6914 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  .decade-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 14px;
+    text-transform: uppercase;
+    color: #8B1A2B;
+    margin-top: -6px;
+  }
+
+  /* Brand */
+  .brand-name {
+    font-family: 'Georgia', serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: #006D77;
+    margin: 8px 0 0;
+    letter-spacing: 5px;
+  }
+
+  .brand-tagline {
+    font-size: 14px;
+    font-weight: 600;
+    color: #8B1A2B;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .brand-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* === THANK YOU — BIG & LOUD === */
+  .thank-you {
+    font-family: 'Great Vibes', cursive;
+    font-size: 72px;
+    color: #8B1A2B;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  /* Vision / Message — prominent */
+  .message {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.7;
+    color: #333333;
+    max-width: 780px;
+    margin-bottom: 14px;
+  }
+
+  .message strong { font-weight: 800; color: #006D77; }
+
+  /* Stakeholders */
+  .stakeholders {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px 14px;
+    margin-bottom: 16px;
+    max-width: 740px;
+  }
+
+  .stakeholder-tag {
+    background: #FDFAF2;
+    border: 1.5px solid #C5982A;
+    padding: 6px 18px;
+    border-radius: 22px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #8B1A2B;
+  }
+
+  /* Divider */
+  .divider {
+    width: 220px; height: 2px;
+    background: linear-gradient(90deg, transparent, #C5982A 30%, #8B1A2B 70%, transparent);
+    margin: 2px auto 12px;
+  }
+
+  /* Self Discovery tagline */
+  .motto {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    font-style: italic;
+    color: #006D77;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .motto span {
+    color: #B8860B;
+  }
+
+  /* Stepping into */
+  .stepping-into {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    color: #444;
+    font-style: italic;
+  }
+
+  .stepping-into span {
+    color: #8B1A2B;
+    font-weight: 700;
+    font-size: 22px;
+    font-style: normal;
+  }
+
+  /* Website */
+  .website-link {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .website-link a { color: #006D77; text-decoration: none; }
+
+  .trust-line {
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Sparkles */
+  .sparkle { position: absolute; color: #C5982A; font-size: 16px; opacity: 0.3; }
+  .s1 { top: 9%; left: 12%; }
+  .s2 { top: 5%; right: 14%; }
+  .s3 { bottom: 9%; left: 8%; }
+  .s4 { bottom: 5%; right: 12%; }
+  .s5 { top: 50%; left: 3%; }
+  .s6 { top: 50%; right: 3%; }
+
+  @media print {
+    body { background: none; padding: 0; }
+    .poster { box-shadow: none; }
+    .download-bar, .size-info { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="download-bar">
+  <button class="download-btn primary" onclick="downloadPoster('square')">
+    📲 Download for Instagram / Facebook (1080×1080)
+  </button>
+  <button class="download-btn secondary" onclick="downloadPoster('story')">
+    📱 Download for WhatsApp Status / Story (1080×1920)
+  </button>
+</div>
+<div class="size-info">Click any button to save as PNG — ready to post!</div>
+
+<!-- === POSTER === -->
+<div class="poster" id="poster">
+
+  <div class="accent-top"></div>
+  <div class="accent-bottom"></div>
+
+  <div class="sparkle s1">✦</div>
+  <div class="sparkle s2">✦</div>
+  <div class="sparkle s3">✦</div>
+  <div class="sparkle s4">✦</div>
+  <div class="sparkle s5">✦</div>
+  <div class="sparkle s6">✦</div>
+
+  <div class="border-frame"></div>
+
+  <div class="corner corner-tl"><svg viewBox="0 0 60 60" fill="none"><path d="M5 55 Q5 5 55 5" stroke="#C5982A" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="3" fill="#C5982A" opacity="0.4"/></svg></div>
+  <div class="corner corner-tr"><svg viewBox="0 0 60 60" fill="none"><path d="M5 55 Q5 5 55 5" stroke="#C5982A" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="3" fill="#C5982A" opacity="0.4"/></svg></div>
+  <div class="corner corner-bl"><svg viewBox="0 0 60 60" fill="none"><path d="M5 55 Q5 5 55 5" stroke="#C5982A" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="3" fill="#C5982A" opacity="0.4"/></svg></div>
+  <div class="corner corner-br"><svg viewBox="0 0 60 60" fill="none"><path d="M5 55 Q5 5 55 5" stroke="#C5982A" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="3" fill="#C5982A" opacity="0.4"/></svg></div>
+
+  <div class="content">
+
+    <div class="logo-container">
+      <img src="client/public/images/srichakra-logo.png" alt="Srichakra Academy" />
+    </div>
+
+    <div class="anniversary-badge">
+      <div class="badge-line"></div>
+      <div class="badge-text">Celebrating</div>
+      <div class="badge-line"></div>
+    </div>
+
+    <div class="years"><span>2016</span> &mdash; <span>2026</span></div>
+
+    <div>
+      <div class="decade-number">10</div>
+      <div class="decade-label">Glorious Years</div>
+    </div>
+
+    <div class="brand-name">Srichakra Academy</div>
+    <div class="brand-tagline">"To Identify Your Child's Divine Gift!"</div>
+    <div class="brand-subtitle">Educational Support Provider &bull; From School to University Admission</div>
+
+    <!-- === LOUD THANK YOU === -->
+    <div class="thank-you">Thank You!</div>
+
+    <div class="message">
+      A decade of <strong>identifying and nurturing every child's divine gift</strong>.
+      None of this would have been possible without your unwavering
+      trust, support, and belief in our mission.
+    </div>
+
+    <div class="stakeholders">
+      <span class="stakeholder-tag">🙏 Parents</span>
+      <span class="stakeholder-tag">🎓 Students</span>
+      <span class="stakeholder-tag">🏫 Schools</span>
+      <span class="stakeholder-tag">👨‍🏫 Teachers</span>
+      <span class="stakeholder-tag">🤝 Friends & Family</span>
+      <span class="stakeholder-tag">💛 Well-Wishers & Partners</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="motto">"<span>Self Discovery</span> to <span>Success</span>"</div>
+
+    <div class="stepping-into">Proudly stepping into our <span>11th Year</span></div>
+
+    <div class="website-link">
+      <a href="https://srichakraacademy.org">🌐 www.srichakraacademy.org</a>
+    </div>
+    <div class="trust-line">A Unit of SriKrpa Foundation Trust</div>
+  </div>
+</div>
+
+<script>
+async function downloadPoster(format) {
+  const poster = document.getElementById('poster');
+  const btn = event.target.closest('button');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ Generating...';
+  btn.disabled = true;
+
+  try {
+    const canvas = await html2canvas(poster, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#FFFFFF',
+      width: 1080,
+      height: 1080,
+      windowWidth: 1080,
+      windowHeight: 1080
+    });
+
+    if (format === 'story') {
+      const sc = document.createElement('canvas');
+      sc.width = 1080 * 2;
+      sc.height = 1920 * 2;
+      const ctx = sc.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, sc.width, sc.height);
+
+      const topG = ctx.createLinearGradient(0, 0, sc.width, 0);
+      topG.addColorStop(0, '#006D77');
+      topG.addColorStop(0.5, '#C5982A');
+      topG.addColorStop(1, '#8B1A2B');
+      ctx.fillStyle = topG;
+      ctx.fillRect(0, 0, sc.width, 12);
+
+      const botG = ctx.createLinearGradient(0, 0, sc.width, 0);
+      botG.addColorStop(0, '#8B1A2B');
+      botG.addColorStop(0.5, '#C5982A');
+      botG.addColorStop(1, '#006D77');
+      ctx.fillStyle = botG;
+      ctx.fillRect(0, sc.height - 12, sc.width, 12);
+
+      ctx.drawImage(canvas, 0, (sc.height - canvas.height) / 2);
+
+      const a = document.createElement('a');
+      a.download = 'Srichakra_10th_Anniversary_Story.png';
+      a.href = sc.toDataURL('image/png');
+      a.click();
+    } else {
+      const a = document.createElement('a');
+      a.download = 'Srichakra_10th_Anniversary.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Use Win+Shift+S to screenshot the poster');
+  }
+
+  btn.innerHTML = originalText;
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>

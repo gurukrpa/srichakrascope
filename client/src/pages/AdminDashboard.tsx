@@ -18,7 +18,10 @@ import { db, auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
 import CareerAssessment from './CareerAssessment';
+import MIAssessment from './MIAssessment';
 import type { ReportData } from './reportTemplate';
+import { CAREER_CLUSTERS, getClustersByStream, getClusterStats, type StreamName } from '../data/careerClusters';
+import { SPECIALIZED_REPOSITORIES, getSpecializedStats, type SpecializedRepository } from '../data/specializedRepositories';
 
 interface StudentRecord {
   uid: string;
@@ -440,6 +443,8 @@ const AdminDashboard: React.FC = () => {
     { id: 'bulk-register', icon: '📋', label: 'Bulk Register' },
     { id: 'enquiries', icon: '📩', label: 'Enquiries' },
     { id: 'reports', icon: '📄', label: 'Reports' },
+    { id: 'career-repo', icon: '🎯', label: 'Career Repository' },
+    { id: 'mi-assessment', icon: '🧠', label: 'MI Assessment' },
     { id: 'analytics', icon: '📊', label: 'Analytics' },
     { id: 'settings', icon: '⚙️', label: 'Settings' },
   ];
@@ -831,6 +836,304 @@ const AdminDashboard: React.FC = () => {
           )}
 
           {/* ── Enquiries Section ── */}
+          {activeSection === 'career-repo' && (() => {
+            const stats = getClusterStats();
+            const streams: StreamName[] = ['Science', 'Commerce', 'Arts / Humanities'];
+
+            const exportCSV = () => {
+              const rows: string[] = ['Stream,Cluster,Role,Description,Qualifications,Entrance Exams,Salary Range (LPA),Growth Outlook,Key Skills,Recommended Subjects'];
+              for (const cluster of CAREER_CLUSTERS) {
+                for (const p of cluster.pathways) {
+                  const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
+                  rows.push([
+                    esc(cluster.streams.join(' / ')),
+                    esc(cluster.name),
+                    esc(p.role),
+                    esc(p.description),
+                    esc(p.qualifications.join('; ')),
+                    esc(p.entranceExams.join('; ')),
+                    esc(p.salaryRange),
+                    esc(p.growthOutlook),
+                    esc(cluster.keySkills.join('; ')),
+                    esc(cluster.recommendedSubjects.join('; ')),
+                  ].join(','));
+                }
+              }
+              const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `Srichakra_Career_Repository_${new Date().toISOString().slice(0, 10)}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            };
+
+            const printRepo = () => {
+              const printWindow = window.open('', '_blank');
+              if (!printWindow) return;
+              let html = `<html><head><title>Srichakra Career Repository</title><style>
+                body { font-family: 'Segoe UI', sans-serif; padding: 20px; color: #333; }
+                h1 { color: #006D77; } h2 { color: #006D77; margin-top: 30px; border-bottom: 2px solid #006D77; padding-bottom: 4px; }
+                h3 { color: #E29578; margin-top: 20px; }
+                table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 0.9em; }
+                th { background: #006D77; color: #fff; padding: 8px 10px; text-align: left; }
+                td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; }
+                tr:nth-child(even) { background: #f8f9fa; }
+                .badge-high { color: #38a169; font-weight: 600; } .badge-mod { color: #d69e2e; font-weight: 600; } .badge-stable { color: #718096; font-weight: 600; }
+                @media print { body { padding: 0; } }
+              </style></head><body>`;
+              html += `<h1>Srichakra Career Repository</h1>`;
+              html += `<p><strong>${stats.totalClusters} Clusters</strong> | <strong>${stats.totalPathways} Career Pathways</strong> | Science: ${stats.byStream['Science']} | Commerce: ${stats.byStream['Commerce']} | Arts: ${stats.byStream['Arts / Humanities']}</p>`;
+
+              for (const stream of streams) {
+                html += `<h2>${stream} Stream</h2>`;
+                const clusters = getClustersByStream(stream);
+                for (const cluster of clusters) {
+                  html += `<h3>${cluster.icon} ${cluster.name}</h3>`;
+                  html += `<p><strong>Key Skills:</strong> ${cluster.keySkills.join(', ')}</p>`;
+                  html += `<p><strong>Recommended Subjects:</strong> ${cluster.recommendedSubjects.join(', ')}</p>`;
+                  html += `<table><thead><tr><th>Role</th><th>Description</th><th>Qualifications</th><th>Entrance Exams</th><th>Salary</th><th>Growth</th></tr></thead><tbody>`;
+                  for (const p of cluster.pathways) {
+                    const gc = p.growthOutlook === 'High' ? 'badge-high' : p.growthOutlook === 'Moderate' ? 'badge-mod' : 'badge-stable';
+                    html += `<tr><td><strong>${p.role}</strong></td><td>${p.description}</td><td>${p.qualifications.join('; ')}</td><td>${p.entranceExams.join('; ')}</td><td>${p.salaryRange}</td><td class="${gc}">${p.growthOutlook}</td></tr>`;
+                  }
+                  html += `</tbody></table>`;
+                }
+              }
+              html += `</body></html>`;
+              printWindow.document.write(html);
+              printWindow.document.close();
+              printWindow.print();
+            };
+
+            return (
+            <div>
+              {/* Header with export buttons */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap' as const, gap: 12 }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.2em', fontWeight: 700, color: '#2d3748' }}>🎯 Career Repository</h2>
+                  <p style={{ margin: '4px 0 0', color: '#718096', fontSize: '0.9em' }}>
+                    {stats.totalClusters} Clusters · {stats.totalPathways} Career Pathways · All Indian context
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button onClick={exportCSV} style={{ padding: '8px 18px', background: '#38a169', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9em' }}>
+                    📥 Export CSV
+                  </button>
+                  <button onClick={printRepo} style={{ padding: '8px 18px', background: '#006D77', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9em' }}>
+                    🖨️ Print / PDF
+                  </button>
+                </div>
+              </div>
+
+              {/* Stream-wise sections */}
+              {streams.map((stream) => {
+                const clusters = getClustersByStream(stream);
+                return (
+                  <div key={stream} style={{ marginBottom: 30 }}>
+                    <h3 style={{ color: '#006D77', borderBottom: '2px solid #006D77', paddingBottom: 6, marginBottom: 16 }}>
+                      {stream === 'Science' ? '🔬' : stream === 'Commerce' ? '💰' : '📚'} {stream} Stream ({clusters.length} clusters)
+                    </h3>
+                    {clusters.map((cluster) => (
+                      <div key={cluster.name} style={{ marginBottom: 20, background: '#f8f9fa', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                          <h4 style={{ margin: 0, color: '#2d3748' }}>{cluster.icon} {cluster.name}</h4>
+                          <span style={{ fontSize: '0.8em', color: '#718096' }}>{cluster.pathways.length} pathways</span>
+                        </div>
+                        <p style={{ margin: '4px 0 8px', fontSize: '0.9em', color: '#555' }}>{cluster.description}</p>
+                        <div style={{ fontSize: '0.85em', color: '#718096', marginBottom: 8 }}>
+                          <strong>Skills:</strong> {cluster.keySkills.join(', ')} · <strong>Subjects:</strong> {cluster.recommendedSubjects.join(', ')}
+                        </div>
+                        <div style={{ overflowX: 'auto' as const }}>
+                          <table style={{ ...s.table, fontSize: '0.85em' }}>
+                            <thead>
+                              <tr>
+                                <th style={{ ...s.th, padding: '6px 8px' }}>Role</th>
+                                <th style={{ ...s.th, padding: '6px 8px' }}>Qualifications</th>
+                                <th style={{ ...s.th, padding: '6px 8px' }}>Entrance Exams</th>
+                                <th style={{ ...s.th, padding: '6px 8px' }}>Salary (LPA)</th>
+                                <th style={{ ...s.th, padding: '6px 8px' }}>Growth</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {cluster.pathways.map((p, i) => (
+                                <tr key={p.role} style={i % 2 === 0 ? { background: '#fff' } : {}}>
+                                  <td style={{ ...s.td, padding: '6px 8px', fontWeight: 600 }}>{p.role}</td>
+                                  <td style={{ ...s.td, padding: '6px 8px', fontSize: '0.9em' }}>{p.qualifications.join('; ')}</td>
+                                  <td style={{ ...s.td, padding: '6px 8px', fontSize: '0.9em' }}>{p.entranceExams.join('; ')}</td>
+                                  <td style={{ ...s.td, padding: '6px 8px' }}>{p.salaryRange}</td>
+                                  <td style={{ ...s.td, padding: '6px 8px' }}>
+                                    <span style={{ color: p.growthOutlook === 'High' ? '#38a169' : p.growthOutlook === 'Moderate' ? '#d69e2e' : '#718096', fontWeight: 600 }}>
+                                      {p.growthOutlook === 'High' ? '🟢' : p.growthOutlook === 'Moderate' ? '🟡' : '🔵'} {p.growthOutlook}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+
+              {/* ── Specialized Repositories ── */}
+              <div style={{ marginTop: 40, borderTop: '3px solid #006D77', paddingTop: 30 }}>
+                <h2 style={{ margin: '0 0 8px', fontSize: '1.2em', fontWeight: 700, color: '#2d3748' }}>📌 Specialized Deep-Dive Repositories</h2>
+                <p style={{ margin: '0 0 20px', color: '#718096', fontSize: '0.9em' }}>
+                  {getSpecializedStats().map(s2 => `${s2.icon} ${s2.title}: ${s2.totalClusters} clusters, ${s2.totalPathways} pathways`).join(' · ')}
+                </p>
+
+                {SPECIALIZED_REPOSITORIES.map((repo: SpecializedRepository) => {
+                  const exportSpecializedCSV = () => {
+                    const rows: string[] = ['Repository,Cluster,Role,Description,Qualifications,Entrance Exams,Top Institutions,Salary Range (LPA),Growth Outlook,Eligible Streams,Category,Key Skills'];
+                    for (const cluster of repo.clusters) {
+                      for (const p of cluster.pathways) {
+                        const esc = (val: string) => `"${val.replace(/"/g, '""')}"`;
+                        rows.push([
+                          esc(repo.title),
+                          esc(cluster.name),
+                          esc(p.role),
+                          esc(p.description),
+                          esc(p.qualifications.join('; ')),
+                          esc(p.entranceExams.join('; ')),
+                          esc(p.topInstitutions.join('; ')),
+                          esc(p.salaryRange),
+                          esc(p.growthOutlook),
+                          esc(p.eligibleStreams.join('; ')),
+                          esc(p.category),
+                          esc(cluster.keySkills.join('; ')),
+                        ].join(','));
+                      }
+                    }
+                    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Srichakra_${repo.title.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  };
+
+                  const printSpecialized = () => {
+                    const pw = window.open('', '_blank');
+                    if (!pw) return;
+                    let html = `<html><head><title>${repo.title}</title><style>
+                      body { font-family: 'Segoe UI', sans-serif; padding: 20px; color: #333; }
+                      h1 { color: #006D77; } h2 { color: #006D77; margin-top: 30px; border-bottom: 2px solid #006D77; padding-bottom: 4px; }
+                      h3 { color: #E29578; margin-top: 20px; }
+                      table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 0.85em; }
+                      th { background: #006D77; color: #fff; padding: 8px 10px; text-align: left; }
+                      td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; }
+                      tr:nth-child(even) { background: #f8f9fa; }
+                      .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 600; }
+                      .emerging { background: #c6f6d5; color: #276749; } .traditional { background: #e2e8f0; color: #4a5568; } .hybrid { background: #fefcbf; color: #975a16; }
+                      .high { color: #38a169; } .moderate { color: #d69e2e; } .stable { color: #718096; }
+                      @media print { body { padding: 0; } }
+                    </style></head><body>`;
+                    html += `<h1>${repo.icon} ${repo.title}</h1><p>${repo.description}</p>`;
+                    for (const cluster of repo.clusters) {
+                      html += `<h2>${cluster.icon} ${cluster.name}</h2><p>${cluster.description}</p>`;
+                      html += `<p><strong>Key Skills:</strong> ${cluster.keySkills.join(', ')}</p>`;
+                      html += `<table><thead><tr><th>Role</th><th>Description</th><th>Qualifications</th><th>Entrance Exams</th><th>Top Institutions</th><th>Salary</th><th>Growth</th><th>Streams</th><th>Type</th></tr></thead><tbody>`;
+                      for (const p of cluster.pathways) {
+                        html += `<tr><td><strong>${p.role}</strong></td><td>${p.description}</td><td>${p.qualifications.join('; ')}</td><td>${p.entranceExams.join('; ')}</td><td>${p.topInstitutions.join('; ')}</td><td>${p.salaryRange}</td><td class="${p.growthOutlook.toLowerCase()}">${p.growthOutlook}</td><td>${p.eligibleStreams.join('; ')}</td><td><span class="badge ${p.category.toLowerCase()}">${p.category}</span></td></tr>`;
+                      }
+                      html += `</tbody></table>`;
+                    }
+                    html += `</body></html>`;
+                    pw.document.write(html);
+                    pw.document.close();
+                    pw.print();
+                  };
+
+                  return (
+                    <div key={repo.title} style={{ marginBottom: 30, border: '2px solid #E29578', borderRadius: 10, overflow: 'hidden' }}>
+                      {/* Repo header */}
+                      <div style={{ background: 'linear-gradient(135deg, #006D77, #83C5BE)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: 10 }}>
+                        <div>
+                          <h3 style={{ margin: 0, color: '#fff', fontSize: '1.1em' }}>{repo.icon} {repo.title}</h3>
+                          <p style={{ margin: '2px 0 0', color: '#e0f2f1', fontSize: '0.85em' }}>{repo.subtitle}</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button onClick={exportSpecializedCSV} style={{ padding: '6px 14px', background: '#38a169', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontWeight: 600, fontSize: '0.8em' }}>
+                            📥 CSV
+                          </button>
+                          <button onClick={printSpecialized} style={{ padding: '6px 14px', background: '#fff', color: '#006D77', border: 'none', borderRadius: 5, cursor: 'pointer', fontWeight: 600, fontSize: '0.8em' }}>
+                            🖨️ Print
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Repo description */}
+                      <div style={{ padding: '12px 20px', background: '#f0f7f8', fontSize: '0.9em', color: '#555', lineHeight: 1.6 }}>
+                        {repo.description}
+                      </div>
+
+                      {/* Clusters */}
+                      <div style={{ padding: '0 16px 16px' }}>
+                        {repo.clusters.map((cluster) => (
+                          <div key={cluster.name} style={{ marginTop: 16, background: '#f8f9fa', borderRadius: 8, padding: 14, border: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                              <h4 style={{ margin: 0, color: '#2d3748', fontSize: '1em' }}>{cluster.icon} {cluster.name}</h4>
+                              <span style={{ fontSize: '0.75em', color: '#718096' }}>{cluster.pathways.length} pathways</span>
+                            </div>
+                            <p style={{ margin: '2px 0 8px', fontSize: '0.85em', color: '#666' }}>{cluster.description}</p>
+                            <div style={{ fontSize: '0.8em', color: '#718096', marginBottom: 8 }}>
+                              <strong>Skills:</strong> {cluster.keySkills.join(', ')}
+                            </div>
+                            <div style={{ overflowX: 'auto' as const }}>
+                              <table style={{ ...s.table, fontSize: '0.8em' }}>
+                                <thead>
+                                  <tr>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Role</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Qualifications</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Entrance Exams</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Top Institutions</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Salary</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Growth</th>
+                                    <th style={{ ...s.th, padding: '5px 7px' }}>Type</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {cluster.pathways.map((p, i) => (
+                                    <tr key={p.role} style={i % 2 === 0 ? { background: '#fff' } : {}}>
+                                      <td style={{ ...s.td, padding: '5px 7px', fontWeight: 600 }}>{p.role}</td>
+                                      <td style={{ ...s.td, padding: '5px 7px', fontSize: '0.9em' }}>{p.qualifications.join('; ')}</td>
+                                      <td style={{ ...s.td, padding: '5px 7px', fontSize: '0.9em' }}>{p.entranceExams.join('; ')}</td>
+                                      <td style={{ ...s.td, padding: '5px 7px', fontSize: '0.9em' }}>{p.topInstitutions.join('; ')}</td>
+                                      <td style={{ ...s.td, padding: '5px 7px' }}>{p.salaryRange}</td>
+                                      <td style={{ ...s.td, padding: '5px 7px' }}>
+                                        <span style={{ color: p.growthOutlook === 'High' ? '#38a169' : p.growthOutlook === 'Moderate' ? '#d69e2e' : '#718096', fontWeight: 600 }}>
+                                          {p.growthOutlook === 'High' ? '🟢' : p.growthOutlook === 'Moderate' ? '🟡' : '🔵'} {p.growthOutlook}
+                                        </span>
+                                      </td>
+                                      <td style={{ ...s.td, padding: '5px 7px' }}>
+                                        <span style={{
+                                          display: 'inline-block', padding: '1px 8px', borderRadius: 10, fontSize: '0.8em', fontWeight: 600,
+                                          background: p.category === 'Emerging' ? '#c6f6d5' : p.category === 'Hybrid' ? '#fefcbf' : '#e2e8f0',
+                                          color: p.category === 'Emerging' ? '#276749' : p.category === 'Hybrid' ? '#975a16' : '#4a5568',
+                                        }}>
+                                          {p.category}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            );
+          })()}
+
           {activeSection === 'enquiries' && (
             <div style={s.tableCard}>
               <div style={s.tableHeader}>
@@ -899,6 +1202,9 @@ const AdminDashboard: React.FC = () => {
               )}
             </div>
           )}
+
+          {/* MI Assessment Section */}
+          {activeSection === 'mi-assessment' && <MIAssessment />}
 
           {/* Overview Cards */}
           <div style={s.cardGrid}>

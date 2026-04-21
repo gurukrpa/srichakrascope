@@ -9,6 +9,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
+import { getStorage as _getStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 const firebaseConfig = {
@@ -23,6 +24,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+// Enable App Check debug mode in development
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
 // Initialize App Check with reCAPTCHA v3 to protect backend resources
 if (typeof window !== 'undefined') {
   initializeAppCheck(app, {
@@ -34,4 +40,5 @@ if (typeof window !== 'undefined') {
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app, 'asia-south1');
+export const storage = _getStorage(app);
 export default app;

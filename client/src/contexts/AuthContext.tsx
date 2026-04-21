@@ -51,7 +51,7 @@ export function useAuth() {
 /** Admin email addresses — hardcoded for simplicity */
 const ADMIN_EMAILS = [
   'admin@srichakraacademy.org',
-  // Add more admin emails as needed
+  'eswari.srichakra@gmail.com',
 ];
 
 export function AuthProvider({ children }: { children: ReactNode }) {

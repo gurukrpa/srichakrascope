@@ -26,6 +26,15 @@ import type { ReportData } from './reportTemplate';
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../components/ui/dialog';
+import { Button } from '../components/ui/button';
 
 // ────────────────────────────────────────────
 // Constants
@@ -125,30 +134,70 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   });
 
   // ── State ──
-  const [phase, setPhase] = useState<'name' | 'aptitude' | 'preference' | 'submitting'>(
-    _saved.phase === 'submitting' ? 'name' : _saved.phase || 'name'
-  );
-  const [studentName, setStudentName] = useState(_saved.studentName || '');
-  const [currentIndex, setCurrentIndex] = useState(_saved.currentIndex || 0);
-  const [aptitudeAnswers, setAptitudeAnswers] = useState<Record<number, number>>(_saved.aptitudeAnswers || {});
-  const [preferenceAnswers, setPreferenceAnswers] = useState<Record<number, number>>(_saved.preferenceAnswers || {});
-  const [startTime] = useState(Date.now());
-  const [elapsed, setElapsed] = useState(0);
+  const [assessmentState, setAssessmentState] = useState<AssessmentState>(() => {
+    const savedState = localStorage.getItem('assessmentState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      const timeSinceLastSave = new Date().getTime() - new Date(parsedState.timestamp).getTime();
+      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
 
-  // ── Persist progress on every change ──
-  useEffect(() => {
-    if (phase !== 'submitting') {
-      localStorage.setItem(PROGRESS_KEY, encodeProgress({
-        phase, studentName, currentIndex, aptitudeAnswers, preferenceAnswers,
-      }));
+      if (timeSinceLastSave < threeDaysInMillis) {
+        return parsedState.state;
+      } else {
+        // If it's been more than 3 days, clear the old state
+        localStorage.removeItem('assessmentState');
+        return {
+          studentName: '',
+          answers: [],
+          startTime: null,
+        };
+      }
     }
-  }, [phase, studentName, currentIndex, aptitudeAnswers, preferenceAnswers]);
+    return {
+      studentName: '',
+      answers: [],
+      startTime: null,
+    };
+  });
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [showReport, setShowReport] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
 
-  // Timer
+
+  const allQuestions: Question[] = useMemo(() => {
+    return [...APTITUDE_QUESTIONS, ...PREFERENCE_QUESTIONS];
+  }, []);
+
   useEffect(() => {
-    const timer = setInterval(() => setElapsed(Date.now() - startTime), 1000);
+    const savedState = localStorage.getItem('assessmentState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      const timeSinceLastSave = new Date().getTime() - new Date(parsedState.timestamp).getTime();
+      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
+
+      if (timeSinceLastSave < threeDaysInMillis) {
+        setAssessmentState(parsedState.state);
+        setCurrentQuestionIndex(parsedState.state.answers.length);
+        setStartTime(new Date(parsedState.state.startTime));
+        setShowInstructions(false); // Skip instructions if resuming
+      } else {
+        // If it's been more than 3 days, clear the old state
+        localStorage.removeItem('assessmentState');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (showReport && isFinished) {
+        setElapsed(Date.now() - startTime);
+      }
+    }, 1000);
     return () => clearInterval(timer);
-  }, [startTime]);
+  }, [showReport, isFinished, startTime]);
 
   const formatTime = (ms: number) => {
     const s = Math.floor(ms / 1000);
@@ -157,30 +206,37 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  // ── Current question ──
-  const questions = phase === 'aptitude' ? APTITUDE_QUESTIONS : PREFERENCE_QUESTIONS;
-  const currentQ = questions[currentIndex];
-  const answers = phase === 'aptitude' ? aptitudeAnswers : preferenceAnswers;
-  const totalQuestions = APTITUDE_QUESTIONS.length + PREFERENCE_QUESTIONS.length;
-  const answeredCount = Object.keys(aptitudeAnswers).length + Object.keys(preferenceAnswers).length;
-  const globalIndex = phase === 'aptitude' ? currentIndex : APTITUDE_QUESTIONS.length + currentIndex;
+  const handleStart = () => {
+    const studentName = assessmentState.studentName.trim();
+    if (studentName) {
+      setShowInstructions(false);
+      const newStartTime = new Date();
+      setStartTime(newStartTime);
+      setAssessmentState(prevState => ({ ...prevState, startTime: newStartTime.toISOString() }));
+    } else {
+      alert('Please enter your name to start the assessment.');
+    }
+  };
 
-  // ── Handlers ──
-  const handleAptitudeSelect = useCallback((qId: number, optionIndex: number) => {
-    setAptitudeAnswers((prev) => ({ ...prev, [qId]: optionIndex }));
-  }, []);
-
-  const handlePreferenceSelect = useCallback((qId: number, value: number) => {
-    setPreferenceAnswers((prev) => ({ ...prev, [qId]: value }));
-  }, []);
+  const handleAnswer = (answer: number | number[]) => {
+    setAssessmentState(prevState => {
+      const newAnswers = { ...prevState.answers };
+      if (phase === 'aptitude') {
+        newAnswers[currentQuestionIndex] = answer;
+      } else {
+        newAnswers[currentQuestionIndex] = answer;
+      }
+      return { ...prevState, answers: newAnswers };
+    });
+  };
 
   const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    if (currentQuestionIndex < allQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else if (phase === 'aptitude') {
       // Move to preference section
       setPhase('preference');
-      setCurrentIndex(0);
+      setCurrentQuestionIndex(0);
     } else {
       // Submit
       handleSubmit();
@@ -188,11 +244,11 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
   };
 
   const handleBack = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     } else if (phase === 'preference') {
       setPhase('aptitude');
-      setCurrentIndex(APTITUDE_QUESTIONS.length - 1);
+      setCurrentQuestionIndex(APTITUDE_QUESTIONS.length - 1);
     }
   };
 
@@ -336,12 +392,34 @@ const Assessment: React.FC<AssessmentProps> = ({ onComplete }) => {
               <li><strong>Part 2:</strong> 60 self-report preference questions (no right or wrong answers)</li>
             </ul>
             <p style={{ color: '#555', lineHeight: 1.7, fontSize: '1.0em' }}>
-              Estimated time: <strong>25–35 minutes</strong>. Answer honestly for the best results.
+              Estimated time: <strong>25–35 minutes</strong>.
             </p>
+
+            <div style={{ background: '#f0f8f8', border: '1px solid #b2d8d8', borderRadius: 10, padding: '14px 18px', marginTop: 16 }}>
+              <p style={{ margin: '0 0 8px', color: '#006D77', fontSize: '0.95em', fontWeight: 700 }}>
+                📋 Instructions — Please read before you begin:
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '18px', color: '#444', fontSize: '0.92em', lineHeight: 1.9 }}>
+                <li>Find a <strong>quiet place</strong> free from distractions before starting.</li>
+                <li>Read each question <strong>carefully</strong> and pay full attention.</li>
+                <li>Answer every question <strong>genuinely and honestly</strong> — there are no right or wrong answers in Part 2.</li>
+                <li>Do <strong>not</strong> rush. Take your time to think before selecting an answer.</li>
+                <li>Do <strong>not</strong> seek help from others — your responses should reflect <strong>your own</strong> thoughts and preferences.</li>
+              </ul>
+            </div>
+
             <div style={{ background: '#fff8f0', border: '1px solid #f0d8c0', borderRadius: 10, padding: '12px 16px', marginTop: 14 }}>
               <p style={{ margin: 0, color: '#8B6914', fontSize: '0.93em', lineHeight: 1.6 }}>
                 ⚠️ <strong>Important:</strong> You can only take this assessment <strong>once</strong>.
                 If you leave mid-way, you can resume within <strong>3 days</strong>. After that, the assessment will expire.
+              </p>
+            </div>
+
+            <div style={{ background: '#f5f0fa', border: '1px solid #d8cce8', borderRadius: 10, padding: '12px 16px', marginTop: 14 }}>
+              <p style={{ margin: 0, color: '#6B5B80', fontSize: '0.88em', lineHeight: 1.6 }}>
+                📌 <strong>Disclaimer:</strong> The assessment report and its outcomes are generated <strong>entirely based on your responses</strong>.
+                The accuracy and relevance of the results depend on how honestly and attentively you answer. This report is meant for
+                guidance purposes only and should not be considered a definitive evaluation of ability or potential.
               </p>
             </div>
           </div>

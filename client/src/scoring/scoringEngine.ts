@@ -11,11 +11,13 @@
 import {
   APTITUDE_QUESTIONS,
   PREFERENCE_QUESTIONS,
-  type AptitudeDomain,
-  type PreferenceDomain,
+  AptitudeQuestion,
+  AptitudeDomain,
+  PreferenceDomain,
 } from '../data/questionBank';
 import type { ReportData } from '../pages/reportTemplate';
 import { CAREER_CLUSTERS, scoreClusterMatch } from '../data/careerClusters';
+import { estimateAbility } from './irt';
 
 // ────────────────────────────────────────────
 // Types
@@ -30,18 +32,16 @@ export interface RawAnswers {
 }
 
 // ────────────────────────────────────────────
-// Aptitude Scoring
+// Aptitude Scoring (IRT-based)
 // ────────────────────────────────────────────
 
 interface AptitudeResult {
-  domain: string;
-  score: number;       // percentage 0-100
-  maxScore: number;
-  correct: number;
-  total: number;
+  domain: AptitudeDomain;
+  theta: number; // The student's estimated ability level (-3 to 3)
+  score: number; // A user-friendly percentile score (0-100)
+  level: 'Developing' | 'Moderate' | 'Strong' | 'Exceptional';
+  readiness: 'EXPLORATORY' | 'WITH DEVELOPMENT' | 'READY NOW';
   skills: string;
-  level: string;
-  readiness: string;
 }
 
 const APTITUDE_SKILLS: Record<AptitudeDomain, string> = {
@@ -50,6 +50,31 @@ const APTITUDE_SKILLS: Record<AptitudeDomain, string> = {
   'Verbal Ability': 'Reading comprehension, vocabulary, grammar',
   'Spatial Intelligence': 'Visual-spatial reasoning, mental rotation, design',
 };
+
+/**
+ * Converts a theta score (from IRT, typically -3 to +3) to a more intuitive
+ * percentile-like score (0-100) using a standard normal distribution's CDF.
+ */
+function thetaToPercentile(theta: number): number {
+  // A simplified error function approximation for the CDF of a normal distribution
+  const erf = (x: number) => {
+    const a1 = 0.254829592;
+    const a2 = -0.284496736;
+    const a3 = 1.421413741;
+    const a4 = -1.453152027;
+    const a5 = 1.061405429;
+    const p = 0.3275911;
+    const sign = x >= 0 ? 1 : -1;
+    const t = 1.0 / (1.0 + p * Math.abs(x));
+    const poly = t * (a1 + t * (a2 + t * (a3 + t * (a4 + t * a5))));
+    const result = 1.0 - poly * Math.exp(-x * x);
+    return sign * result;
+  };
+
+  const cdf = 0.5 * (1 + erf(theta / Math.sqrt(2)));
+  return Math.round(cdf * 100);
+}
+
 
 function scoreAptitude(answers: Record<number, number>): AptitudeResult[] {
   const domains: AptitudeDomain[] = [
@@ -60,26 +85,29 @@ function scoreAptitude(answers: Record<number, number>): AptitudeResult[] {
   ];
 
   return domains.map((domain) => {
-    const qs = APTITUDE_QUESTIONS.filter((q) => q.domain === domain);
-    const total = qs.length;
-    const correct = qs.filter(
-      (q) => answers[q.id] === q.correctIndex
-    ).length;
-    const score = Math.round((correct / total) * 100);
+    const domainQuestions = APTITUDE_QUESTIONS.filter((q) => q.domain === domain);
+
+    const domainAnswers = domainQuestions.map(q => ({
+      question: q,
+      isCorrect: answers[q.id] === q.correctIndex,
+    })).filter(a => answers.hasOwnProperty(a.question.id)); // Only include answered questions
+
+    // Estimate ability (theta) using the IRT engine
+    const theta = estimateAbility(domainAnswers);
+    const score = thetaToPercentile(theta);
+
     const level =
-      score >= 75 ? 'Strong' : score >= 50 ? 'Moderate' : 'Developing';
+      score >= 90 ? 'Exceptional' : score >= 75 ? 'Strong' : score >= 50 ? 'Moderate' : 'Developing';
     const readiness =
       score >= 75 ? 'READY NOW' : score >= 50 ? 'WITH DEVELOPMENT' : 'EXPLORATORY';
 
     return {
       domain,
+      theta,
       score,
-      maxScore: 100,
-      correct,
-      total,
-      skills: APTITUDE_SKILLS[domain],
       level,
       readiness,
+      skills: APTITUDE_SKILLS[domain],
     };
   });
 }
@@ -430,33 +458,35 @@ function checkConsistency(answers: Record<number, number>): {
 } {
   const flags: string[] = [];
   let contradictions = 0;
+  const totalPairs = 5;
 
-  // Pair 1: Teamwork vs. Solo work (IDs 361, 362)
-  const answer1A = answers[361] || 3;
-  const answer1B = answers[362] || 3;
-  // Contradiction if user agrees/disagrees with both
-  if ((answer1A >= 4 && answer1B >= 4) || (answer1A <= 2 && answer1B <= 2)) {
-    contradictions++;
-    flags.push('Contradictory answers on teamwork vs. solo work preference.');
+  // Define mirror question pairs
+  const pairs = [
+    { id1: 361, id2: 362, msg: 'Contradictory answers on teamwork vs. solo work preference.' },
+    { id1: 363, id2: 364, msg: 'Contradictory answers on preference for schedule vs. spontaneity.' },
+    { id1: 365, id2: 366, msg: 'Contradictory answers on creative brainstorming vs. practical tasks.' },
+    { id1: 367, id2: 368, msg: 'Contradictory answers on intuitive vs. analytical decision-making.' },
+    { id1: 373, id2: 374, msg: 'Contradictory answers on being outgoing vs. quiet with strangers.' },
+  ];
+
+  for (const pair of pairs) {
+    const answer1 = answers[pair.id1];
+    const answer2 = answers[pair.id2];
+
+    // Check for contradiction if both questions were answered
+    if (answer1 !== undefined && answer2 !== undefined) {
+      // A contradiction exists if the user agrees/disagrees with both opposing statements
+      const isContradictory = (answer1 >= 4 && answer2 >= 4) || (answer1 <= 2 && answer2 <= 2);
+      if (isContradictory) {
+        contradictions++;
+        flags.push(pair.msg);
+      }
+    }
   }
 
-  // Pair 2: Schedule vs. Spontaneity (IDs 363, 364)
-  const answer2A = answers[363] || 3;
-  const answer2B = answers[364] || 3;
-  if ((answer2A >= 4 && answer2B >= 4) || (answer2A <= 2 && answer2B <= 2)) {
-    contradictions++;
-    flags.push('Contradictory answers on preference for schedule vs. spontaneity.');
-  }
+  const contradictionRate = contradictions / totalPairs;
+  const level = contradictionRate === 0 ? 'High' : contradictionRate <= 0.4 ? 'Medium' : 'Low';
 
-  // Pair 3: Creative vs. Practical (IDs 365, 366)
-  const answer3A = answers[365] || 3;
-  const answer3B = answers[366] || 3;
-  if ((answer3A >= 4 && answer3B >= 4) || (answer3A <= 2 && answer3B <= 2)) {
-    contradictions++;
-    flags.push('Contradictory answers on creative brainstorming vs. practical tasks.');
-  }
-
-  const level = contradictions === 0 ? 'High' : contradictions === 1 ? 'Medium' : 'Low';
   return { level, flags };
 }
 
@@ -478,7 +508,7 @@ export function buildReportFromAnswers(raw: RawAnswers): ReportData {
 
   const totalAnswered =
     Object.keys(raw.aptitude).length + Object.keys(raw.preference).length;
-  const completionRate = Math.round((totalAnswered / 98) * 100); // Updated from 76 to 98
+  const completionRate = Math.round((totalAnswered / 74) * 100);
 
   return {
     studentName: raw.studentName,
