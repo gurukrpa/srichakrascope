@@ -294,7 +294,8 @@ const Landing: React.FC = () => {
               Get a comprehensive 10-page personalized report with stream recommendations & career cluster mapping.
             </p>
             <div style={s.promoPriceRow}>
-              <span style={s.promoNewPrice}>₹1099/-</span>
+              <span style={s.promoOldPrice}>₹2999</span>
+              <span style={s.promoNewPrice}>₹1599/-</span>
             </div>
             <button
               style={s.promoBtn}
@@ -313,50 +314,6 @@ const Landing: React.FC = () => {
             <div style={s.promoFeature}>✅ Aptitude & Personality Analysis</div>
             <div style={s.promoFeature}>✅ Instant Digital Report</div>
           </div>
-        </div>
-      </section>
-
-      {/* ══════════ VINAYAGAR AGAVAL BANNER ══════════ */}
-      <section
-        style={{
-          background: 'linear-gradient(135deg, #FF6B35 0%, #FF9800 50%, #FFD54F 100%)',
-          padding: '32px 20px',
-          textAlign: 'center' as const,
-          cursor: 'pointer',
-          transition: 'transform 0.2s',
-        }}
-        onClick={() => navigate('/agaval')}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.01)'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
-      >
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <div style={{ fontSize: '3rem' }}>🐘</div>
-          <h2 style={{ color: '#fff', fontSize: '1.6em', margin: '8px 0 4px', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
-            🙏 My Friend Ganesha — என் நண்பன் கணேசா!
-          </h2>
-          <p style={{ color: '#fff', fontSize: '1.05em', margin: '4px 0 8px', opacity: 0.95 }}>
-            Vinayagar Agaval Learning Journey | விநாயகர் அகவல் கற்றல் பயணம்
-          </p>
-          <p style={{ color: '#FFF8E1', fontSize: '0.9em', margin: '0 0 16px', lineHeight: 1.6 }}>
-            56-day structured program for children aged 3-16 • Learn 4 lines daily • Audio support &amp; recording • Earn badges • World Record Attempt 🏆
-          </p>
-          <button
-            style={{
-              padding: '14px 36px',
-              background: '#fff',
-              color: '#FF6B35',
-              border: 'none',
-              borderRadius: 28,
-              fontSize: '1.1em',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-              fontFamily: 'inherit',
-            }}
-            onClick={(e) => { e.stopPropagation(); navigate('/agaval'); }}
-          >
-            🐘 Enroll Now — இப்போதே பதிவு செய்யுங்கள்!
-          </button>
         </div>
       </section>
 
@@ -400,6 +357,50 @@ const Landing: React.FC = () => {
             onClick={(e) => { e.stopPropagation(); navigate('/ebooks'); }}
           >
             📖 Browse E-Books
+          </button>
+        </div>
+      </section>
+
+      {/* ══════════ VINAYAGAR AGAVAL BANNER ══════════ */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #FF6B35 0%, #FF9800 50%, #FFD54F 100%)',
+          padding: '32px 20px',
+          textAlign: 'center' as const,
+          cursor: 'pointer',
+          transition: 'transform 0.2s',
+        }}
+        onClick={() => navigate('/agaval')}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.01)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
+      >
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <div style={{ fontSize: '3rem' }}>🐘</div>
+          <h2 style={{ color: '#fff', fontSize: '1.6em', margin: '8px 0 4px', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
+            🙏 My Friend Ganesha — என் நண்பன் கணேசா!
+          </h2>
+          <p style={{ color: '#fff', fontSize: '1.05em', margin: '4px 0 8px', opacity: 0.95 }}>
+            Vinayagar Agaval Learning Journey | விநாயகர் அகவல் கற்றல் பயணம்
+          </p>
+          <p style={{ color: '#FFF8E1', fontSize: '0.9em', margin: '0 0 16px', lineHeight: 1.6 }}>
+            56-day structured program for children aged 3-16 • Learn 4 lines daily • Audio support &amp; recording • Earn badges • World Record Attempt 🏆
+          </p>
+          <button
+            style={{
+              padding: '14px 36px',
+              background: '#fff',
+              color: '#FF6B35',
+              border: 'none',
+              borderRadius: 28,
+              fontSize: '1.1em',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              fontFamily: 'inherit',
+            }}
+            onClick={(e) => { e.stopPropagation(); navigate('/agaval'); }}
+          >
+            🐘 Enroll Now — இப்போதே பதிவு செய்யுங்கள்!
           </button>
         </div>
       </section>
