@@ -35,65 +35,67 @@ const twoParamLogistic = (
   return 1 / (1 + Math.exp(exponent));
 };
 
-/**
- * Calculates the log-likelihood of a student's response pattern for a given ability level (theta).
- * The goal of the estimation process is to find the theta that maximizes this value.
- *
- * @param theta The ability level to evaluate.
- * @param answers The student's answers for a specific domain.
- * @returns The log-likelihood value.
- */
-const logLikelihood = (theta: number, answers: AptitudeAnswer[]): number => {
-  let ll = 0;
-  answers.forEach(answer => {
-    const { difficulty, discrimination } = answer.question;
-    const probability = twoParamLogistic(theta, difficulty, discrimination);
-
-    if (answer.isCorrect) {
-      // Use a small floor to prevent log(0)
-      ll += Math.log(Math.max(probability, 1e-9));
-    } else {
-      ll += Math.log(Math.max(1 - probability, 1e-9));
-    }
-  });
-  return ll;
-};
+/** Logistic-to-normal scaling constant used in the 2PL model. */
+const D_SCALE = 1.7;
 
 /**
- * Estimates the student's ability (theta) for a single aptitude domain using Maximum Likelihood Estimation (MLE).
- * It iteratively searches for the theta value that maximizes the log-likelihood of the observed answers.
+ * Estimates the student's ability (theta) for a single aptitude domain using
+ * Maximum Likelihood Estimation (MLE) via Newton–Raphson on the analytic
+ * 2PL score function and Fisher information.
+ *
+ *   score(θ)   = Σ a_i · D · (u_i − P_i(θ))
+ *   info(θ)    = Σ (a_i · D)² · P_i(θ) · (1 − P_i(θ))
+ *   θ_{n+1}    = θ_n + score / info
  *
  * @param answers The student's answers for a specific domain.
- * @param maxIterations The maximum number of iterations for the search.
- * @param tolerance The convergence tolerance.
- * @returns The estimated theta value (typically between -3 and 3).
+ * @param maxIterations The maximum number of Newton iterations.
+ * @param tolerance Convergence tolerance on |Δθ|.
+ * @returns The estimated theta value (clamped to [-4, +4]).
  */
 export const estimateAbility = (
   answers: AptitudeAnswer[],
   maxIterations = 50,
   tolerance = 1e-4
 ): number => {
-  let theta = 0.0; // Start with an average ability estimate
+  // Edge case: no answers in this domain → return neutral theta (avoids
+  // [].every() === true falsely triggering the all-correct branch below).
+  if (answers.length === 0) return 0;
 
-  // Handle edge cases: all correct or all incorrect
+  // Handle edge cases: all correct or all incorrect.
+  // (MLE is undefined at the boundary; assign a strong but finite theta.)
   const allCorrect = answers.every(a => a.isCorrect);
   const allIncorrect = answers.every(a => !a.isCorrect);
-  if (allCorrect) return 2.5; // Assign a high theta
-  if (allIncorrect) return -2.5; // Assign a low theta
+  if (allCorrect) return 2.5;
+  if (allIncorrect) return -2.5;
 
-  // Simple gradient ascent to find the maximum likelihood
+  let theta = 0.0;
+
   for (let i = 0; i < maxIterations; i++) {
-    const gradient = logLikelihood(theta + tolerance, answers) - logLikelihood(theta - tolerance, answers);
-    const newTheta = theta + 0.1 * gradient; // 0.1 is the learning rate
+    let score = 0;
+    let info = 0;
 
-    if (Math.abs(newTheta - theta) < tolerance) {
-      break; // Converged
+    for (const answer of answers) {
+      const a = answer.question.discrimination;
+      const b = answer.question.difficulty;
+      const aD = a * D_SCALE;
+      const p = twoParamLogistic(theta, b, a);
+      const u = answer.isCorrect ? 1 : 0;
+
+      score += aD * (u - p);
+      info += aD * aD * p * (1 - p);
     }
-    theta = newTheta;
+
+    // Guard against a near-zero information matrix (would blow up the step).
+    if (info < 1e-9) break;
+
+    const step = score / info;
+    theta += step;
 
     // Clamp theta to a reasonable range
     if (theta > 4) theta = 4;
     if (theta < -4) theta = -4;
+
+    if (Math.abs(step) < tolerance) break; // Converged
   }
 
   return theta;

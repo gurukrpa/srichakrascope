@@ -22,6 +22,7 @@ import MIAssessment from './MIAssessment';
 import type { ReportData } from './reportTemplate';
 import { CAREER_CLUSTERS, getClustersByStream, getClusterStats, type StreamName } from '../data/careerClusters';
 import { SPECIALIZED_REPOSITORIES, getSpecializedStats, type SpecializedRepository } from '../data/specializedRepositories';
+import EbookSalesPanel from './EbookSalesPanel';
 
 interface StudentRecord {
   uid: string;
@@ -445,6 +446,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'reports', icon: '📄', label: 'Reports' },
     { id: 'career-repo', icon: '🎯', label: 'Career Repository' },
     { id: 'mi-assessment', icon: '🧠', label: 'MI Assessment' },
+    { id: 'ebook-sales', icon: '📚', label: 'E-book Sales' },
     { id: 'analytics', icon: '📊', label: 'Analytics' },
     { id: 'settings', icon: '⚙️', label: 'Settings' },
   ];
@@ -1204,6 +1206,9 @@ const AdminDashboard: React.FC = () => {
           )}
 
           {/* MI Assessment Section */}
+
+          {/* E-book Sales Section */}
+          {activeSection === 'ebook-sales' && <EbookSalesPanel />}
           {activeSection === 'mi-assessment' && <MIAssessment />}
 
           {/* Overview Cards */}

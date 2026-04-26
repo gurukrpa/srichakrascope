@@ -82,5 +82,25 @@ service cloud.firestore {
       allow create: if true;
       allow read, update: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
     }
+
+    // E-book leads: public create (FB-ad funnel), public read of own doc by
+    // unguessable auto-generated leadId; admins can update/delete.
+    // Cloud Functions (admin SDK) write status / downloadUrl after payment.
+    match /ebookLeads/{leadId} {
+      allow create: if true;
+      allow read: if true;
+      allow update, delete: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
+
+    // E-book payments: admin-only read; Cloud Functions manage all writes.
+    match /ebookPayments/{orderId} {
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
+
+    // Counselling bookings: student can read own; admins read all; Cloud Functions write.
+    match /counsellingBookings/{orderId} {
+      allow read: if request.auth != null && resource.data.studentUid == request.auth.uid;
+      allow read: if request.auth != null && request.auth.token.email in ['admin@srichakraacademy.org', 'eswari.srichakra@gmail.com'];
+    }
   }
 }

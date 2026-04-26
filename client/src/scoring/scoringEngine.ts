@@ -11,6 +11,7 @@
 import {
   APTITUDE_QUESTIONS,
   PREFERENCE_QUESTIONS,
+  TOTAL_QUESTIONS,
   AptitudeQuestion,
   AptitudeDomain,
   PreferenceDomain,
@@ -508,7 +509,8 @@ export function buildReportFromAnswers(raw: RawAnswers): ReportData {
 
   const totalAnswered =
     Object.keys(raw.aptitude).length + Object.keys(raw.preference).length;
-  const completionRate = Math.round((totalAnswered / 74) * 100);
+  const completionRate =
+    TOTAL_QUESTIONS > 0 ? Math.round((totalAnswered / TOTAL_QUESTIONS) * 100) : 0;
 
   return {
     studentName: raw.studentName,

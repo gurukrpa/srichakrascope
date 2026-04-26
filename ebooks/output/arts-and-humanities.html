@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Arts &amp; Humanities Careers — Srichakra E-book</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; background: #f4f4f4; }
+  .page {
+    width: 210mm; min-height: 297mm; padding: 18mm 16mm; margin: 0 auto 8mm;
+    background: #fff; position: relative; page-break-after: always;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  }
+  .page:last-child { page-break-after: auto; }
+  h1, h2, h3, h4 { margin: 0 0 10px; line-height: 1.25; }
+  p { line-height: 1.6; margin: 0 0 10px; }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(160deg, #a83246 0%, #651b2a 100%);
+    color: #fff; padding: 0; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .cover-inner { padding: 22mm 18mm; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; font-weight: 700; letter-spacing: 2px; font-size: 13px; opacity: 0.98; }
+  .brand-mark { width: 90px; height: 90px; border-radius: 50%; background: #fff; padding: 2px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.22); overflow: hidden; }
+  .brand-mark img { width: 102%; height: 102%; object-fit: cover; }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand-text .b-name { font-size: 18px; letter-spacing: 2.5px; }
+  .brand-text .b-tag { font-size: 12px; opacity: 0.88; letter-spacing: 1.5px; font-weight: 500; margin-top: 5px; }
+  .cover-icon { font-size: 100px; line-height: 1; margin: 24px 0; }
+  .cover h1 { font-size: 44px; font-weight: 800; max-width: 16ch; }
+  .cover .subtitle { font-size: 18px; opacity: 0.95; max-width: 36ch; margin-top: 12px; }
+  .cover .promise { font-size: 16px; opacity: 0.85; margin-top: 16px; max-width: 40ch; }
+  .cover-meta { display: flex; gap: 24px; font-size: 12px; opacity: 0.85; border-top: 1px solid rgba(255,255,255,0.25); padding-top: 14px; }
+  .cover-meta strong { display: block; font-size: 18px; opacity: 1; margin-bottom: 4px; color: #ffd166; }
+  .cover-price-tag {
+    position: absolute; top: 18mm; right: 18mm; background: #ffd166; color: #1a1a1a;
+    padding: 10px 16px; border-radius: 6px; font-weight: 800; font-size: 18px; letter-spacing: 1px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+
+  /* ── TOC / intro pages ── */
+  .page-title { font-size: 32px; color: #a83246; border-bottom: 4px solid #ffd166; padding-bottom: 10px; margin-bottom: 22px; }
+  .lead { font-size: 17px; color: #333; max-width: 65ch; }
+  .toc { list-style: none; padding: 0; margin: 22px 0 0; }
+  .toc li { display: flex; align-items: baseline; padding: 12px 0; border-bottom: 1px dashed #ddd; font-size: 16px; }
+  .toc-num { font-weight: 800; color: #a83246; width: 38px; }
+  .toc-title { flex: 0 1 auto; padding-right: 8px; }
+  .toc-dots { flex: 1; border-bottom: 2px dotted #bbb; transform: translateY(-4px); margin: 0 6px; }
+  .toc-count { font-size: 13px; color: #666; white-space: nowrap; }
+
+  /* ── Chapter divider ── */
+  .chapter-divider {
+    background: linear-gradient(135deg, #a83246 0%, #651b2a 100%);
+    color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding-left: 24mm;
+  }
+  .chapter-divider .ch-no { font-size: 14px; letter-spacing: 4px; opacity: 0.7; }
+  .chapter-divider h2 { font-size: 56px; font-weight: 800; margin-top: 8px; max-width: 14ch; }
+  .chapter-divider .ch-desc { font-size: 18px; opacity: 0.92; max-width: 40ch; margin-top: 16px; }
+  .chapter-divider .ch-skills { margin-top: 24px; }
+  .chapter-divider .ch-skills span { display: inline-block; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px; font-size: 13px; margin: 0 6px 6px 0; }
+
+  /* ── Career card ── */
+  .career-card {
+    border: 1px solid #e3e3e3; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+    background: #fff; page-break-inside: avoid;
+  }
+  .career-card .role-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .career-card h3 { font-size: 18px; color: #a83246; margin-bottom: 4px; }
+  .career-card .desc { font-size: 14px; color: #333; margin: 6px 0 12px; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 4px 9px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px; }
+  .badge-growth-High { background: #e6f7ee; color: #0a7c4a; border: 1px solid #b6e6c9; }
+  .badge-growth-Moderate { background: #fff7e0; color: #8a6500; border: 1px solid #ffe28a; }
+  .badge-growth-Stable { background: #eef2ff; color: #2740a8; border: 1px solid #c7d2fe; }
+  .badge-cat { background: #f3eaff; color: #5b2a86; border: 1px solid #e0ccff; }
+  .badge-neet { background: #ffebeb; color: #a02525; border: 1px solid #ffc1c1; }
+  .meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px; font-size: 12.5px; color: #333;
+    border-top: 1px dashed #e6e6e6; padding-top: 10px;
+  }
+  .meta-grid div strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 2px; }
+  .salary-row {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 10px;
+    padding: 8px 12px; background: #f8faf9; border-left: 4px solid #a83246; border-radius: 6px; font-size: 13px;
+  }
+  .salary-row strong { color: #a83246; font-size: 16px; }
+
+  /* ── CTA / coupon ── */
+  .cta-page {
+    background: linear-gradient(160deg, #fff 0%, #f4f9f8 100%);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .cta-card {
+    border: 3px dashed #a83246; border-radius: 18px; padding: 28px; margin: 12px 0;
+    text-align: center; background: #fff;
+  }
+  .cta-card h2 { color: #a83246; font-size: 28px; }
+  .coupon {
+    display: inline-block; margin: 18px 0; padding: 14px 28px; border-radius: 8px;
+    background: #ffd166; color: #1a1a1a; font-family: 'Courier New', monospace;
+    font-size: 24px; font-weight: 800; letter-spacing: 4px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .cta-button {
+    display: inline-block; margin-top: 12px; padding: 14px 32px; background: #a83246;
+    color: #fff; border-radius: 30px; font-weight: 700; text-decoration: none; font-size: 16px;
+  }
+
+  /* ── Footer ── */
+  .pg-footer {
+    position: absolute; bottom: 8mm; left: 16mm; right: 16mm;
+    display: flex; justify-content: space-between; font-size: 11px; color: #888;
+    border-top: 1px solid #eee; padding-top: 6px;
+  }
+
+  /* ── Print tweaks ── */
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ──────── COVER ──────── -->
+<section class="page cover">
+  <div class="cover-price-tag">₹99</div>
+  <div class="cover-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="data:image/png;base64,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" alt="Srichakra Academy" /></span>
+      <span class="brand-text">
+        <span class="b-name">SRICHAKRA ACADEMY</span>
+        <span class="b-tag">Self Discovery to Success</span>
+      </span>
+    </div>
+    <div>
+      <div class="cover-icon">🎭</div>
+      <h1>Arts &amp; Humanities Careers</h1>
+      <p class="subtitle">35+ powerful careers for students of Psychology, Sociology, Languages, History, Media &amp; more</p>
+      <p class="promise">35+ powerful careers across Psychology, Civil Services, Law, Media, Languages, Design &amp; more.</p>
+    </div>
+    <div class="cover-meta">
+      <div><strong>35+</strong> Careers Mapped</div>
+      <div><strong>8</strong> Career Clusters</div>
+      <div><strong>India</strong> Focused (Exams · Colleges · Salaries)</div>
+    </div>
+    <div style="font-size:12px; opacity:0.85; margin-top:14px;">
+      srichakraacademy.org · 85903 96662 · 98430 30697
+    </div>
+  </div>
+</section>
+
+<!-- ──────── INTRO ──────── -->
+<section class="page">
+  <h1 class="page-title">Why this e-book?</h1>
+  <p class="lead">Arts is not a &quot;fallback&quot; stream — it is the foundation of leadership, public service, communication, design, policy and human-centred professions. From UPSC-cracking civil servants and behavioural scientists to journalists, diplomats, designers, archaeologists and content creators — humanities graduates run modern India. This e-book maps the strongest, best-paying career paths you can build with an Arts background.</p>
+
+  <div style="margin-top: 28px;">
+    <h3 style="color: #a83246;">Who is this for?</h3>
+    <p>Arts / Humanities / Commerce students, parents who think Arts is &quot;less serious&quot;</p>
+  </div>
+
+  <div style="margin-top: 22px;">
+    <h3 style="color: #a83246;">What you will get</h3>
+    <ul style="line-height: 1.9;">
+      <li><strong>35+ career pathways</strong> — each with qualifications, exams, top institutions and salary ranges</li>
+      <li><strong>8 career clusters</strong> — organised so you can scan and compare</li>
+      <li><strong>India-first context</strong> — JEE, NEET-alternatives, CUET, CAT, state CETs, ICAI and more</li>
+      <li><strong>Honest growth outlook</strong> — High / Moderate / Stable, not marketing fluff</li>
+      <li><strong>A free ₹500 coupon</strong> for the full Srichakra Career Assessment (page 20)</li>
+    </ul>
+  </div>
+
+  <div class="pg-footer"><span>Srichakra Academy · Arts &amp; Humanities Careers</span><span>Page 2</span></div>
+</section>
+
+<!-- ──────── TOC ──────── -->
+<section class="page">
+  <h1 class="page-title">Inside this e-book</h1>
+  <ol class="toc">
+        <li>
+          <span class="toc-num">01</span>
+          <span class="toc-title">🧠 Psychology &amp; Behavioural Sciences</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">4 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">02</span>
+          <span class="toc-title">⚖️ Civil Services, Law &amp; Public Policy</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">5 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">03</span>
+          <span class="toc-title">📰 Media, Journalism &amp; Communication</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">5 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">04</span>
+          <span class="toc-title">📚 Languages, Literature &amp; Linguistics</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">4 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">05</span>
+          <span class="toc-title">🏛️ History, Archaeology &amp; Heritage</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">4 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">06</span>
+          <span class="toc-title">🤝 Sociology, Anthropology &amp; Social Impact</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">4 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">07</span>
+          <span class="toc-title">📊 Economics &amp; Business (Humanities Path)</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">4 careers</span>
+        </li>
+        <li>
+          <span class="toc-num">08</span>
+          <span class="toc-title">🎨 Education, Design &amp; Creative Arts</span>
+          <span class="toc-dots"></span>
+          <span class="toc-count">5 careers</span>
+        </li></ol>
+  <div style="margin-top: 28px; padding: 16px; background: #f4f9f8; border-left: 5px solid #a83246; border-radius: 8px; font-size: 14px;">
+    <strong>How to read:</strong> Skim the cluster dividers first to find what excites you,
+    then deep-dive into 2–3 careers per cluster. Mark roles you would like to explore further —
+    you will use that shortlist with the Srichakra Career Assessment.
+  </div>
+  <div class="pg-footer"><span>Srichakra Academy · srichakraacademy.org</span><span>Page 3</span></div>
+</section>
+
+<!-- ──────── CLUSTERS ──────── -->
+
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 01</div>
+  <h2>🧠 Psychology &amp; Behavioural Sciences</h2>
+  <p class="ch-desc">India&#39;s mental-health awareness boom is creating massive demand for trained psychologists, counsellors and behavioural specialists.</p>
+  <div class="ch-skills"><span>Active listening</span><span>Empathy</span><span>Research methodology</span><span>Statistics (SPSS)</span><span>Ethical practice</span><span>Report writing</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">🧠 Psychology &amp; Behavioural Sciences</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Clinical Psychologist</h3>
+            <p class="desc">Diagnoses and treats mental health disorders — registered with the Rehabilitation Council of India (RCI).</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA/B.Sc Psychology · MA/M.Sc Psychology · M.Phil Clinical Psychology (RCI-recognised)</div>
+          <div><strong>Entrance Exams</strong>CUET · NIMHANS entrance · University entrance exams</div>
+          <div><strong>Top Institutions</strong>NIMHANS Bangalore · Christ University · TISS Mumbai · Delhi University · IIPR Bangalore</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–15 LPA (private practice can be much higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Counselling Psychologist / School Counsellor</h3>
+            <p class="desc">Helps individuals navigate life issues — career, relationships, anxiety, school stress.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Psychology + MA Counselling Psychology · Diploma in Guidance &amp; Counselling</div>
+          <div><strong>Entrance Exams</strong>CUET · University entrance · IGNOU PG Diploma</div>
+          <div><strong>Top Institutions</strong>TISS Mumbai · Christ University · Banyan Academy Chennai · Jamia Millia Islamia</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–10 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Industrial-Organisational (I-O) Psychologist</h3>
+            <p class="desc">Improves workplace productivity, hiring, employee engagement and leadership development for companies.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA Psychology (I-O specialisation) · MBA HR optional</div>
+          <div><strong>Entrance Exams</strong>CUET · TISSNET · XAT</div>
+          <div><strong>Top Institutions</strong>TISS · XLRI Jamshedpur · IIPM · Christ University</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>6–20 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>UX Researcher / Behavioural Designer</h3>
+            <p class="desc">Studies user behaviour to design better digital products — used by Flipkart, Swiggy, Razorpay, Microsoft.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Psychology / Sociology + UX certification · MA HCI / Cognitive Science</div>
+          <div><strong>Entrance Exams</strong>CUET · IIT Design (CEED) · Company recruitment</div>
+          <div><strong>Top Institutions</strong>IDC IIT Bombay · NID · Srishti Manipal · IIIT Bangalore (HCI)</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>8–25 LPA</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 1 · Psychology &amp; Behavioural Sciences</span><span>4 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 02</div>
+  <h2>⚖️ Civil Services, Law &amp; Public Policy</h2>
+  <p class="ch-desc">The most prestigious career destination for humanities students — UPSC, judiciary, policy think-tanks, and diplomacy.</p>
+  <div class="ch-skills"><span>Reading &amp; analysis</span><span>Writing</span><span>Current affairs</span><span>Logical reasoning</span><span>Public speaking</span><span>Constitution &amp; polity</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">⚖️ Civil Services, Law &amp; Public Policy</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>IAS / IPS / IFS Officer (UPSC)</h3>
+            <p class="desc">Leads India&#39;s administration, policing and foreign service — the apex civil services.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>Any bachelor&#39;s degree (Arts/Science/Commerce)</div>
+          <div><strong>Entrance Exams</strong>UPSC Civil Services Examination (Prelims, Mains, Interview)</div>
+          <div><strong>Top Institutions</strong>Delhi University · JNU · Jamia · Allahabad University · Coaching: Vajiram, Vision IAS, Forum IAS</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>₹56,100 starting + perks (~12 LPA CTC), rising to Cabinet Secretary scale</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>State PSC Officer (Group I / DSP / Tahsildar)</h3>
+            <p class="desc">State-level administrative, revenue, police and welfare officer roles via state PSCs.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>Any graduate degree</div>
+          <div><strong>Entrance Exams</strong>TNPSC Group I · KPSC · APPSC · TSPSC · MPSC etc.</div>
+          <div><strong>Top Institutions</strong>Loyola College · Madras Christian College · Stella Maris · state universities + coaching</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>8–20 LPA + perks</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Lawyer / Corporate Counsel</h3>
+            <p class="desc">Advocates in courts, drafts contracts, advises corporates, handles M&amp;A, litigation and constitutional matters.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA LLB (5 yr) / LLB (3 yr after graduation) · LLM optional</div>
+          <div><strong>Entrance Exams</strong>CLAT · AILET · LSAT India · SLAT · state law CETs</div>
+          <div><strong>Top Institutions</strong>NLSIU Bangalore · NALSAR Hyderabad · NLU Delhi · Jindal Global Law School · Symbiosis Law</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>6–30 LPA at top corporate firms; ₹3–10 LPA litigation start</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Judicial Services Officer (Magistrate / Civil Judge)</h3>
+            <p class="desc">Becomes a judge through state Judicial Services Examination.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>LLB + Judicial Services Exam</div>
+          <div><strong>Entrance Exams</strong>State Judicial Services Examination (TN PCS-J, Delhi JS, MP JS etc.)</div>
+          <div><strong>Top Institutions</strong>NLUs · Government Law Colleges</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>₹77,840+ (entry Civil Judge) + perks · ~15 LPA CTC</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Public Policy Analyst / Think-Tank Researcher</h3>
+            <p class="desc">Researches and shapes policy on education, health, climate, gender for ORF, CPR, NITI Aayog, World Bank.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Economics/Pol Sci + MA Public Policy / MPP / MPA</div>
+          <div><strong>Entrance Exams</strong>CUET PG · NLSIU MPP · TISS PGD-PP</div>
+          <div><strong>Top Institutions</strong>NLSIU Bangalore (MPP) · TISS · Ashoka University · IIM Bangalore (MPP) · Jindal School of Govt</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>6–20 LPA</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 2 · Civil Services, Law &amp; Public Policy</span><span>5 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 03</div>
+  <h2>📰 Media, Journalism &amp; Communication</h2>
+  <p class="ch-desc">Print, broadcast, digital and creator-economy careers — from investigative journalism to YouTube to brand storytelling.</p>
+  <div class="ch-skills"><span>Writing</span><span>Storytelling</span><span>Interviewing</span><span>Camera &amp; editing basics</span><span>Social media</span><span>Critical thinking</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">📰 Media, Journalism &amp; Communication</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Journalist / News Reporter</h3>
+            <p class="desc">Reports for newspapers, news channels and digital platforms — politics, business, sports, investigative.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Journalism / Mass Comm · PG Diploma in Journalism</div>
+          <div><strong>Entrance Exams</strong>CUET · IIMC entrance · Symbiosis SET · University entrance</div>
+          <div><strong>Top Institutions</strong>IIMC Delhi · ACJ Chennai · Symbiosis SIMC Pune · Xavier&#39;s Mumbai · Jamia MCRC</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–12 LPA (anchors / senior editors much higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Content Creator / Digital Storyteller</h3>
+            <p class="desc">Builds audience on YouTube, Instagram, podcasts; monetises via brand deals, ads, courses.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>Any graduate degree + portfolio + niche expertise</div>
+          <div><strong>Entrance Exams</strong>No formal exam — portfolio-driven</div>
+          <div><strong>Top Institutions</strong>Self-learning · MICA Ahmedabad (PG) · Creator-economy bootcamps</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>₹0–Crores per year (highly variable, top 5% earn 50 LPA+)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Public Relations / Corporate Communications Manager</h3>
+            <p class="desc">Manages brand reputation, media relations, crisis communication for corporates, governments and NGOs.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Mass Comm + MBA Communications / PG Diploma PR</div>
+          <div><strong>Entrance Exams</strong>CUET · MICAT · CAT (for MBA)</div>
+          <div><strong>Top Institutions</strong>MICA Ahmedabad · XIC Mumbai · Symbiosis SCMC · IIMC</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>5–18 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Advertising Copywriter / Brand Strategist</h3>
+            <p class="desc">Writes campaigns, taglines and brand strategy for agencies (Ogilvy, Wieden+Kennedy, Lowe, Leo Burnett).</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA English / Mass Comm + portfolio</div>
+          <div><strong>Entrance Exams</strong>CUET · MICAT · Agency portfolio round</div>
+          <div><strong>Top Institutions</strong>MICA · Miami Ad School Mumbai · IIMC PG Adv &amp; PR</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–20 LPA (Creative Directors 25–60 LPA)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Film / Video Editor / Documentary Maker</h3>
+            <p class="desc">Edits films, documentaries, OTT series and branded content using Premiere Pro, DaVinci Resolve, Avid.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Film &amp; TV / Mass Comm + portfolio · Diploma from FTII/SRFTI</div>
+          <div><strong>Entrance Exams</strong>FTII / SRFTI entrance (JET) · CUET</div>
+          <div><strong>Top Institutions</strong>FTII Pune · SRFTI Kolkata · Whistling Woods Mumbai · IIMC</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–18 LPA (freelance project rates vary widely)</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 3 · Media, Journalism &amp; Communication</span><span>5 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 04</div>
+  <h2>📚 Languages, Literature &amp; Linguistics</h2>
+  <p class="ch-desc">For students who love language — careers in translation, publishing, foreign languages, NLP-linguistics and academia.</p>
+  <div class="ch-skills"><span>Writing &amp; editing</span><span>Reading comprehension</span><span>Multilingual fluency</span><span>Cultural awareness</span><span>Research</span><span>Detail orientation</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">📚 Languages, Literature &amp; Linguistics</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Foreign Language Specialist / Interpreter (German, French, Japanese, Mandarin, Spanish)</h3>
+            <p class="desc">Works as translator, interpreter, language trainer or in MNCs (BFSI, IT, embassies, MEA).</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Foreign Language · MA / Diploma + proficiency certification (DELF, JLPT, HSK, Goethe)</div>
+          <div><strong>Entrance Exams</strong>CUET · JNU entrance · EFLU entrance</div>
+          <div><strong>Top Institutions</strong>JNU Delhi · EFLU Hyderabad · Delhi University · Pune University · Alliance Française / Goethe / Max Mueller</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–18 LPA (interpreters at MEA / MNCs higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Editor / Publishing Professional</h3>
+            <p class="desc">Acquires, edits and produces books, magazines and digital content for publishers (Penguin, HarperCollins, Westland).</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA English Literature + PG Diploma in Publishing</div>
+          <div><strong>Entrance Exams</strong>CUET · Ambedkar University Publishing entrance</div>
+          <div><strong>Top Institutions</strong>Ambedkar University (Publishing) · Jadavpur University · University of Calcutta · St. Stephen&#39;s</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–14 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Computational Linguist / NLP Annotator</h3>
+            <p class="desc">Builds and labels language datasets for AI/LLMs — Indian languages, speech recognition, translation.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Linguistics / MA Computational Linguistics · Programming basics</div>
+          <div><strong>Entrance Exams</strong>CUET · EFLU entrance · JNU entrance</div>
+          <div><strong>Top Institutions</strong>EFLU Hyderabad · IIT Madras (Linguistics) · IIIT Hyderabad (LTRC)</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>5–18 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Technical Writer / Documentation Specialist</h3>
+            <p class="desc">Writes user manuals, API docs and product help content for SaaS and tech companies.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA English + STC certification or technical writing course</div>
+          <div><strong>Entrance Exams</strong>CUET · Company recruitment</div>
+          <div><strong>Top Institutions</strong>Symbiosis · Christ University · TWB (Technical Writers of India)</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>5–18 LPA</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 4 · Languages, Literature &amp; Linguistics</span><span>4 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 05</div>
+  <h2>🏛️ History, Archaeology &amp; Heritage</h2>
+  <p class="ch-desc">For students fascinated by the past — careers in research, museums, archives, archaeology and heritage tourism.</p>
+  <div class="ch-skills"><span>Research</span><span>Critical reading</span><span>Field documentation</span><span>Languages (Sanskrit/Tamil/Persian etc.)</span><span>Curation</span><span>Storytelling</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">🏛️ History, Archaeology &amp; Heritage</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Archaeologist (ASI)</h3>
+            <p class="desc">Excavates, documents and protects historical sites with the Archaeological Survey of India.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA History / Archaeology + PG Diploma from Institute of Archaeology, ASI</div>
+          <div><strong>Entrance Exams</strong>CUET PG · ASI Institute of Archaeology entrance · UPSC (Asst Archaeologist)</div>
+          <div><strong>Top Institutions</strong>Institute of Archaeology (ASI) Delhi · JNU · Deccan College Pune · BHU</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>6–15 LPA (Govt pay-scale + perks)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Museum Curator / Heritage Manager</h3>
+            <p class="desc">Curates exhibits and manages collections at museums (National Museum, CSMVS, DAG, Salar Jung, INTACH).</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA History / Museology / Art History</div>
+          <div><strong>Entrance Exams</strong>CUET PG · National Museum Institute entrance</div>
+          <div><strong>Top Institutions</strong>National Museum Institute Delhi · MS University Baroda · Calcutta University</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–12 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Heritage Tourism Consultant / Cultural Guide</h3>
+            <p class="desc">Designs heritage walks, cultural tours and works with state tourism boards and luxury operators.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA History / Tourism + Regional Level Guide license (Ministry of Tourism)</div>
+          <div><strong>Entrance Exams</strong>CUET · IITTM entrance · Ministry of Tourism guide certification</div>
+          <div><strong>Top Institutions</strong>IITTM Gwalior · IGNOU · state university tourism programmes</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–12 LPA (luxury tour guides earn higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Archivist / Records Manager</h3>
+            <p class="desc">Manages historical records and digital archives for governments, libraries, corporates.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA History + PG Diploma in Archives &amp; Records Management (NAI)</div>
+          <div><strong>Entrance Exams</strong>CUET PG · National Archives of India entrance</div>
+          <div><strong>Top Institutions</strong>School of Archival Studies (NAI) Delhi · JNU · Delhi University</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–10 LPA</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 5 · History, Archaeology &amp; Heritage</span><span>4 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 06</div>
+  <h2>🤝 Sociology, Anthropology &amp; Social Impact</h2>
+  <p class="ch-desc">Build a career around social change — NGOs, CSR, development consulting, gender studies, rural development.</p>
+  <div class="ch-skills"><span>Field research</span><span>Empathy</span><span>Survey design</span><span>Report writing</span><span>Community engagement</span><span>M&amp;E frameworks</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">🤝 Sociology, Anthropology &amp; Social Impact</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Development Sector Professional (NGO / CSR / UN)</h3>
+            <p class="desc">Designs and runs programs in education, health, livelihoods, gender for NGOs (Pratham, CRY, SEWA), CSR teams and UN agencies.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Sociology / Social Work + MSW / MA Development Studies</div>
+          <div><strong>Entrance Exams</strong>TISSNET · CUET PG · IRMA entrance · Azim Premji University entrance</div>
+          <div><strong>Top Institutions</strong>TISS Mumbai · IRMA Anand · Azim Premji University · XISS Ranchi · Delhi School of Social Work</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>5–20 LPA (UN / international NGOs higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Social Worker / MSW Practitioner</h3>
+            <p class="desc">Works in hospitals, schools, prisons, child welfare and disaster response as a licensed social worker.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BSW + MSW</div>
+          <div><strong>Entrance Exams</strong>CUET · TISSNET · University entrance</div>
+          <div><strong>Top Institutions</strong>TISS · Delhi School of Social Work · Madras School of Social Work · Loyola College</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–10 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Anthropologist / Ethnographic Researcher</h3>
+            <p class="desc">Studies cultures and human behaviour for academia, tech (UX research), and conservation organisations.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA Anthropology · PhD for academia</div>
+          <div><strong>Entrance Exams</strong>CUET PG · JNU entrance · Anthropological Survey of India recruitment</div>
+          <div><strong>Top Institutions</strong>Delhi University · University of Hyderabad · JNU · Visva Bharati Santiniketan</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–14 LPA (UX-research roles 10–25 LPA)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Gender / DEI Specialist</h3>
+            <p class="desc">Drives gender, diversity, equity and inclusion programs in corporates, foundations and governments.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Emerging</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA Gender Studies / Sociology / Public Policy</div>
+          <div><strong>Entrance Exams</strong>CUET PG · TISSNET · JNU entrance</div>
+          <div><strong>Top Institutions</strong>TISS · JNU · Ambedkar University Delhi · Christ University</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>6–20 LPA</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 6 · Sociology, Anthropology &amp; Social Impact</span><span>4 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 07</div>
+  <h2>📊 Economics &amp; Business (Humanities Path)</h2>
+  <p class="ch-desc">Economics-stream and humanities students can build careers in research, consulting, management and policy.</p>
+  <div class="ch-skills"><span>Quantitative reasoning</span><span>Excel / Stata / R</span><span>Writing</span><span>Business intuition</span><span>Critical thinking</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">📊 Economics &amp; Business (Humanities Path)</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Economist / Economic Researcher</h3>
+            <p class="desc">Works at RBI, NITI Aayog, CRISIL, World Bank, IMF, think-tanks and global investment banks.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA Economics + MA Economics / MSc Econometrics · PhD for senior research</div>
+          <div><strong>Entrance Exams</strong>CUET · DSE / ISI / IGIDR / JNU entrance · RBI Grade B</div>
+          <div><strong>Top Institutions</strong>Delhi School of Economics · ISI Kolkata · IGIDR Mumbai · JNU CESP · Madras School of Economics</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>8–30 LPA (RBI Grade B / global research firms higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Management Consultant (BCG / McKinsey / Bain / Big 4)</h3>
+            <p class="desc">Solves strategy problems for Fortune 500 companies — recruited from top liberal arts and B-schools.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA + MBA from top IIM / ISB · Top liberal arts colleges (Ashoka / SRCC) recruited directly</div>
+          <div><strong>Entrance Exams</strong>CAT · GMAT · XAT · CUET</div>
+          <div><strong>Top Institutions</strong>IIM Ahmedabad/Bangalore/Calcutta · ISB · SRCC · Ashoka University · St. Stephen&#39;s</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>12–40 LPA entry; partners 1 Cr+</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Brand / Product Manager (FMCG, D2C)</h3>
+            <p class="desc">Owns brand strategy and P&amp;L for products at HUL, ITC, Nykaa, Mamaearth, Tata Consumer.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA / B.Com + MBA Marketing</div>
+          <div><strong>Entrance Exams</strong>CAT · XAT · NMAT · CUET</div>
+          <div><strong>Top Institutions</strong>IIMs · ISB · XLRI · MICA · NMIMS Mumbai</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>15–35 LPA (post-MBA)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Human Resources / Talent Management Leader</h3>
+            <p class="desc">Drives hiring, L&amp;D, performance and culture at corporates — top-paid HR career path is HRBP / CHRO.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA + MBA HR / MA HRM</div>
+          <div><strong>Entrance Exams</strong>XAT · CAT · TISSNET · CUET</div>
+          <div><strong>Top Institutions</strong>XLRI Jamshedpur · TISS HRM · IIMs · MDI Gurgaon</div>
+          <div><strong>Eligible Streams</strong>Arts · Commerce · Science</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>10–30 LPA (CHROs ₹1 Cr+)</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 7 · Economics &amp; Business (Humanities Path)</span><span>4 careers</span></div>
+</section>
+<section class="page chapter-divider">
+  <div class="ch-no">CHAPTER 08</div>
+  <h2>🎨 Education, Design &amp; Creative Arts</h2>
+  <p class="ch-desc">Teaching, instructional design, fine arts, performing arts and design — careers blending creativity with impact.</p>
+  <div class="ch-skills"><span>Pedagogy</span><span>Creativity</span><span>Visual / aesthetic sense</span><span>Patience</span><span>Communication</span><span>Tech-enabled teaching</span></div>
+</section>
+
+<section class="page">
+  <h1 class="page-title">🎨 Education, Design &amp; Creative Arts</h1>
+  
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>School Teacher / Academic Coordinator (CBSE/ICSE/IB)</h3>
+            <p class="desc">Teaches in K-12 schools — top-tier IB and international schools pay competitively.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA + B.Ed · PG + B.Ed for senior secondary · IB/PYP certification for international schools</div>
+          <div><strong>Entrance Exams</strong>CTET · TET (state) · CUET B.Ed · University entrance</div>
+          <div><strong>Top Institutions</strong>DIET / RIE Mysore-Bhopal-Ajmer · DU CIE · Tata Institute of Education · Azim Premji University B.Ed</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>3–18 LPA (top international schools 12–25 LPA)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>College / University Professor (NET-JRF)</h3>
+            <p class="desc">Teaches and researches in colleges and universities; assistant professor positions through UGC NET.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Stable">Stable growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>MA + UGC NET / JRF · PhD for permanent professorship</div>
+          <div><strong>Entrance Exams</strong>UGC NET / JRF · CSIR NET (sciences) · PhD entrance (JNU/DU/HCU)</div>
+          <div><strong>Top Institutions</strong>JNU · DU · University of Hyderabad · BHU · TISS</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>8–22 LPA (Assistant Professor pay-scale)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Graphic / Communication Designer</h3>
+            <p class="desc">Designs visual identity, posters, packaging and digital assets for agencies, brands and startups.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>B.Des Communication Design · BFA Applied Art + portfolio</div>
+          <div><strong>Entrance Exams</strong>NID DAT · UCEED · NIFT · CEED (PG)</div>
+          <div><strong>Top Institutions</strong>NID Ahmedabad · IDC IIT Bombay · Srishti Manipal · MIT Institute of Design Pune · Sir JJ School of Art</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–18 LPA</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Fashion / Textile / Product Designer</h3>
+            <p class="desc">Designs apparel, accessories, lifestyle and home products for fashion houses, D2C brands, exporters.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-High">High growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>B.Des / B.F.Tech NIFT / NID · Diploma + portfolio</div>
+          <div><strong>Entrance Exams</strong>NIFT · NID DAT · UCEED · Pearl Academy entrance</div>
+          <div><strong>Top Institutions</strong>NIFT (16 campuses) · NID Ahmedabad · Pearl Academy · Symbiosis Design · NIFT Hyderabad</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>4–18 LPA (independent designers / brands much higher)</strong>
+        </div>
+      </div>
+      <div class="career-card">
+        <div class="role-head">
+          <div>
+            <h3>Performing Artist / Music &amp; Dance Professional</h3>
+            <p class="desc">Builds career in classical/contemporary music, dance, theatre, playback singing or composition.</p>
+          </div>
+          <div class="badges">
+            <span class="badge badge-growth-Moderate">Moderate growth</span>
+            <span class="badge badge-cat">Traditional</span>
+            
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div><strong>Qualifications</strong>BA / MA Performing Arts · Guru-shishya tradition + diploma from KKHSOU / SNA</div>
+          <div><strong>Entrance Exams</strong>CUET · University entrance · audition-based admissions</div>
+          <div><strong>Top Institutions</strong>Kalakshetra Chennai · Sangeet Natak Akademi institutes · Faculty of Music BHU · NSD Delhi (theatre)</div>
+          <div><strong>Eligible Streams</strong>Arts · Science · Commerce</div>
+        </div>
+        <div class="salary-row">
+          <span>Typical salary range (India)</span>
+          <strong>₹0–Cr (extremely variable; performance fees &amp; teaching)</strong>
+        </div>
+      </div>
+  <div class="pg-footer"><span>Srichakra Academy · Chapter 8 · Education, Design &amp; Creative Arts</span><span>5 careers</span></div>
+</section>
+
+<!-- ──────── STUDY ABROAD ──────── -->
+<section class="page">
+  <h1 class="page-title">🌍 Dreaming of Studying Abroad?</h1>
+  <p class="lead">
+    From <strong>MBBS in Russia, Georgia, Uzbekistan & the Philippines</strong> to <strong>Engineering, Business, Design and Liberal Arts</strong>
+    in the UK, Germany, Ireland, Canada, Australia, USA, Singapore and the UAE — Srichakra Academy guides you end-to-end.
+  </p>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px;">
+    <div style="border:1px solid #e3e3e3; border-radius:12px; padding:16px; background:#fff;">
+      <h3 style="color:#a83246; margin-bottom:8px;">🩺 MBBS Abroad</h3>
+      <p style="font-size:13.5px; line-height:1.6; margin:0;">
+        NMC-approved universities in <strong>Georgia & Uzbekistan</strong> · FMGE/NEXT preparation guidance ·
+        transparent fee structure · hostel, food & cultural orientation. Affordable alternatives to private Indian medical colleges.
+      </p>
+    </div>
+    <div style="border:1px solid #e3e3e3; border-radius:12px; padding:16px; background:#fff;">
+      <h3 style="color:#a83246; margin-bottom:8px;">🎓 UG / PG Courses</h3>
+      <p style="font-size:13.5px; line-height:1.6; margin:0;">
+        Engineering, Business, Computer Science, Data Science, Design, Nursing, Allied Health, Hospitality, Liberal Arts —
+        bachelor and master programmes worldwide.
+      </p>
+    </div>
+  </div>
+
+  <div style="margin-top:22px; padding:18px 20px; background:linear-gradient(135deg, #a83246 0%, #651b2a 100%); color:#fff; border-radius:12px;">
+    <h3 style="margin:0 0 6px; color:#fff;">Choose your destination — we will handle the rest</h3>
+    <p style="margin:0; font-size:14px; opacity:0.95;">
+      �🇺 Australia · 🇳🇿 New Zealand · 🇺🇸 USA · 🇬🇧 UK · 🇨🇦 Canada ·
+      🇩🇪 Germany · 🇳🇱 Netherlands · 🇫🇷 France · 🇬🇪 Georgia · 🇺🇿 Uzbekistan      &nbsp;&amp; more    </p>
+  </div>
+
+  <h3 style="margin-top:26px; color:#a83246;">What our Study Abroad service includes</h3>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; font-size:13.5px; line-height:1.7;">
+    <div>✅ Country & university shortlisting</div>
+    <div>✅ Course & specialisation guidance</div>
+    <div>✅ Application & SOP support</div>
+    <div>✅ IELTS / TOEFL / GRE / GMAT prep tie-ups</div>
+    <div>✅ Scholarship & education-loan assistance</div>
+    <div>✅ Visa documentation & interview prep</div>
+    <div>✅ Pre-departure & travel orientation</div>
+    <div>✅ Forex, accommodation & on-arrival support</div>
+    <div>✅ MBBS: NMC compliance & FMGE coaching tie-ups</div>
+    <div>✅ Post-study work-visa pathway counselling</div>
+  </div>
+
+  <div style="margin-top:24px; text-align:center; padding:16px 18px; background:#fff9e6; border:2px dashed #ffd166; border-radius:12px;">
+    <p style="margin:0; font-size:15px; line-height:1.6;">
+      📞 Talk to our Study Abroad counsellor:
+      <strong style="color:#a83246;">85903 96662 &nbsp;·&nbsp; 98430 30697</strong><br/>
+      🌐 <strong>srichakraacademy.org</strong> &nbsp;·&nbsp; ✉️ <strong>info.srichakra@gmail.com</strong>
+    </p>
+  </div>
+
+  <div class="pg-footer"><span>Srichakra Academy · Study Abroad Guidance</span><span>Choose your destination</span></div>
+</section>
+
+<!-- ──────── CTA ──────── -->
+<section class="page cta-page">
+  <h1 class="page-title" style="text-align:center; border:none;">Your next step</h1>
+  <p class="lead" style="text-align:center; margin: 0 auto 14px;">
+    Reading about careers is step 1. Knowing which careers fit <em>you</em> is step 2.
+  </p>
+
+  <div class="cta-card">
+    <h2>Take the Srichakra Career Assessment</h2>
+    <p>A research-grade assessment that maps your <strong>Multiple Intelligences</strong>,
+    <strong>Aptitudes</strong>, <strong>Interests</strong>, <strong>Work Interests</strong> and <strong>Personality</strong>
+    against 35+ Indian career pathways.</p>
+
+    <p style="margin-top: 14px;">Use this coupon at checkout to save <strong>₹500</strong>:</p>
+    <div class="coupon">ARTS500</div>
+
+    <p style="font-size: 13px; color: #666;">Valid for 60 days from purchase of this e-book.</p>
+    <a class="cta-button" href="https://srichakraacademy.org">Visit srichakraacademy.org →</a>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin-top:24px;">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAL0AAACrCAYAAAAzWJ22AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAADzESURBVHhe7Z0HYFvVucf/2tawJdvy3nvGiZ04mywyIQmQMMKGQFktoxRo2ZRC20cLZT02j9Kyd9gzQBbZw3E84r23LEuy9njnXF3vJdsBbOn+grDuufdKuvf+z3e+70yeiwAODh+Cz/7l4PAZONFz+Byc6Dl8Dk70HD4HJ3oOn4MT/S+A3WIGV0k2deCqLH9G7FYLmo8UQKRzwGjrhio7GYGxcexejl8LTvQ/EyatFo0/7kNsVBpcdgeTZhcCzcZGJC45jdnm+HXgRP8zYOrSom3HfoSHJoP4NWyqG7PDhA6+EQkL5rIpHL80nE8/CJfTCafDbZknglHbiQZi4SOGETzFTyBFmDAIFT/8yKZMDIvBwL7jGC+cpR9Ewbvvw58vhcnlgDIhGuq0FEgUCnbv6Jh1XWjYvgexEcSlGeO2OkV8NBgakLR0MZsyOk67Ha0lpehuaoOloR3KCDXE8ZEISUtlj+DwFE70/ag/dBhBDgWETgGzzRMLoetsg07fAVlyLGShQfAPDWP2DcZmMqHuqx8QE5nOlBaeYOM50GxqQtKypWzKQCx6PQwtrdBV1MPPIYA6IhYuq723BGlqr0TUysUQ+kmZbQ7P4ETPQv1w7Z4CBAdGsSkD4fF4cBDrXFFVgPhlCyEPVrN73BS9tw0psTkeC74Hp5gPczAPqrh4NoVAHknljl3wd4ihUobBZRve3eKJBKhsLEXahjVsCocncD49S+3OfVCHxrJbQ6G2gW91IDV2BnQHS1D27fe9Loy+qQnJyTPHLXgK3+qE5vhJdou4SHodij/8DDH+sVDK1CMKnkL3qeVBTInA4TmcpSfYzCZofjyMQGU4mzI2PD8RKmsKkbR2BZoOHCXBaQi7gwce/UtcI/DJe/Lqj8tBbjcNlO3O3kxj5zvRrXJBERqKhh/2IC4qgxznWQbiCQXQSAwIm5HNpnCMBSd6QvvJMigNYre/PA6oz9/QUUksfRuJA3gwtLVDQApPMU8Mp8UKq80Gm9OCkrKTiI6KRoCfHCKJH0RiCVykjDU7TRBLpQiMjkGHWYvAwCBEByX2ZgZPaeyoQvyZK9ktjrHgRE9o2L4bIbKxrTz1ofVdnWgsL4aQqNZuNMNlskPl5w+ZTAWpvxI8iRAWkxFVdRUwabpgbNEizh6MNosGjjA/CJRSqMNDERkWD4FAAKfZCp2uA3qdBhYeyXRyESR+fuDLpYhNmwEeMfhjuU1WpxVICYYiJJRN4RgNnxe9g1jj1i93Izgkhk0ZCI/Ph8luQvmx/bC2EmvsF4iYmDRyIrltTvetc4p5OFlbipbaGjg7zFCaJIhVhEEp9ne7M/3gCflo7GpCvUMDp0oAcbgK6Wk5UIoU7s+kkGOM3V2oqi+Bw48HZWwMkjLziB9G3KJhHhdPwEedvg6JK5awKRyj4fOi19bVQd5K/GvbQNeGCqm9vQ41h49AZOUjOXEmRAJRnzCJ1W/qakTJiQKIWiyId6kRRmta7GS/h7eU+vt2lwPHtCdhDhEiKDESMxNz4bL0/RaeWABtZytqW8rBD/bHjMUrmYB6MFVVJ5B24UZ2i2M0fF70DQeOIFSkhou4GRQq9s7OZpTt341AoRoJ8ZkDREitcHF9MaqPFyGmW4nUwAQmKJ005HPb9G0oRiNk8cFYkLsEPNvAR2NxmVFSfpSI3w/Zi1dB5OirfNOSc5ULsj1uSPNlfF70TQeOQc1TMrUlerMOJTu/hdwhRVpa/kCxE6jV/er7T5DQ4Y+4gKheq88T8Ijf7UKXUQODRQcz3wGL1AE/lYxYcxLaUt+d3mbyHTaLBY4uMyRmIWQiP6hEQSQWUPSVEDwe9E4j9ttKsWD1GqgEQ0VMa3uOl+yBIFiG3GXrwSOWnycSwqB2IbB/fT/HsHiN6Gmwp62qhkXfTYp/O7pbWsGDCA6rjT2CeCQyCfgk0BQGBUAaFAhJoBLak1UQdllQe+QIJBYhEuKyhrXcHcZ2HN/5E2YLUyDmidBmaES3vxOCcH/wA/3AC5QjKCKCCD0QcrkSfCJCmhFoTPDEnb9BzryFWLbhcqYak4rbZrUwfru5owOddfVw6Szg6xxw1OugIplO5R+KA9oiSLLDMDs1nwQO7A/peVwkc9AAtqrmOPkNAchcugodVmLt4+NhbOuAqbkN1g49RCQzuVzkZFKC0UxHToRNxIdEJoYwWAVFdDjkIWx1q4/gNaLvqq+HvIsPp97EpowOrWfvNunww1v/QWp4CuJjZ/SKndbAdBB3oaGhBt26LpJZ5GgrrUSuIAEtsi4Is9SIy5uHQHV4r1s0LESYn77zLH586Q0m2P3jy68gNDSR3TkMNEPQWKG6FHX7DkFSYoKTuDBV4d0IcwbAxXPBLuMjPCYOyVEppCRyB7a05+ax8p9gEbgwd/VG+MtUQ2KUkWjW1SN29fDdILwVrxG95mQZ/PWiUVsw+2MjLsjebW8hJTQD6sBoYgl50Ji1KCw8BGeTgam3T1JGQ0oEX95cAlu6HMrcZCRnziUneyYoXXcbHrpkCwRG9/FBs5Jx+2OvenY+yQA2lx1Fu7+DvUQDdbsIIQERRORAnbYBFa42SGKUyJ45B0ESJZPBSk4egCNIjFmnrfW4zaGhoQIJm1ezW76B14i+teAEVCZpX/E/EkQcLa0VqPzhJ8zJWwUeKf7bietyZP8eqDrFmBGYDL6TuALkvwZdDbQZQqSuOp24G8QF8LCVlIFY7CfvvBaNe08wQqXY+S5c9Oe7kTd/nH1lxEJUlx5D69f7EW+KgLzHzycZ9ZCmCOYYCRYtXAmxjQedWYPCygNYuOkSpi1hLJqqSxB3wRnMffEVvEb0HUeL4G+WsFsjU1ddCG1xDTJS58LCt2PXrm+gaHAgNziDWGAiavLwuyztqPBvRcpZpyM8PGnsjDQMxQV78NJtd0DkcvfY7CFsZiJ+/8R/PS4t+uMS8nHk+09h2VuNbGk2+KyoLbBir+4EFBkRWJizhPxcF/Ye/xqLzyMxxBgWv7OrDcHLciGUjH3vvAWvEX37wQIE2OXs1lBoa2rRwR8hM/DhpwhC8YljkNRbkBWQ4O5KTMSuMbWiLcqMwNnpSMieQ4Tpmas0BBIo/uOGC6EpIQHqoMLBwXNi3Y1bseKsrb2NW+OCnEJds7Kd22E91ow4RyQJrIlgye/X2rtwEi0QR6swKyefuDv7ETErCxGRqSNmXLPNBPGsWPj5B7Ap3o/XiL7+qx8QqhyhVVUkxO5tryErcQ6OHj8CSVk3Zgan9baW0kaio/pjCDk7HylZ88bnxgyGiO/zt5/BDy+9SSzx8C6DlWj0Ty+9jNDwZDZlYrhIRt7/8VtQHwfCpcTfZ6El2G5jIbKXLoRJ2wpRVBBSMvKZEmAwDhfJ2JlhkCpJXOAjeI3om77fg2Dp0AEetFPYD++9gu52EwQaF2ZIEgbUfdM69kO8Qsy55jJI+X6MaCdDJwkyH7riUoi6Ry4leMQrCcyOxx1Pv0EU2lelOiHI7y05vAPOL6sRF5DYV3qQ6yrpqESHyoIuZwfy165CXEruEIvvi6IfO9KZJoj8hzbi0G63uz9+HUKhAnPMyThNnjNA8NQX3s87gvxrLodUQILgSQqeBpz/efQhiE2ju0XU5WktrMT3H77CpkwCIuL0vCVQXJyLQt1xJhMzkFIsXZWAxfwMRJvDYGhoQ1N9qXtfP2x2K1PS+RJeI3onKeoHU3x4J1IjstBV3QZ/Kup+Vs5A/N+CwHIsuekm+AmIhT8F7PnmfdTtLxzixw+H0MnHly+/CqNFx6ZMAnJdsTHZSL9xM/ZbDjFWvgfaQBYrDoVG143Go4VwCgcK3GrqhlDsO0EsxWtEL5AImX4zPTQSqybROdHQ3oIkk7qvtyOx5k2WerTOF2HZ5deBT2tsTgHtbVX45KmnGTF7Ct9gxbP3/Z7kgFNgaclHKBUhWHjztSgKq4HZ0c3uAFQiJZxFHUhKno29778Bq8PM7gH0nR0+VXND8RrRSwJV5H8i5n2Xrhmth4sQFp6I1r1FiJH1BXmN3TUQXDgDGfOWw26zwO60TfrlELjw3IN3w6Ezw0H+OXlO5m//98OlOUiR0HCsFNtJkE1j3lPxEgkkmHPBJSiPbidPlyRQSEkwV5WJ44f3YW72Suz98G0m1qGIQ8h98zG8JpClfW8q3v0cMSnZ2PX6K1iQtw77SIA3UxMBPutiGx0G1M204b9PPQ6hzuJOnCxEV5Gz03DTIy+5B3z0tESNg8oT+/H0H26D+BTZIPobll99MaT1FswXz+kt5Y50lyFv82rYLGaUNh7D3NWb0CHQITxvJrPfV/AaS09xKITY//m7mDPzdHdQ2qjvFbyD9kxUViNv1dnYcPWVcBG/V8ATTPrlJF+zesuVEJA3fJID6HDB8b5SZi5CxvL5EBJTLXBM7kU/QxqixJrzfoN511+Bo/qjvRZ/hiIBu/Zth4wvg1qoRn1DMRSRw09p4s1MW0tPp+zQlFXB3KWDtamTqNqG5voqRPCCERuVgd1Fu5DeoIQ/ecBEnTjgOITFt9wIIREGdYMeuekSdBZUehR0jgStegyfm4mb//7CxBuyWIxWHf580WbwukbpwOYBVp4Dlzz8APLyVzJuTWNrGdpf2omkgDRm/x7tcczevAb+Qjl279mGiLlzIBGKYCXuliwiCOIAJQKTYiELDGKO90amnaVvr6xC4evvw3SkEqHiEMQoYkiANgOJWXPAJ4KJjcuCXUw0WNIKf4GcsfhFXSeQu/Uit+ApFhuu+tODsPpN7vLtMiEuv/3+SQueIhMHYO3WK5j+OROFZsKU5fOQt5Dt20OuPTIsFYLVCUxrM2V+UDYO7d/FVGkuWLgB9q5OxCVlISUpB1HyGHJP1bCfaETxB5+hs66OOcfbmBait5vNaC4oRPkHn0Pe7kRq0iwo/JRwGYlfzhZUJw/sQG72EuZh7vnpO8xWZjD76sy1CL9oEZTygZMzBatjcc7vbmAGZEwEet4Gcr5K2RckT5blGy9DypJcEpCOX/hU8NI4Nbbe/vCQTJg1fyVaidtucZjAJ26YtMGKDksn+HZSCBoc7oHlFHK/6D31E0qRTEpLaYsNlR98gabjx5lpBb2FKS166nmVf/cDWr8/gGCbArGRacR3Znf2wyniwd6qJ/6sEN08E4kMdZCQsNBoN8C4UIWY2Cz2yH6Qz168bgtmnLF0/CIjBUb62tOwZM35vZnulGB34Kr7/gVx2Pj7wViFPFz9wMPEVRmmzcHhxOz156Pav4XZzAvKRMH+n5innxQ3E0e/+mRAdS+F3nu+3YXoyFSorQGo/3In2kqHNm5NR6a06Ms//QpxQYlQB0aO3E+eFOHHf/gSSQk5zOaRo/uQr3ZPfNQg1yBv6QZGpMNCRHbhTfdCqPJ8LkhqUREkxaU338ecf6oR2vk4+8abYe2JwD3ASTLt4gs2IDI6k00ZBpsd/vnJxBDo4bI7IW63w0GMBch7lVCJ9vZ69sCh0AEp4aRkFHVY0VZWzqZOX6a06P38pHCN0TeF1pE727sZK09HPNkadBC4BEwXA3FOOPOwR0NMyoQ5Z53hFrMH2Ejku+GaayCh/XR+DogOZy9ah5gcz2cj9otU4eyrbifqH91VS5m9CKXiGiawjxeG4kRZAZOelJKLqgP7mG4boyGXkBLIeeoz+i/NlBa9SD12DcLxHV8hLT2fed9tNiDQRMRI3SJzOdIXn86kjwoR2RkXXAunys8j4Yemx2ERdWt+TkhGXXbuFo/iDeqaLT5rI3ietCyT0jJu/RI0a+sQqgyDtqWZSaYD4BUuGTSd7u2R0LTUISgpid2avkxp0UvVgcxY1pGw84jV0ZiJtRYz27VN1QgTK9FpaYdq3UzGJ/UE6gdfetfdsNPifhSoCM/ces2YpcepIHfhWqQtzx893iA/Nyg7His3X80mjE1MYjY0yU4SmDrg100ev9AtgeSU2aj6ac+o1t7Ms0EgdLfkTmemtOhlxNLrOtxVbcNRuPtbpKf1LWNjJ66QXKJAfVAnUnMXsqmekZ27FKddeDYcI1UZEoFln7EEWbOXsQk/MyT43Hr3oxCFB4xYArn8xbjuwccwrgoo8rnZm89GqbYYTquNfDab0UkpoOAroNEMb+3prA6yGM8nuJ3KTGnRi6QytLU3sFsD4fmJ4eowEV++zzIpApUo7SiDegEJasdbd+50YcOVf0BAYviwIuOpZbjoJhK8TmaAyTgR2Hk495bbYMLQkoXW56++4mIoFQOrYj1BKpKDlxkE06BgOSl5FqoO7ScXO7TEo/Po+6m9o5/OlBY9RZWZBJ7U7b70p7mqFGoVnR3AbZntJKA9vG83eEo+kmfNZ9LGC5006eLb72Gm0ugPXTFkw7XXuofl/ZIQ7c2atxKpS/IHZET6PmRGIk7f5LlbMwCSwaMXzoaq3YHtOz7vdXGob88zkpdkqAtTS4Je//BT1ybxazLlRR+akY6q4qPsFguxRG3lJxEZyw63I9s//fQdzpDPgyw3clKjkRJTZmHuOWt73RwqsLh52Vi46lxm+xeHxA+X3/YgnIq+2MZGrO7WO+5l9k2U0JhkCGKlSOxUYX/xXjYVCAuMREtlCbvlhpaq/CB/dmv6M+VFzyeBkzwtmqma7IEO8rZ3Wd2THRFKGosR2SZBZVspUpYsZ9ImDHFfzrv2ToQRS0otrVCtwNY/PYyxZhX4OaFVhef94ffMPaDB+8bfXoOQSY6vpdfjNzMWgQLi6pzQoLazlkkOi0hAU3EJsSN9Lk5dZQESlnnP2rdTXvSUqNxcVNacYMROqa8sRngwsejEtXFK+Gj66QRi5VFwJisgE0/eItEek9f95V+wSfnYcte9UMh+/c5Xc07bgMTFs5C+ZhGWrL+EcVEmS/qCZWi1tGGmKhUl+w8xc3W66IzIJhK3sP3tbTwr/LOSmfk4vYVp08vSbrGg+uMvERs7AwU7vkJW7Gy4zHbsLNqBjAYVZBDjcFQ1gkJP3cIEFWXFSEhLH/cKJT8X7Zp2+CsUkIhPTcOYxeWEf5UDCaYI1Osb4FwYheTQJDS2VEA1KxVKdTjKqguQuWkDe4Z3MK26Fpu0ndAeKUH9jgPISiTBHbH8P277CPPFmWg3NMF5aTqe/t2N4BmI6zPJq7IQN+KiB+7Be488Cl735Lr7nhJ4LuRfdBbamltQs33fpK+Pei8huck4b92VCDtB4gUBDzv5RTh96Xo4yb96O7mfJG5P33IO+HzvsfKUaeHe9CBVBUJj7HTPGkaK99rWKoQZFYybY5DZkJich/Nvuw1O8kRFPOHEX3wh0hbkYeGys7DmyouZon3Y437BlzBAjrMv/h2uvu0vECplwx7j6UssIC91AG586ClYZCQD0IHkdiek7S7YBE5yvUK0VlQgacNqrxM8ZXqInoi6tbQUNV98j1A/NeRS4reTB1V67DgSg+OYQwRRAcTdsWHekg1Yfc2lE+4yTGtrhGEBuJIGrzYH1px7LZIWz5xQd99ThV3owgV33AY/sZypY7/gjttJGrtznNDr4wf44fp/PMr04VfHxaOjy937MkMRjyOFe5kMEBwWiZbv9qN+1z7om5uY/d7ClBc9HSFVvO0LBJqkiAiMhb6xCaHqWKZxRtHhYnoM0rJaEhjgrrN3OLF2yw2YvXkt0/twvFhcdlx6131QSNmGGLsDVz/wBCQRygF15b8UtOp03uZ1yFuwjk0BchesRd7ZqyaUEa3EcF/2178iJsrdIzM4Ig56h4F5rxDK4GzpZgyK0OxCRFQSQoVqCBuMKPzgY6/pUz+lRW81GtFI/Hc6oIFacYrRoINYIUdxxXHEiN2LCfCEPFjE/fxuItQtv70PAYnjDGpJKZ9zxlKkzZjPZKQehA4+Nt9yG8kQ42zlnSQ0k8mjgrD5uruIO9ev5CIZ+/wb7mL63Y8nI9J5NFduvQhpaXOYa6UIJGIYFe57R+fIsbYaYCfHWSzm3tklBOTWp8XloPTTL4hd+eVapH8upqzonQ4HEfx+xIQmMUvj9CDkiZjtruZWhAa4Re2yOSEiGaE/POKanLn1WqY11RMY8QRJ3V0NhuknPzN/BTLWLOoVyy8BLXW23HYn+IPWnqIw/e5vugV00hFPoNcXmh2PdRf+dkB1Jx2nIFKRuIjN5AniUNQ0VULCJ1Fsv/tOj0uOyUHRh59Me+FPSdHT6TxKtn2FKHU82Rj4wCVCCTPKx96hZ8RO0Zu0UAQP7YOSu3ANsted5pEbYCVWfON110I8Uj95khEu+/2fgYBfqCsCW+qk5ywcPqORtNnk+lKXUKs99vWZSebffP2tQ1txqbADRO5glhCujEBjbRVkEr8hy+/TwSSp8bNQ8O6HQ57LdGLKid5hteDkJ18iJS6L+OtDrZjFbkFLZxOCjMSysze+266HKGCYRini71/+h78hcl7mqMJ3Er85e/UiLFw5elcDOnBkxSUXTChWGA/UKktjg3HxzQ8MW+r0Qqzv5bf9BaKQURrkiJZpv6QNN1+PxLQ8NnEQir6+TXSOHEdrN3jEtTEYu9jUPmibRWbSHJR8+iW5/dNT+FNK9PQmln36LRKjiUhH6FficNhQXlaElOAENoVAdCGRytiNgdBKnBv/9jzkKREj+r8StT+uuPMfowuMZfV51yAwLdpjX5pmNjothxV2j8+xw4lVl1wGEW9oR7vByMQKLD3/3BG7RDvI9y+6ZBNWrL90gFvTHwEds9CzjzwDtUEGrUkPg77TnTYI+mySorNQ+O4HbMr0YkqJvuyrb5CUmMP4jyNBBWGsboeg35yRNqJsAW/kOjw6mOSGP/8dDjkpxgdfMbGE8zaeCZ7VQz+V/LYr/nQ/LCOPbemFflforCQsvfJCrPndVQMs6kjQc4LT47Bw1WY2ZQyIL75805WQhg9Tu0SuLTw3BedceZvbjRkBvoDGSX0ZIlWdiIaaGthJqTsSdBhnfGwmDOzoq+nE4Nv0q2EzGaHkSUdfrY9QUlyIbMkgX5+85fNHr7hWqxNwzi03EYvb9/AZkQTLsOb8qxmBeEpETAYWn7t+5AEnLHYSjKdnz8K3r76BPR9/jsRZaUOFOQiamS6/4x4mc3mKgBy66fe3D+h3T7+HT67tuj8/Rj5r9KpGV7+aKgaSAXQ1bZCOMbErnXGiq3r6zY0zZURPB4y0GzS9E4uOREb6DJww1TAWrgc6nZ7TOXYd8oIV5yBx0axe4bmD1+s8ciMGQALtc37zR/jHhowqYqFAgJPFBVh2yXmYf/aZqDpWOuqMajQTLT5vA8lUo8xqMAKz8pcjbdm83sxrI7/rsgcehFw89mILvMHzb5KgNiBODXO/NXiHw2DWIih1+o2ZnTKip2ScvR7VdUWjjtMU8gTwT4+Aydm3XqyQXIajZ8Ki0SA++yU33wNBqD8JXoEZ607DwtM3sTvHBx2IfdWf/wYM5zKxUIE3HyrD3tc+wHdPvQyXfuTfSD8jfBZxRbaOPavBsJCSYettD0ESE8Rc28ItG5CeMbc3E4wG9dF7F3MgFGnKEZeYDInfyFOjGC1dsIXKIJ2G0/9NKdHTPi5J61ej/ORBIoLhf5pAIMSMtFyUaIm1Z6HBosloZLdGR6kMww3/8yjkcSG44o+PeBS8jkRUZCrW33gDMy3ISPDYSVnpsMZRq7cDJLjh4SfA6+dbjxeJSIar73kQ6ux4bLr6jhED18FYzMSA9IielKBamQUKkR/85MOXElaeHV0yB8IyM9iU6cWUEj2FCj/hzJWobS1nHsBgRCTokknlsMiJgtj9cpE/HIa+RQjGIiohC5lziSswcX31QqcDCc0iMcYkoC2gZ1z3G0iFQ5cQGi/+QWpk5M9n/HJP4XcT15A9nLH4aj+malIuHfp7XGI+WsytiMt3T7syHZlyoqf4KVWIXDQHHbqhNQNWB/EziQUTkAdDux9Q/KUqGDUdzPsxIRnl0zeewZ53P8JXbz9H7sDQjDUuiDhOP//iCXdwo4RmxOG0dReyWxPHJRbg+Qduxw+vvQ3tCAPqh0Cn89PZemtvmruaEROfBKPVPGSZTRe53xX1hUhaOr1HUU1J0VOkgYGQpEZCZ2wfYPHtLuIXE9dHEaJGJwl8KTwRH2YPLX23oQPfv/YWJE4hvn75NZw8eZjdM3FmLzkT4bmpowa1I0E7zi09bwuTeSYFiYPefPJ+tBfVgnZD+uTN59kdo+MeekncG7Y2rNLegriIRFjsZmJU+i6INlbRgSaZG6f/gJIpK3pKUFw85LPT0NBVDZPdSLTPg1wZCJOuC5nJOai0sjN02V3wM3vQ75tklndf+AdERrcfLyY6e/XuP6G1zT0+dMKQIPKae/4HghDFuIRPY5GUpbMxb9lZbMoEIdf15VvP4PCH3zBDHWkjX+GXO1BdU8geMDJWkxEKvbvRgYpcECZjpjSXyGRMJz9aqdDe2YA2dCBpuXeMk53SoqdIiauTsHoFkBiMitYy8OV+aCMipQNJugNdbmtEHrKlQzegRBgCOaay7DARw67egJL+dWrNePOxv5BgYYId1FkC5MG45K77mWpQT6CZQxKpxFX3PjqpYJpy4sgOfPnifwcs8sa3OvHK/XcyMzqPRkd9NQJITESp0zYgJDGO3BhyXxRE7B0NKG8uQeiKuYjMzWWO8QamvOh7UEZGIn3DGhgEZrdfT3zQsIQ4dBq1zH6mv8goUwC6JEK88c+/QjTokqnw6w6VYPvH/x4904wFOTd9xnzkrF82aj+fHmjmOO+WO5jekpNCLMRHLz4NP7rUfz/odZmadPjwhb8zJcFIaJsaofJ3d9Fu4GmQnpDNuIsN5WXwn52KjPVrIZT8TJPV/kpMG9FTjBoNwgMiYKF18iQATU+egSJjNbNPYRBArxshmCWC/Py1p9BV2TxstaHQxccXz72MhvoiopaxBTsiDicuvOl+iELHqIUheStj1ULMyF/KvJ8wJAh9/8W/o+tkI5swEBpb737/c7Q0DJzHpj8incMdxJIS0xFOZ4m2M/NcRmdnofrHPYyr5G1MG9E7nQ7Uf7cD/pJAuGQCZroKoY0HfrQ/4+IopcGoPTp8UKrVNmL7G+8x/u5IiMxOPHfvnbDR5Tkmgdglwjk33cpUQ45IoBSX/eFBEguMcsxYEC0ePfAd9rz+Efh0Lc0RkJBC8VVSwvUMCBkAKQEszV1MRj/YWoCcPFqN60JTcxWCwqKRlpyHgrffZQ/2HqaN6Ms//xYJibOYhxKZmoHmunLm/cz8+TigOQ6xSAJTKbF4g1YOp+J79r7bxly6njaCWus1ePz2a4jrMQnhE/3Rfu4py+YMG9S6iI996d13j9xv30NOnjyAtx56GGLe6AE8Ldnajlfiwxf/hxF5f8wOE4QNFhhdZtgTFQiiXRZIqajVtSIwNIIJZFMT81B34CB7hncwLUTfWlKC2MjU3t6XofHJaOl0F+lKvgL8rBBoLF0QVnQPdHHIQ37nuYehLa4b1q0ZDG09bT9agZceunVygS1xD7bccDsz/V5/aCZIO30usmYtYVMmhlbXjJfvuQvQ2zy6LgG5rp2vvY/66oG1OSU7v0O4IgI7TQVYumA10/7Bkwhgl/J77zUtHSVaCwxtI88ePd2YFqJvOnB0wJA5aoGEATISuLqFOT9zEUoFjUgITUPFT7uZNEp7YzkObvuGEbOn0GMrdx3BF+88y1i9iaIMisLSizYN6IlpJT93/cXXMOKaKC4SZD5HSi6+zoO+Rv2Q8IT44vWX3I1RFBIAO8o0OGmow5zTV7hnNiO0NFQiKs29SF0PgYFRqN3lPdZ+you+q7EByXTET7+HQN+HpSSjibo4FLsTSQvysLP9CGzHm93+Kwl0P3njBUh6ltEcB7Tq77uXXkdTQxmbMgGIsDdcdgsCkt2DV5hZDTatRSgpsSYMEeybTz2AjuJajyx8f+jxpTsOoqmWBOuEViLujoo2ODKViJD1LaDc2tGI8KR0dssNHcEW5BcAh230XpfThSkv+tYjJ4j/O7Trb3hiBjo0xMVhrXGUPIKI6gzom4woL9gHTUc9TmzfO25x9CCyu/Des/9kWjonDHERLr/9HsbC01kNzr120KwG4+TE4R04+MHXowbkoyEi5/37Hw8zVbs1uw4AKhlmZ/VNa06n6HYqhEwNzmDoVCGGpuk3YGQ4BA8Q2PdTDlpdpjlSAmVAMJvSD2J9mjtqEawI6629MFq7Ya/XwWRsw6dfvAV9TTPorom8qDQ1Ta3wC5IgJjkLrgn+CwgKQ6epFcvPuxjqYBIc0s+fwD86Lvf/HroTFo1+yG/19EWvyaDRgqcAAk4YIbKKEZaeQFw65vahivj80XNmwk8ycGYJBnK/dd0a+EdN/znqp/RclnRmLUkzKVLZOW8GY4MDRZ99hqwUYq3IZRhhQeUHOxEolsK+Pg5JmXPYIyeOzWbEY3dcC82JfgNX6C2j73v+jpEmIP6NkxQ5zK324PjBabQG6vTfXIEzzqfxwMRLCgbiIu1/63VktcTiYGcRFm05mymRaK1XQfluzD5z04jDNZuaKxF39ip2a/oypd0bS6cOvGGK2h5EEMCpFMHqco/llPsp0CHqRogsAh2fHYZLSMdUTe6fWCTH7x99GZLIIPJtPGbFbb6LP/DvGGm08Yc3wr6x0lwkw+Sftx5nXnAt+QzyOZP811BVhJAy930RBkvdGYxQXnYYCfMXjDo+WakMgVmvY7emL1Nb9G0a8kzcD2UkZixdi9JSd80C9UVdxB2hXY5T/JJQ/tMPTPpkkfDE2Prnh2AfVAX5c0MD4OCsWFx4w71Ma++kIda8+tMfEaaKIRafBwvtcmN3MtWUepcBQUGjuy5yVRD0DcO3/k4nprTodUT0PQsxjATTySpQAgdtcycZJDQuFu36dkjgB+OxBvKgJ1Hf3gNxNRLic7DqmiuYqfF+CajgXUoJfvvQ45PvdsxSdmQ3Ui2xTL+lkrYypGXMZNKrKgqQmD932HmG+tNt7IR9lJJgujClRZ921hqcrClghqf1+riDIULPWX4GKivdq19nJs1Aid1tjSL1gSjY+TnzftKQ71m9+SpEzEoZtqX1VGMlweuFd90Nf+kwQfxEIMbDsL8CcmEAY+Wbld0IV4UzfW46LO1Qh7lnfx4OWttTWV8MRKsQMSOLTZ2+TGnR0/WmsjZthCA1FM22FrS11xLLP9RyC2ieCJG5rb3FAWmyGl0OA3nA/hDubEU9rZse3UvyDGJxL7ntPuLcera6+EShNTX5m1djZt5ycmFs4mQgweuRz99HrM7dm7JSW4uU3FlMg1RFbQFmrdk4xMrTfvTdZh3qO2uhlZmRtukMqOJGzhjTiSkt+h7oKKrYxQsQvmYx6o0NqKkrIY62cIDrkzZ3CY4UEB+eWLH5eUtRYK5iSoc4aQIaXt8Bndk9ymqyhIbG4/K/PMRMef1zQDOTKi0KF9xAMtdka2pYThzYjsDDNvgJZMwY2LpgAxLCk+Ak9sMh50MicPcDooPxeTIJWlurUNNZDb/cBCSuW46QVDoqbFpIxSOm1fI7PdAel21l5bB0dMHY3AaeyQE+EUhF6TGkqdMRFhiDA2X7kVAlQYBAwTzovY6DWPb7WzxeOn9UiAA+eeNJ/PjK2wMGbkwWKni6dOYfX34VQaooNnUSkEfb3FGJphe2I9XfPXPB0c4iJG5cDLU0CLv2bEPq2pUwdXbCJRJDFh4IaUQogpMSIBT/QhPV/gpMS9GPRPmX29G8/yByEhaS+FWEvds+Qa44jdlHuwwfUZRi+VU3MA0tk0YiwhN3XIXGfUVMf51TAZ1WfMuD9yB//lo2ZXKY7N04/NgrmKXIZYJXuiTnbkkZVi5ch/qWcpiC+YhesRhBsbFeZcnHwmuulPYLkVqB/DPOxcFj34AuMOCKcgdtFBEpyzM10Sjc+cWp8e8tNlz3wKMQh/kzFnqy0L45c85dh/zFZ7Ipk8POd2Dfsy/3Cp5SoC/DktNWw+KyoM3SgsxZp8Gu7/YpwVO85mqNHR0IjSe+J3FfZq09E0eLdiAvbwF26Y/1Cl8hVEKxV4+SIzsYF2WySPhy3PDPJwF/yaSET6cKT1mahy3X33tKSiE6w8KhV19DPn92r+DNsEKUHASXxYqC8p8wd915zNw2loY2Zr8v4TWit+n0vfXZCkUw0lcuR3XlcUTnZ6JK2zfJaIgwDIrtHdj3+VtMNd6kIHkpIjQJa666DPZJFB/KxHBcc//T4J2CBigLEfeOp59Eli6J5Cb2N5GA/oC+BDNnzcfB4h+x8JyL+/rLW51w2L2j96SneI3o7WYr+i/ToyCBmiBUjrCgEFT4awbM1RgoCUFskR920v7lp0D4yzZegZCZiROy9tSP33D1deTNJBugSGhG5wja++QLmIc56N+G1u3QQ5KqxokTu7D4/MsYC99DUEg0rAb3Qmu+gteInmFQTJ4+eylKao8iPCUWBvPApWQCREHIao7Bt0897h5oPhmIYH/7lydIbhpf/T3142esX4acuSvZlAlCLHlNYzGKHn8H+YI+H57C4/NQaWqBOkiFsJxMZl7N/tBaGscYsxN7G14j+uFqUGiDy+JNl0Gva8cRRR12dhfC4Oyb6FXC88MCRx72v/AK4xYMzjTjQS5R4uJ7H4DVwztKM4cyNRqX3fowEekk3Boi+JMFu2F4dR9mKGcyATwDKdkqdXXY5ShGnawFsvBgRMcOM+EqyRSGZvc6sr6C11RZth0rgtI0fN0ybV08susLBNil0OpNMJQ1IY0fBX8+u2QPEU65uQyu2SHIPn0thIPmkPEYEhzv+PINbHvsGYhGGbFFBU+n1P7Dv16APzvnzLghH9/Z1Yzq7buhruAjiF1elIq43tCEZrUFCTOy0NFRg6DkeMQl5ZA8PfRR0+n6OgRdCM+ZwaZ4P14j+taCIqiMozSoEGHX1hTCXN6MpISZ2HHke9hOtmNh4Ezw2QoT6m6cMBZCtXoGMvKXTayjFxH+Z288gR//710MNzUHFbzTX4Q/vfQfBKoi2dTxQZcbOvzJe5AdMyJRleJ2Z8j1tVs1OOqoQlL+LCRHpmDPwc8w/9wtkAqGX4+LQrt1WGKkUISOc83daYwXiZ6I1UQe7hiXU11xDN3ljUhLmo1upxm7d32LiDY/pCsT3K4BEQ8d6VQZqEHm5jXEF44Zv9sjFuKR67egs2ToLAx0duMLHrgL+f1WAPcYEnQf3fklrDsrkSZNg9Dl7odkdFlw0HgSstQQLMpZwlzHvoKvsPD8y5n1dEfDRTKhIzkQsqDpt7jCRPEa0WtOlsFfKyQPfAz/mIi6qekkKnftw7zcNYygy1srULH/KDJs4QgPCHdbTuITV+sqYcqRI33VKiiIzz6evjBlxfvx3M23MnNu9kCtfNzSPFx335Pjq48n1rixphjVn+1EiiESMpE/vQx02404ZqiAMFGFRXNXMJ3tDNYuHD25G4s3XwYhxnbT9AYN/BdlQywdedURb8NrRK+tqYVcy4PL5FlNjAU27P/obWTEzoJKHsIMii6sLEBLRQ0kLXZkKGPh7xfA+MGlnaVwpAdAPTsDCckzPateFPDx9gsP4+A7X/QO5KaDrv/48r8RTEuPsSC+OV3/tWj3t3AUtiOwlY8Qcp62qwNVpmaYAnkQRfgjf9ZCiG3E4pNMWlp+EFZ/HvKWbwBd/c8TGqqLkbBlPbvlG3iN6Lvb2yFps8FltLq7yY50WcREUoEbuzqhJVaxpuAIZCYBUuNmugNYIh6L04a6xmp0azQQ2wVMn5Xm7nZENokgDBJDlBQMqKUIS02HKjjMPXvAcN8n5OPFh25B2faD4EmFuOj+ezBz9ukjHCuAi+dEa30lOiuq4WruBioM5AHx0RhlR6BCRcIFPuRKFULVEZAK/UhpQUoekjla2qrRZmkDLzIIEYGRCI1OIueRrxnpPtB7QOe/Ie5Sc1sVYlZObvKp6YbXiJ4+3Paycpg1XdA3tTBrPMFkIVfYt5/HF8Dux4d/dCSCUhOYacAL3/0IyfHZOPLtpxBb+MhMm9c78dEAiEC+P/g14uqliJaG0/kJ0NBVC4PMAl6sEtKoIMjCwhAYGYkAhZrp9kxFR//+/YYtWLJxExas2OQWGxGvw2xFp7YZnfX16G5qhr1GC1G7AyqnHGplBDOutsJQi6Z4J1bkrXQLfBBW8u9E8V6Ezc5GXGI2LLFyxjfXNzXB0NgKfX0juWYRM1MzyRuw0f5I5OutViOC4+LgIr8lmNwHyaAVR7wd7xH9SJDLo5c4Uqeq2u93IkIRzTTZ64waFO34HipBAJKT3IMsBkAs98GivTAda8T8kJzeJWtoa6/T4YTG0IJumxFWCRGY3Ak/uZxxcwRCCRywg0/cIpvdDqNWD3+zBGInHypJIBTEijMBL/so6IS0+zXHIc2NRl7ynCGCpyVPYckeQClB3ooNzEqHtFrWEi+HQj3BKlAfwvtFPwaNh44hRBDUu2gzs/JGez1K9+5BpCwc0dFpRMH9xE9cg067Dvv3/oiAZiBblQQJj6h8pNtII066r+fvSJD9Dp4DhztKYQx3IX/BcpL5Bk75bXVZUVJxCK4AMWYsXc3MkNzzmXqjFrLZSUzpxTE6Pi962juTV66BgJb7/aDib22sRF3hCYiIl5Sakuc+pqfFk7ZkwoRjBfthq+lCvC0QUUFRxKUh+z29pYxvzUNxRwU0AVYIwxSYlTMXCr7UXYNEIe6RQa9BeU0hxOFByF60wj0QZtB31NeUIvH8de7MxTEqPi96SvX7XyIyKoXdGgh1i8zEB64vK4KNBMk8vZl4Ff4IVke7XSbqehBh1rfVor2J+NBmO5waM8R6IEERQXaJ3fX/9LOI29JqaEezUwNJkD8cMnK+QoTY2CQSqJLgmH4WOcZmNqGxpQpOuRB2EpH6h6kRlZTBdJseLkPRtbgqm0uQdtYZbArHaHCiJ7QcPoZAq2druNJm+/amGrRWlcPaqYfQIYBUKEUIyQQyFXEtqMCJCHUmHcqrSshxtUg0qdFlN0AX6kB8ehaSSAZjglwicBcRekdrHYxGHbqsBkAigCIiFDHpM+An9BvQc3RExEJ0KSzMWFaOseFET9A3NsKvzeFxHX8PPD8xTpTthZ9dAqehG3pNG8QCKcQQMav2Wc1mOHlOlFSWITIsAv4SGUR+fswCEgKJmFnqX0CEr4yLg1bbjtiUVFKKkEB0nI+ksakccWetGjFY5xgIJ3oCbcU9+fYnSEjIZlPGhlr8k1UFyDz7DNTt2odwMdt3hfrptH6QuDyDR2dRd5u527T+nATHzI0nCRa7Ea5kNZw2G/SFlQhXx3lm4VlaHW2IXtQ3+zDH6HCmgUAtpChcyVjuMSHKNbnMqGgpRuY5ZzLnqpJiiVvCzsdDREwFSxeOcBktA17Obva91U4OI5Jn7Y1G14qA8AioYmIRsigXZXUn4BR7FpC6/ERQ0mUwOTyGEz1LwtIlqCw97DbHw0AbmbqJz91oqIc4IxLpa9eQQ93HBkRFobajnOmxOF6sTgtUOe4ZGyh+AUpkbloPk1qERm0d0zdmpM+lv6mmoRj+EdN/+uxfEs696YeusQGuinZIRe6gloqKOiHVFYWQhAZCnZUC/5C+VTsGc/zdD5CeOBsuD4f+MdPlNRYh7YyRp/ww6XRMW4K1VYPYxCwSLwh6XZ/GlgpEr13ideu8/txwoh/EiQ8/RbAsCB0tTVDEhsM/IZqZF2akEqA/dBKq0o++RHJc9pjC54mFKK06guxNZ3n02ZSOqmp0N7bAUFEPVWQ4+MQlC8/2PA7hcMOJfhD0dtjNZogm2NXW6XCg/OOvkBCT6e7wNQxU8BU1J5B21toJ17hYurshod0cOMYNJ/qfASr82m9+RFQQHZgysBaGCv5E6T7MvOBcrorxV4IT/c8EnXGt9sfdCFGEM/X21IXpNnXC6M9D1Ow89iiOXwNO9D8zzUUnYKluhV6nRezS+Qjgalp+dTjR/wLQGEEgkfRWcXL8unCi5/A5uEiKw+fgRM/hc3CinyQ2Yzfqdm+HqePUTI1Xu/Mb7H/2H+huqWdTOE41nOgHQevVXY7hG5WGQySTo/anXXg2Jx/aylI2deJEzVuKQ8+9jG1XX8GmcJxqONEPwmrowhNJKdj1yH29vSDHYv6Nt0PoJ8Lb523y+JyREIjFuODd99FwoBjaihI2leNUwol+EJKAQORcvBF7//UyEd5ONnV0BBIpFv7xt9A1aFH/049s6sQJSs2Cf4QKBW/9h03hOJVwoh+GFQ8/jt8VFxBffQebMjY5F/2G+XvkleeYv5Mlc/NZKHrjQ3aL41TCiX4E/FTBxNp6vqylWOEPZVQwyr7YQzwcz0c9jURwRjr0HTo47ROYOZljVLymccqq6xrSueuX5u0LNqDlWBWu+PpTBMTGs6kTo+STd/D17Q+eks8aDaFUStwz3+qP7zWif3HOTGjr29ktDk9ZdPt1WPiHe9ktH4GK3tspfOc/rtfPWs5unToeCYt0HX7pSXbLxXwHTTN3atiUkaHH9j93MLW7vvP4s8ZirO/yNbzOp9fVVuLof57Hx9ddhG3XXIDjb/+bBKR9NSoOqxnamjLiK9ugrSrD7kfuw/Z7bkXptjeZASQ9fHDRRhS9/192C8xMBXuffBgv5Obgxfxc/PT4w+ye4emqLsenN1yCT66/mPmc/p/dQ+2e3Tj+5iv46OrzmeMK3351WBeN+vVtJw6jcd8O2M0mNhWw6DqZa3GYzSjZ9ha+ueN67Hvib+R6v2eP6IN+1zFyX97cvHLU7/IFvEr03997K56fexp2/eWfMGo6ib8qw74nn0LRe1+zRwCthUfw4rxleGZGJr647UbkXX0TVjz0GMSqILx97rreILTlYCkMrc3Me1N7C16Yk4Ndf3sGM6+6GBd98ilmX3k9zn3rJXRVVTLH9GfHX+8hmW4r5t90O9b+83lEzV6ADy7ZBLupm9lPRdzd3A6TtguGlgZkbj4f6sxsfHf3g3ifHNefz363Fe9fugnykAhEzluC/U/8HQWvP8/sO/zqc8y1PDszB2ZtB1b9zzOYd/OdqNm5nRzzAnNM/+8yaTWY97tbR/wun4Gx917CY9GxrsaDe9itPpwOh0tTVsy8bzy0h3EbnsvLZNIprUXHXE+mJzPpVoOeSXsmJdW175lHyMlO17OzMpl9lV9vY/b1p+CNl1w1O79h3ve4N8/NynDZLWYmrYfCd//r+vT6y5n3dJ+lq9Nl0evIud+Sff9hftfRV59jzidC7XVvniWf5bBamPOIZXc9nZ3qeiYjk9ne8+RfmWP2PvU3Ztths7mKP3zN9WhkjOu7+25l0vp/V+V3nzO/Y8B3sffAl/AqS5+9eS0iiFV1WCyo/uErvHbGEryydD5xYe6HPCycPcrNaXf9qXe4HhEtzJ1GrH3sIYjkA6f3M7Y1Q9+kRfLaBUhYtZFN7SNz08WIyJ3Hbrk59613IBAPXPRNJPVD8YffMC6FQCTGwReewJMp6Xjvgiux/Y4HyG89F9vv/itzrLW7b83b9f/7DPY9/QieSkzCk6nZ5PcYkLJxGbvXTfZ5lzF/6fUUvP4mM0B91kXubgz9v2sbKZ2+u+2+Ad9FMhTz15fwKtGfdj/xuXOy8FhcIt7dshVNhyuIyBwQyGX44OKBXQQi5/TNCDbnN7fiks/fx4yLrmRT+hBK3YOv866+lvk7GFrdJ5L7s1tuVPHJ7Ls+2ooLma93WMz4/KYrcZxkjK0/fo1b62twY2UFfld4mGQq9jf1zIxMCMmcSc4tgdloRlheMs57+xWs/NvT7F43kgD39NxU9Of8+01cvWs7gtLcS2T2/65baqpxU3XlwO/yjsq7ceFVohf7K3Hh51/grJcfJ68n8PvKk9i68wAW3HgnVv/jCRL4dbFHDoLHQ0Te8NPiif0DSGY4k92aGA6LCYeffw0CgYBYVitqd+0nItzLdDfomf7DLyiElA7DL4y2/n9fQUC0CjwnD3FLVvWeMxw0A6qS3JNHEVdt4HexjPZdvoBXif6Njafj+fwFOPbaf5mOW/rmOmLt92LPvx7Ensf+DskEFyxY++jz6CguRsuRvbAZDbDqtaj45mO8uCAXr69bNmqvTHr8W+duhFlvwqpH/0ysshKzrriCxlIksDXC2NqI4o/exDM5GSj5aPh+O3yRCFft3E/cHhO2XeF5pzbaA7T/dxnqq8m9eWHU7/IJGM/eSzBp2kiweJnr8fgEJkijrxfm5pAA7jP2CHpMu+uFeTNdndUn2ZThOfDso64Dzz/GbrnRN9a6PrryfCZQ/N+0NNdPTzxEgkwru9fl0tVXuz647ByX3WxiU1yulmP7Xc/kpLu+ueM6NoUEnOScnY/cx3wG/Y3P581gAuLmIwdc/7d0DlM3r60ucz2dkTqgnl5zstD1RGoS8z2U1sJDzDE2YzezPRz9v+sf4VGulxbOHvBdo53rrXjtGFlar/7O+eux+I67EDZzNrF6/QJUcsnU1+cJRp97kgadp2JuGnqLJzIovOfR9D+XVkHyhX2/m/mNdP8EPt9X8eqB4VU/fIn3tlwFRVgArjtygptciYPB62dDqP7ha2irKpCx6QLi0/vOUvAcI+P1oufgGAxX3nP4HJzoOXwOTvQcPgcneg6fgxM9h8/BiZ7D5+BEz+FzcKLn8Dk40XP4HJzoOXwOTvQcPgcneg6fgxM9h8/BiZ7D5+BEz+FzcKLn8Dk40XP4HJzoOXwOTvQcPgcneg6fgxM9h8/BiZ7D5+BEz+FzcKLn8Dk40XP4HJzoOXwOTvQcPgcneg6fgxM9h8/BiZ7DxwD+HwerfycCeYoSAAAAAElFTkSuQmCC" alt="Srichakra Academy" style="width:120px; height:120px; object-fit:contain;" />
+    <div style="text-align:left;">
+      <div style="font-size:22px; font-weight:800; color:#a83246;">Srichakra Academy</div>
+      <div style="font-size:14px; color:#555; margin-top:4px;">Self Discovery to Success</div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top: 22px; font-size: 14px; color: #333; line-height:2;">
+    <div>🌐 <strong>srichakraacademy.org</strong></div>
+    <div>📞 <strong>85903 96662</strong> &nbsp;·&nbsp; <strong>98430 30697</strong></div>
+    <div>✉️ <strong>info.srichakra@gmail.com</strong></div>
+    <div>📷 Instagram <strong>@eswari_srichakra</strong> &nbsp;·&nbsp; 💼 LinkedIn <strong>eswari-k</strong></div>
+  </div>
+
+  <div class="pg-footer"><span>© 2026 Srichakra Academy · All rights reserved</span><span>Coupon: ARTS500</span></div>
+</section>
+
+</body>
+</html>

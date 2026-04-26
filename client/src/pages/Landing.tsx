@@ -360,6 +360,50 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* ══════════ E-BOOKS PROMO BANNER ══════════ */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #006D77 0%, #00838F 50%, #0097A7 100%)',
+          padding: '32px 20px',
+          textAlign: 'center' as const,
+          cursor: 'pointer',
+          transition: 'transform 0.2s',
+        }}
+        onClick={() => navigate('/ebooks')}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.01)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
+      >
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <div style={{ fontSize: '3rem' }}>📚</div>
+          <h2 style={{ color: '#fff', fontSize: '1.6em', margin: '8px 0 4px', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
+            Career Discovery E-Books
+          </h2>
+          <p style={{ color: '#fff', fontSize: '1.05em', margin: '4px 0 8px', opacity: 0.95 }}>
+            5 stream-wise guides covering 175+ careers in NEET-Plus, Engineering, Commerce, Arts &amp; Future-Ready Tech
+          </p>
+          <p style={{ color: '#E0F7FA', fontSize: '0.9em', margin: '0 0 16px', lineHeight: 1.6 }}>
+            Starting at ₹99 • Instant download • <strong>Includes ₹500 OFF coupon</strong> for the full Career Assessment
+          </p>
+          <button
+            style={{
+              padding: '14px 36px',
+              background: '#fff',
+              color: '#006D77',
+              border: 'none',
+              borderRadius: 28,
+              fontSize: '1.1em',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              fontFamily: 'inherit',
+            }}
+            onClick={(e) => { e.stopPropagation(); navigate('/ebooks'); }}
+          >
+            📖 Browse E-Books
+          </button>
+        </div>
+      </section>
+
       {/* ══════════ SERVICE CARDS ══════════ */}
       <section style={s.cardsSection}>
         <h2 style={s.sectionTitle}>Our Support & Services</h2>

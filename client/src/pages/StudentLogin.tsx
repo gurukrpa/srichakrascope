@@ -50,10 +50,15 @@ const StudentLogin: React.FC = () => {
       navigate('/access-gate');
     } catch (err: any) {
       const code = err?.code || '';
+      console.error('[StudentLogin] auth error:', code, err);
       if (code === 'auth/email-already-in-use') setError('An account with this email already exists. Try logging in instead.');
       else if (code === 'auth/invalid-email') setError('Invalid email address');
+      else if (code === 'auth/weak-password') setError('Password is too weak. Use at least 8 characters with letters and numbers.');
+      else if (code === 'auth/network-request-failed') setError('Network error. Check your internet connection and try again.');
+      else if (code === 'auth/operation-not-allowed') setError('Email/password sign-up is disabled in Firebase. Please contact support.');
+      else if (code === 'auth/too-many-requests') setError('Too many attempts. Please wait a minute and try again.');
       else if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') setError('Invalid email or password');
-      else setError('Something went wrong. Please try again.');
+      else setError(`Something went wrong (${code || err?.message || 'unknown error'}). Please try again.`);
     }
     setLoading(false);
   };

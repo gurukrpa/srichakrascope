@@ -63,6 +63,24 @@ export function renderPage1ExecutiveSummary(data: ReportData): string {
       <div class="student-details">
         <p><strong>Student Name:</strong> ${studentName}</p>
         <p><strong>Assessment Date:</strong> ${assessmentDate}</p>
+        ${(() => {
+          const c = data.consistency ?? { level: 'High' as const, flags: [] };
+          const bg = c.level === 'High' ? '#d4edda' : c.level === 'Medium' ? '#fff3cd' : '#f8d7da';
+          const fg = c.level === 'High' ? '#155724' : c.level === 'Medium' ? '#856404' : '#721c24';
+          const note =
+            c.level === 'Low'
+              ? `<span style="margin-left: 8px; color: #721c24; font-size: 0.85em;">— Some answers were inconsistent; results should be interpreted with caution.</span>`
+              : c.level === 'Medium'
+              ? `<span style="margin-left: 8px; color: #856404; font-size: 0.85em;">— A few answers were inconsistent.</span>`
+              : '';
+          return `
+        <p style="margin-top: 8px; font-size: 0.95em; flex-basis: 100%;">
+          <strong>Response Reliability:</strong>
+          <span style="display: inline-block; margin-left: 6px; padding: 3px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 700; background: ${bg}; color: ${fg};">
+            ${c.level}${c.level === 'High' ? ' ✓' : ''}
+          </span>${note}
+        </p>`;
+        })()}
       </div>
 
       <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-left: 4px solid #006D77;">
@@ -83,12 +101,12 @@ export function renderPage1ExecutiveSummary(data: ReportData): string {
         <h2 style="color: #006D77;">What We Measured</h2>
         <ul style="line-height: 2; font-size: 1.05em;">
           <li>
-            <strong>Aptitude (Ability):</strong> 16 objective questions measuring cognitive capabilities across 
+            <strong>Aptitude (Ability):</strong> 24 objective questions measuring cognitive capabilities across 
             four domains—Numerical Reasoning, Logical Reasoning, Verbal Ability, and Spatial Intelligence. 
             These are performance-based tests with correct and incorrect answers.
           </li>
           <li>
-            <strong>Preferences (Interest):</strong> 60 self-reported questions exploring what the student enjoys, 
+            <strong>Preferences (Interest):</strong> 50 self-reported questions exploring what the student enjoys, 
             values, and feels motivated by. These cover interest patterns (RIASEC model), multiple intelligences, 
             learning styles, and work preferences. There are no "right" answers—only honest reflections.
           </li>
@@ -157,7 +175,7 @@ export function renderPage1ExecutiveSummary(data: ReportData): string {
  * - Interpretation of what scores mean academically
  * - Guardrail note about aptitude being capacity, not destiny
  * 
- * Data source: 16 objective aptitude questions
+ * Data source: 24 objective aptitude questions
  */
 export function renderPage2AptitudeSnapshot(data: ReportData): string {
   // Extract aptitude scores from data (assuming they exist in data.aptitudeScores)
@@ -289,7 +307,7 @@ export function renderPage2AptitudeSnapshot(data: ReportData): string {
  * - Preference explanation (what student enjoys)
  * - Top preference domains list
  * 
- * Data source: 60 self-report preference questions
+ * Data source: 50 self-report preference questions
  * EXCLUDES: Career decisions, course recommendations
  */
 export function renderPage3PreferenceAnalysis(data: ReportData): string {
@@ -339,7 +357,7 @@ export function renderPage3PreferenceAnalysis(data: ReportData): string {
       <!-- SECTION A: Title + Intro -->
       <div class="header">
         <h1>Preference Domain Analysis</h1>
-        <p style="font-size: 1.1em; color: #666;">Based on 60 Self-Reported Interest Questions</p>
+        <p style="font-size: 1.1em; color: #666;">Based on 50 Self-Reported Interest Questions</p>
       </div>
 
       <div style="margin: 20px 0;">
@@ -1266,8 +1284,19 @@ export function renderPage8ActionSteps(data: ReportData): string {
           </ul>
         </div>
 
-        <p style="line-height: 1.8; font-size: 1.05em; margin-bottom: 0;">
-          To schedule a consultation, visit <a href="https://srichakraacademy.org/contact" style="color: #006D77; font-weight: bold;">srichakraacademy.org/contact</a> or visit Srichakra Academy directly.
+        <p style="line-height: 1.8; font-size: 1.05em;">
+          <strong>📞 Book a 1:1 Career Counselling Session — ₹1,399</strong><br/>
+          A 45-minute personalised session walking you through this report,
+          answering your questions, and mapping the next 12 months.
+        </p>
+        <p style="text-align: center; margin: 14px 0 6px;">
+          <a href="https://srichakraacademy.org/counselling"
+             style="display: inline-block; padding: 12px 28px; background: #006D77; color: #fff; text-decoration: none; border-radius: 24px; font-weight: 700;">
+            Book Counselling Session →
+          </a>
+        </p>
+        <p style="line-height: 1.8; font-size: 0.95em; margin-bottom: 0; text-align: center; color: #555;">
+          Or visit <a href="https://srichakraacademy.org/contact" style="color: #006D77; font-weight: bold;">srichakraacademy.org/contact</a>
         </p>
       </div>
 
@@ -1351,15 +1380,19 @@ export function generateFullReport(data: ReportData): string {
           /* ===== PAGE LAYOUT FOR PDF ===== */
           .page {
             width: 210mm;
-            min-height: 297mm;
+            /* On-screen: hug content so sections don't have huge empty gaps. */
+            /* Print rules below restore full A4 height per page.            */
             padding: 25mm 20mm;
-            margin: 0 auto;
+            margin: 0 auto 12mm;
             background: white;
             position: relative;
           }
 
           @media print {
             .page {
+              /* Do NOT force min-height — that pads short sections with huge   */
+              /* empty space at the bottom of every printed sheet.              */
+              /* page-break-after: always still puts each section on its own page. */
               page-break-after: always;
               padding: 20mm 18mm;
               margin: 0;

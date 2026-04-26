@@ -12,15 +12,16 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '../firebase';
 
 // ─── Config ───
-const ORIGINAL_FEE = 2999;     // ₹2,999 (original price)
-const OFFER_FEE = 1099;        // ₹1,099 (10th anniversary offer)
+const ORIGINAL_FEE = 2999;     // ₹2,999 (MRP)
+const OFFER_FEE = 1599;        // ₹1,599 (current offer)
+const COUPON_DISCOUNT = 500;   // ₹500 OFF (e-book coupon)
 const OFFER_EXPIRY = new Date('2026-04-30T23:59:59+05:30');
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
@@ -56,13 +57,29 @@ function getOfferDaysRemaining(): number {
 
 const AccessGate: React.FC = () => {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { currentUser, accessStatus, accessLoading, hasAssessmentAccess, logout } = useAuth();
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState('');
 
+  // Coupon state — auto-filled from /ebooks/success redirect
+  const [couponCode, setCouponCode] = useState((params.get('coupon') || '').toUpperCase());
+  const [ebookLeadId, setEbookLeadId] = useState(params.get('leadId') || '');
+  const [couponApplied, setCouponApplied] = useState(false);
+
   const offerActive = isOfferActive();
-  const currentFee = getCurrentFee();
+  const baseFee = getCurrentFee();
+  const discount = couponApplied ? COUPON_DISCOUNT : 0;
+  const currentFee = Math.max(0, baseFee - discount);
   const daysLeft = getOfferDaysRemaining();
+
+  // Auto-apply if both coupon & leadId arrived in the URL (from EbookSuccess CTA)
+  useEffect(() => {
+    if (couponCode && ebookLeadId && !couponApplied) {
+      setCouponApplied(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Real-time listener: detect existing UPI claim & auto-redirect on approval
   useEffect(() => {
@@ -105,6 +122,8 @@ const AccessGate: React.FC = () => {
       const result = await createOrder({
         studentName: currentUser?.displayName || '',
         studentEmail: currentUser?.email || '',
+        couponCode: couponApplied ? couponCode : '',
+        ebookLeadId: couponApplied ? ebookLeadId : '',
       });
       const { orderId, amount, currency } = result.data as { orderId: string; amount: number; currency: string };
 
@@ -236,7 +255,7 @@ const AccessGate: React.FC = () => {
                 ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
               </span>
               <span style={{ fontSize: '2em', fontWeight: 900, color: '#fff' }}>
-                ₹{OFFER_FEE.toLocaleString('en-IN')}
+                ₹{baseFee.toLocaleString('en-IN')}
               </span>
               <span style={styles.savingsBadge}>
                 SAVE {getSavingsPercent()}%
@@ -275,7 +294,7 @@ const AccessGate: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: '#333', fontWeight: 500 }}>SCOPE Assessment Fee</span>
                   <div style={{ textAlign: 'right' as const }}>
-                    {offerActive && (
+                    {(offerActive || couponApplied) && (
                       <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: 8 }}>
                         ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
                       </span>
@@ -285,10 +304,56 @@ const AccessGate: React.FC = () => {
                     </span>
                   </div>
                 </div>
+                {couponApplied && (
+                  <div style={{ marginTop: 8, fontSize: '0.85em', color: '#0a7c4a', fontWeight: 600 }}>
+                    ✅ Coupon <strong>{couponCode}</strong> applied — ₹{COUPON_DISCOUNT} OFF
+                  </div>
+                )}
                 <div style={{ marginTop: 8, fontSize: '0.82em', color: '#888' }}>
                   76 questions · 10-page personalized report · Stream + Career recommendations
                 </div>
               </div>
+
+              {/* Coupon input — for users who didn't arrive via /ebooks/success */}
+              {!couponApplied && (
+                <div style={{ marginTop: 12, marginBottom: 12, padding: '10px 12px', background: '#fffdf6', border: '1px dashed #d4a017', borderRadius: 8 }}>
+                  <div style={{ fontSize: '0.85em', color: '#7a5500', marginBottom: 6, fontWeight: 600 }}>
+                    🎁 Have an e-book coupon?
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input
+                      type="text"
+                      placeholder="e.g. FUTURE500"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      style={{ flex: 1, padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.9em', textTransform: 'uppercase' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Lead ID (from confirmation email)"
+                      value={ebookLeadId}
+                      onChange={(e) => setEbookLeadId(e.target.value.trim())}
+                      style={{ flex: 1.4, padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.9em' }}
+                    />
+                    <button
+                      onClick={() => {
+                        if (!couponCode.trim() || !ebookLeadId.trim()) {
+                          setPaymentError('Please enter both coupon code and lead ID.');
+                          return;
+                        }
+                        setPaymentError('');
+                        setCouponApplied(true);
+                      }}
+                      style={{ padding: '8px 16px', background: '#d4a017', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: '0.9em' }}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  <div style={{ fontSize: '0.72em', color: '#999', marginTop: 6 }}>
+                    Coupon will be validated by the server when you click Pay.
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={handleRazorpayPayment}

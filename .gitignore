@@ -5,3 +5,9 @@ dist/
 *.log
 *.env
 auth_users.json
+
+.demo-build/
+*.pdf
+scope-demo-report.html
+package-lock.json
+

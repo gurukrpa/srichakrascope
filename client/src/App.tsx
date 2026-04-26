@@ -12,8 +12,15 @@ import AccessGate from './pages/AccessGate';
 import VinayagarAgavalEnroll from './pages/VinayagarAgavalEnroll';
 import VinayagarAgavalDashboard from './pages/VinayagarAgavalDashboard';
 import DMITCapture from './pages/DMITCapture';
+import EbooksLanding from './pages/EbooksLanding';
+import EbookCheckout from './pages/EbookCheckout';
+import EbookSuccess from './pages/EbookSuccess';
+import Counselling from './pages/Counselling';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import type { ReportData } from './pages/reportTemplate';
+import { buildReportFromAnswers, type RawAnswers } from './scoring/scoringEngine';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 /** Error Boundary to catch and display runtime errors */
 class ErrorBoundary extends React.Component<
@@ -253,7 +260,61 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
-        <Routes>
+          <AppRoutes reportData={reportData} setReportData={setReportData} />
+        </ErrorBoundary>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+/**
+ * Inner routes component — lives inside <AuthProvider> so it can use useAuth().
+ * Auto-rehydrates stale cached report data: if the cached report is missing
+ * fields added by a newer scoring-engine version (currently `consistency`), and
+ * the signed-in user has raw answers in Firestore, we rebuild the report from
+ * the raw answers using the current scoring engine.
+ */
+function AppRoutes({
+  reportData,
+  setReportData,
+}: {
+  reportData: ReportData | null;
+  setReportData: (d: ReportData | null) => void;
+}) {
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const cachedNeedsRefresh = reportData !== null && (reportData as ReportData).consistency === undefined;
+    const noCacheButLoggedIn = reportData === null;
+
+    if (!cachedNeedsRefresh && !noCacheButLoggedIn) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'assessments', currentUser.uid));
+        if (cancelled || !snap.exists()) return;
+        const data = snap.data() as { rawAnswers?: RawAnswers; reportData?: ReportData };
+        if (!data.rawAnswers) return;
+        const fresh = buildReportFromAnswers(data.rawAnswers);
+        setReportData(fresh);
+      } catch (err) {
+        console.warn('[App] Could not rehydrate report from Firestore:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally re-run only when auth user changes; reportData is read but
+    // we don't want to loop on our own setState.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  return (
+    <Routes>
           {/* Landing page — start here */}
           <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
 
@@ -336,10 +397,15 @@ function App() {
 
           {/* DMIT — Fingerprint Capture & Assessment */}
           <Route path="/dmit/capture" element={<DMITCapture />} />
+
+          {/* E-books — public storefront */}
+          <Route path="/ebooks" element={<ErrorBoundary><EbooksLanding /></ErrorBoundary>} />
+          <Route path="/ebooks/checkout/:key" element={<ErrorBoundary><EbookCheckout /></ErrorBoundary>} />
+          <Route path="/ebooks/success" element={<ErrorBoundary><EbookSuccess /></ErrorBoundary>} />
+
+          {/* Counselling — paid 1:1 post-assessment */}
+          <Route path="/counselling" element={<ErrorBoundary><Counselling /></ErrorBoundary>} />
         </Routes>
-        </ErrorBoundary>
-      </AuthProvider>
-    </BrowserRouter>
   );
 }
 
