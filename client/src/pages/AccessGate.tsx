@@ -65,6 +65,7 @@ const AccessGate: React.FC = () => {
   // Coupon state — auto-filled from /ebooks/success redirect
   const [couponCode, setCouponCode] = useState((params.get('coupon') || '').toUpperCase());
   const [ebookLeadId, setEbookLeadId] = useState(params.get('leadId') || '');
+  const [ebookLeadEmail, setEbookLeadEmail] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
 
   const offerActive = isOfferActive();
@@ -124,6 +125,7 @@ const AccessGate: React.FC = () => {
         studentEmail: currentUser?.email || '',
         couponCode: couponApplied ? couponCode : '',
         ebookLeadId: couponApplied ? ebookLeadId : '',
+        ebookLeadEmail: couponApplied ? ebookLeadEmail : '',
       });
       const { orderId, amount, currency } = result.data as { orderId: string; amount: number; currency: string };
 
@@ -307,6 +309,17 @@ const AccessGate: React.FC = () => {
                 {couponApplied && (
                   <div style={{ marginTop: 8, fontSize: '0.85em', color: '#0a7c4a', fontWeight: 600 }}>
                     ✅ Coupon <strong>{couponCode}</strong> applied — ₹{COUPON_DISCOUNT} OFF
+                    <div style={{ fontSize: '0.85em', color: '#555', fontWeight: 400, marginTop: 2 }}>
+                      Verifying with: <code style={{ background: '#f0f0f0', padding: '1px 6px', borderRadius: 4 }}>{ebookLeadId || ebookLeadEmail}</code>
+                      {' '}
+                      <button
+                        type="button"
+                        onClick={() => { setCouponApplied(false); setPaymentError(''); }}
+                        style={{ marginLeft: 6, background: 'none', border: 'none', color: '#006D77', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.95em', padding: 0 }}
+                      >
+                        change
+                      </button>
+                    </div>
                   </div>
                 )}
                 <div style={{ marginTop: 8, fontSize: '0.82em', color: '#888' }}>
@@ -316,40 +329,69 @@ const AccessGate: React.FC = () => {
 
               {/* Coupon input — for users who didn't arrive via /ebooks/success */}
               {!couponApplied && (
-                <div style={{ marginTop: 12, marginBottom: 12, padding: '10px 12px', background: '#fffdf6', border: '1px dashed #d4a017', borderRadius: 8 }}>
-                  <div style={{ fontSize: '0.85em', color: '#7a5500', marginBottom: 6, fontWeight: 600 }}>
+                <div style={{ marginTop: 12, marginBottom: 12, padding: '12px 14px', background: '#fffdf6', border: '1px dashed #d4a017', borderRadius: 8 }}>
+                  <div style={{ fontSize: '0.9em', color: '#7a5500', marginBottom: 10, fontWeight: 600 }}>
                     🎁 Have an e-book coupon?
                   </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <input
-                      type="text"
-                      placeholder="e.g. FUTURE500"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      style={{ flex: 1, padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.9em', textTransform: 'uppercase' }}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Lead ID (from confirmation email)"
-                      value={ebookLeadId}
-                      onChange={(e) => setEbookLeadId(e.target.value.trim())}
-                      style={{ flex: 1.4, padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.9em' }}
-                    />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78em', color: '#555', marginBottom: 4, fontWeight: 600 }}>
+                        Coupon Code
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. ENGG500"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.95em', textTransform: 'uppercase', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78em', color: '#555', marginBottom: 4, fontWeight: 600 }}>
+                        Email used at e-book checkout
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        value={ebookLeadEmail}
+                        onChange={(e) => setEbookLeadEmail(e.target.value.trim())}
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.95em', boxSizing: 'border-box' }}
+                      />
+                      <div style={{ fontSize: '0.72em', color: '#888', marginTop: 4 }}>
+                        We'll match this against your e-book purchase.
+                      </div>
+                    </div>
+                    <details style={{ fontSize: '0.82em', color: '#666' }}>
+                      <summary style={{ cursor: 'pointer', color: '#006D77' }}>
+                        Have a Lead ID instead? (advanced)
+                      </summary>
+                      <input
+                        type="text"
+                        placeholder="Lead ID from confirmation email"
+                        value={ebookLeadId}
+                        onChange={(e) => setEbookLeadId(e.target.value.trim())}
+                        style={{ width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.85em', boxSizing: 'border-box', fontFamily: 'monospace', marginTop: 6 }}
+                      />
+                    </details>
                     <button
                       onClick={() => {
-                        if (!couponCode.trim() || !ebookLeadId.trim()) {
-                          setPaymentError('Please enter both coupon code and lead ID.');
+                        if (!couponCode.trim()) {
+                          setPaymentError('Please enter the coupon code.');
+                          return;
+                        }
+                        if (!ebookLeadEmail.trim() && !ebookLeadId.trim()) {
+                          setPaymentError('Please enter the email you used at e-book checkout (or a Lead ID).');
                           return;
                         }
                         setPaymentError('');
                         setCouponApplied(true);
                       }}
-                      style={{ padding: '8px 16px', background: '#d4a017', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: '0.9em' }}
+                      style={{ padding: '10px 16px', background: '#d4a017', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: '0.95em' }}
                     >
-                      Apply
+                      Apply Coupon
                     </button>
                   </div>
-                  <div style={{ fontSize: '0.72em', color: '#999', marginTop: 6 }}>
+                  <div style={{ fontSize: '0.75em', color: '#999', marginTop: 8 }}>
                     Coupon will be validated by the server when you click Pay.
                   </div>
                 </div>

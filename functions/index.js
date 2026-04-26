@@ -182,15 +182,49 @@ exports.createRazorpayOrder = onCall(
     }
 
     const uid = request.auth.uid;
-    const { studentName, studentEmail, couponCode, ebookLeadId } = request.data || {};
+    const { studentName, studentEmail, couponCode, ebookLeadId, ebookLeadEmail } = request.data || {};
 
     // ── Validate coupon (optional) ──
+    // Caller may identify the redeeming e-book lead by either:
+    //   (a) ebookLeadId  — the Firestore doc ID (auto-filled from /ebooks/success), OR
+    //   (b) ebookLeadEmail — the email used at e-book checkout (manual entry path).
+    // For (b) we look up the most recent PAID lead whose assessmentCoupon matches.
     let discountPaise = 0;
     let couponApplied = null;
     let couponLeadRef = null;
-    if (couponCode && ebookLeadId) {
+    if (couponCode && (ebookLeadId || ebookLeadEmail)) {
       const code = String(couponCode).trim().toUpperCase();
-      couponLeadRef = admin.firestore().collection("ebookLeads").doc(String(ebookLeadId));
+      const db = admin.firestore();
+
+      if (ebookLeadId) {
+        couponLeadRef = db.collection("ebookLeads").doc(String(ebookLeadId));
+      } else {
+        const email = String(ebookLeadEmail).trim().toLowerCase();
+        const q = await db.collection("ebookLeads")
+          .where("email", "==", email)
+          .where("assessmentCoupon", "==", code)
+          .where("status", "==", "paid")
+          .limit(10)
+          .get();
+        if (q.empty) {
+          throw new HttpsError("not-found", "No paid e-book purchase found for that email + coupon. Please use the exact email you entered at e-book checkout.");
+        }
+        // Already-redeemed leads must be filtered out (one coupon per purchase).
+        const all = q.docs.map((d) => ({ id: d.id, data: d.data() }));
+        const unredeemed = all
+          .filter((c) => !c.data.couponRedeemedAt)
+          .sort((a, b) => {
+            const ta = a.data.paidAt ? a.data.paidAt.toMillis() : 0;
+            const tb = b.data.paidAt ? b.data.paidAt.toMillis() : 0;
+            return tb - ta;
+          });
+        if (!unredeemed.length) {
+          // All matching leads for this email + coupon are already used.
+          throw new HttpsError("failed-precondition", "This coupon has already been redeemed by this email. Each e-book purchase entitles you to one ₹500 OFF assessment redemption.");
+        }
+        couponLeadRef = db.collection("ebookLeads").doc(unredeemed[0].id);
+      }
+
       const leadSnap = await couponLeadRef.get();
       if (!leadSnap.exists) throw new HttpsError("not-found", "Invalid coupon — lead not found.");
       const lead = leadSnap.data();
@@ -228,7 +262,7 @@ exports.createRazorpayOrder = onCall(
           studentEmail: studentEmail || "",
           purpose: "Career Assessment Fee",
           coupon: couponApplied || "",
-          ebookLeadId: ebookLeadId || "",
+          ebookLeadId: (couponLeadRef && couponLeadRef.id) || ebookLeadId || "",
         },
       });
 
@@ -241,7 +275,7 @@ exports.createRazorpayOrder = onCall(
         baseAmount: ASSESSMENT_FEE_PAISE,
         discountPaise,
         couponApplied,
-        ebookLeadId: ebookLeadId || null,
+        ebookLeadId: (couponLeadRef && couponLeadRef.id) || ebookLeadId || null,
         currency: "INR",
         status: "created",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -630,6 +664,11 @@ exports.verifyEbookPayment = onCall(
               ${ebook.assessmentCoupon}
             </p>
             <p style="font-size:12px;color:#888;">Valid for 60 days. Take the assessment at srichakraacademy.org.</p>
+            <p style="font-size:12px;color:#666;background:#f6f6f6;padding:8px 12px;border-radius:6px;">
+              <strong>Your order reference (Lead ID):</strong>
+              <code style="font-family:Courier New,monospace;">${leadId}</code><br/>
+              <span style="color:#888;">Keep this for support. To redeem the coupon, you can also just use the email above (<strong>${payment.studentEmail}</strong>) — no need to type the Lead ID.</span>
+            </p>
             <p style="font-size:12px;color:#888;margin-top:24px;">
               Need help? Reply to this email or call 85903 96662 / 98430 30697.
             </p>
