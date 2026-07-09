@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#0E6B73"/>
+      <stop offset="55%" stop-color="#148088"/>
+      <stop offset="100%" stop-color="#1A8A94"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="600" fill="url(#bg)"/>
+  <rect width="900" height="600" fill="url(#glow)"/>
+  <!-- Decorative dot grid -->
+  <g fill="#ffffff" opacity="0.06">
+    <circle cx="60"  cy="60"  r="2"/><circle cx="120" cy="60"  r="2"/><circle cx="180" cy="60"  r="2"/><circle cx="240" cy="60"  r="2"/>
+    <circle cx="60"  cy="120" r="2"/><circle cx="120" cy="120" r="2"/><circle cx="180" cy="120" r="2"/>
+    <circle cx="780" cy="500" r="2"/><circle cx="840" cy="500" r="2"/><circle cx="780" cy="560" r="2"/><circle cx="840" cy="560" r="2"/>
+  </g>
+  <!-- Fingerprint: concentric oval arcs centered at (450,300) -->
+  <g transform="translate(450 300)" fill="none" stroke="#FFE9D6" stroke-width="4" stroke-linecap="round" opacity="0.92">
+    <!-- innermost arcs -->
+    <path d="M -10 -20 Q 0 -30 10 -20"/>
+    <path d="M -20 -8 Q 0 -22 20 -8"/>
+    <path d="M -32 4 Q 0 -18 32 4"/>
+    <path d="M -44 16 Q 0 -14 44 16"/>
+    <path d="M -56 28 Q 0 -10 56 28"/>
+    <path d="M -68 40 Q 0 -6 68 40"/>
+    <path d="M -80 52 Q 0 -2 80 52"/>
+    <path d="M -92 64 Q 0 4 92 64"/>
+    <path d="M -104 76 Q 0 12 104 76"/>
+    <path d="M -116 88 Q 0 20 116 88"/>
+    <path d="M -128 100 Q 0 28 128 100"/>
+    <path d="M -140 112 Q 0 36 140 112"/>
+    <path d="M -152 124 Q 0 44 152 124"/>
+    <!-- left flank verticals -->
+    <path d="M -110 -90 Q -160 0 -110 110" />
+    <path d="M -130 -100 Q -190 0 -130 130" />
+    <path d="M -150 -110 Q -220 0 -150 150" />
+    <path d="M -170 -120 Q -250 0 -170 170" />
+    <!-- right flank verticals -->
+    <path d="M 110 -90 Q 160 0 110 110" />
+    <path d="M 130 -100 Q 190 0 130 130" />
+    <path d="M 150 -110 Q 220 0 150 150" />
+    <path d="M 170 -120 Q 250 0 170 170" />
+    <!-- top crown arcs -->
+    <path d="M -70 -110 Q 0 -160 70 -110" />
+    <path d="M -50 -130 Q 0 -180 50 -130" />
+    <path d="M -30 -150 Q 0 -200 30 -150" />
+  </g>
+  <!-- Small accent dot bottom-right -->
+  <circle cx="700" cy="450" r="6" fill="#E29578" opacity="0.85"/>
+</svg>

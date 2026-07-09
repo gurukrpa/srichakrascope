@@ -664,10 +664,10 @@ exports.verifyEbookPayment = onCall(
               ${ebook.assessmentCoupon}
             </p>
             <p style="font-size:12px;color:#888;">Valid for 60 days. Take the assessment at srichakraacademy.org.</p>
-            <p style="font-size:12px;color:#666;background:#f6f6f6;padding:8px 12px;border-radius:6px;">
-              <strong>Your order reference (Lead ID):</strong>
-              <code style="font-family:Courier New,monospace;">${leadId}</code><br/>
-              <span style="color:#888;">Keep this for support. To redeem the coupon, you can also just use the email above (<strong>${payment.studentEmail}</strong>) — no need to type the Lead ID.</span>
+            <p style="font-size:12px;color:#666;background:#fff7e0;padding:10px 12px;border-radius:6px;border:1px dashed #d4a017;">
+              <strong style="color:#8a5d00;">🎁 Your Gift ID (order reference):</strong><br/>
+              <code style="font-family:Courier New,monospace;font-size:14px;color:#1a1a1a;">${leadId}</code><br/>
+              <span style="color:#888;">Keep this safe. To redeem the ₹500 coupon you can simply use the email above (<strong>${payment.studentEmail}</strong>) — no need to type the Gift ID.</span>
             </p>
             <p style="font-size:12px;color:#888;margin-top:24px;">
               Need help? Reply to this email or call 85903 96662 / 98430 30697.

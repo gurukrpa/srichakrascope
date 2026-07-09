@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Srichakra School Brochure</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Manrope:wght@400;600;700&display=swap');
+		:root { --teal:#0f6972; --deep:#163845; --accent:#e58f74; --ink:#24343b; }
+		*{box-sizing:border-box} body{margin:0;padding:14px;background:#edf3f4;font-family:'Manrope',sans-serif;color:var(--ink)}
+		.sheet{max-width:1140px;margin:0 auto 14px;background:#fff;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;aspect-ratio:297/210;box-shadow:0 14px 30px rgba(15,105,114,.18)}
+		.panel{padding:24px;position:relative}
+		.left{background:linear-gradient(145deg,var(--deep),var(--teal));color:#fff}
+		.right{background:linear-gradient(165deg,#fff,#edf7f8)}
+		h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;line-height:1.1}
+		.brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}.brand img{width:54px;height:54px;background:#fff;border-radius:8px;padding:5px}
+		.k{display:inline-block;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);margin-bottom:10px}
+		.title{font-size:38px;color:#ffe9d4;max-width:440px}.sub{font-size:15px;line-height:1.5;max-width:440px;opacity:.95}
+		.list{margin:12px 0 0;padding-left:18px;line-height:1.5;font-size:14px}
+		.section{font-size:30px;color:#0d5e66}.muted{font-size:14px;color:#51646d;line-height:1.5;margin:8px 0}
+		.box{margin-top:10px;background:#fff;border:1px solid #d6e6e9;border-left:4px solid var(--accent);border-radius:10px;padding:10px}
+		.offer{margin:0;padding-left:18px;font-size:13px;line-height:1.5;color:#4f626b}
+		.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.pill{font-size:11px;font-weight:700;color:#0f6972;background:#eef7f9;border:1px solid #c7dfe4;border-radius:999px;padding:4px 8px}
+		.world-map{width:100%;height:84px;object-fit:cover;border-radius:8px;border:1px solid #d2e4e8;margin-top:8px}
+		.qr{margin-top:12px;display:grid;grid-template-columns:82px 1fr;gap:10px;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px}
+		.qr img{width:82px;height:82px;background:#fff;border-radius:7px;padding:5px}
+		.foot{position:absolute;left:24px;right:24px;bottom:16px;font-size:12px;opacity:.9}
+		@media (max-width:980px){.sheet{grid-template-columns:1fr;aspect-ratio:auto}.panel{min-height:420px}}
+		@media print{@page{size:A4 landscape;margin:0}body{padding:0;background:#fff}.sheet{width:297mm;height:210mm;max-width:none;border-radius:0;box-shadow:none;page-break-after:always}.sheet:last-child{page-break-after:auto}.panel{padding:14mm 11.5mm}}
+	</style>
+</head>
+<body>
+	<section class="sheet">
+		<article class="panel left">
+			<span class="k">Front</span>
+			<div class="brand"><img src="client/public/images/srichakra-logo.png" alt="Srichakra logo" /><div><h2 style="color:#ffe9d4;font-size:30px">Srichakra Academy</h2><div style="font-size:13px;opacity:.9">School Partnership Model</div></div></div>
+			<h1 class="title">Future-Ready Career Ecosystem for Schools</h1>
+			<p class="sub">A structured progression model from middle school profile building to overseas admission outcomes.</p>
+			<ul class="list">
+				<li>Profile building and MI from Grade 6</li>
+				<li>Career assessments from Grade 8 at discounted rates</li>
+				<li>2 teachers trained and certified in Career Counselling</li>
+				<li>Overseas admission support for school families</li>
+			</ul>
+			<div class="qr"><img src="qr-srichakra.png" alt="QR" /><div style="font-size:12px;line-height:1.4">Scan to request school presentation<br/>85903 96662 | 98430 30697<br/>srichakraacademy.org</div></div>
+			<div class="foot">A Unit of SriKrpa Foundation Trust</div>
+		</article>
+		<article class="panel right">
+			<span class="k" style="background:#fff;border-color:#c7dfe3;color:#0f6972">Inside</span>
+			<h2 class="section">School Offer Structure</h2>
+			<p class="muted">Designed for measurable student outcomes with counsellor enablement and parent engagement.</p>
+			<div class="box"><h3 style="color:#0f6972;font-size:16px">Core Package</h3><ul class="offer"><li>Profile Building and MI from Grade 6</li><li>Career Assessments from Grade 8 at discounted rates</li><li>2 teachers trained and certified in Career Counselling</li><li>Overseas admission support</li></ul></div>
+			<div class="box"><h3 style="color:#0f6972;font-size:16px">Top Destinations</h3><div class="pills"><span class="pill">UK</span><span class="pill">USA</span><span class="pill">Canada</span><span class="pill">Australia</span><span class="pill">Germany</span><span class="pill">France</span><span class="pill">Netherlands</span><span class="pill">New Zealand</span><span class="pill">Singapore</span><span class="pill">Malaysia</span><span class="pill">Georgia</span><span class="pill">Kazakhstan</span><span class="pill">Kyrgyzstan</span><span class="pill">Russia</span></div></div>
+			<div class="box"><h3 style="color:#0f6972;font-size:16px">Global Pathways, Open Options</h3><p style="font-size:12.5px;line-height:1.45;color:#4f626b;margin:6px 0 0">Institution suggestions are kept open and tailored to each student profile, academic goals, and destination choices.</p><img class="world-map" src="client/public/images/overseas-admission.jpg" alt="World map and global education pathways"/></div>
+		</article>
+	</section>
+</body>
+</html>

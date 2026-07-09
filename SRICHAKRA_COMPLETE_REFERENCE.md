@@ -216,9 +216,14 @@ admin@srichakraacademy.org
 
 | Part | Type | Count | Question IDs | Scoring |
 |---|---|---|---|---|
-| Part 1 | Aptitude (MCQ) | 16 | 201–216 | Correct/Incorrect → percentage |
+| Part 1 | Aptitude (MCQ) | 16 | 201–216 | 2-PL IRT — ability θ → percentile + 95% CI |
 | Part 2 | Preference (Likert) | 60 | 301–360 | 1–5 scale → domain average |
-| **Total** | | **76** | | |
+| Part 3 | Validity — Consistency Pairs | 10 | 361–364, 380–389 | Mirror items, average absolute gap |
+| Part 4 | Validity — Attention Checks | 2 | 395, 396 | Forced answers; 2 fails → Low validity |
+| Part 5 | MBTI Step-I-style | 16 | 401–416 | 4 axes × 4 items, forced-Likert |
+| **Total** | | **103** | | |
+
+> **Why these counts?** Aptitude is small but item-response-scaled, so a few items still produce defensible percentile bands with 95% confidence intervals. MBTI uses 4 items per axis (E/I, S/N, T/F, J/P) — adequate for a coarse Step-I-style indicator, not a clinical type.
 
 ---
 
@@ -398,22 +403,25 @@ RawAnswers {
 
 ### Processing Pipeline
 
-#### Step 1: Aptitude Scoring
-- Groups questions by domain (4 questions each)
-- Counts correct answers per domain
-- Converts to percentage: `(correct / total) × 100`
-- Assigns level and readiness band:
+#### Step 1: Aptitude Scoring (IRT)
+- Groups questions by domain (4 questions each).
+- Estimates ability θ using a **2-parameter logistic IRT model** (`scoring/irt.ts`).
+- Converts θ → 0–100 percentile via the standard normal CDF.
+- Computes a **95% confidence interval** on the percentile from Fisher information (SE capped at 2.0). When the CI spans more than 40 points the domain is flagged `lowInformation = true` and a `LOW INFO` badge is rendered.
+- Assigns level / readiness using **Wechsler-style z-score percentile cuts** (≈ 50th, 84th, 98th percentile):
 
 | Score Range | Level | Readiness Tag | Color Code |
 |---|---|---|---|
-| 75% and above | Strong | READY NOW | Green (#28a745) |
-| 50% – 74% | Moderate | WITH DEVELOPMENT | Amber (#f0ad4e) |
-| Below 50% | Developing | EXPLORATORY | Coral (#E29578) |
+| ≥ 98 | Exceptional | READY NOW | Green (#28a745) |
+| 84 – 97 | Strong | READY NOW | Green (#28a745) |
+| 50 – 83 | Moderate | WITH DEVELOPMENT | Amber (#f0ad4e) |
+| < 50 | Developing | EXPLORATORY | Coral (#E29578) |
 
 #### Step 2: Preference Scoring
-- Groups all 60 answers by preference domain
-- Calculates average per domain (1.0 – 5.0 scale)
-- Sorts by score (highest first)
+- Groups all 60 answers by preference domain.
+- **Excludes** the validity domains (`Consistency`, `AttentionCheck`) and the four MBTI domains (`MBTI_EI/SN/TF/JP`) from RIASEC averaging — these are scored separately.
+- Calculates average per domain (1.0 – 5.0 scale).
+- Sorts by score (highest first).
 
 #### Step 3: RIASEC Mapping
 Maps the 11 internal preference domains to the 6 standard RIASEC personality types:
@@ -449,33 +457,35 @@ Calculates readiness for 3 academic streams:
 | Commerce | Average of Numerical + Verbal + Logical | Business/Economics pathway |
 | Arts / Humanities | Average of Verbal + Logical | Humanities/Social Sciences pathway |
 
-Each stream gets: readiness tag, confidence score, match description, and personalized guidance text.
+Each stream gets: readiness tag, confidence score, match description, and personalized guidance text. Streams within **5 points** of the leader are flagged `tied: true` and rendered as **EQUALLY VIABLE**.
 
 #### Step 7: Course Family Recommendations (Class 12)
-Uses a **60% aptitude + 40% preference** weighted formula for 6 course families:
+Uses a **50% aptitude + 30% personality + 20% interest** base score for 6 course families, plus a curated MBTI fit bonus capped at **±5 points**:
 
-| Course Family | Aptitude Inputs | Preference Inputs |
-|---|---|---|
-| Engineering / Technology | Numerical, Logical, Spatial | Analytical, Technical |
-| Data Science & Analytics | Numerical, Logical | Analytical, Technical |
-| Medicine / Life Sciences | Numerical, Logical, Verbal | Analytical, Social |
-| Business / Commerce | Numerical, Verbal, Logical | Executive, Analytical |
-| Law / Social Sciences | Verbal, Logical | Verbal, Social |
-| Arts / Design / Media | Spatial, Verbal | Creative, Verbal |
+| Course Family | Aptitude Inputs | Preference Inputs | Typical MBTI |
+|---|---|---|---|
+| Engineering / Technology | Numerical, Logical, Spatial | Analytical, Technical | xxTJ |
+| Data Science & Analytics | Numerical, Logical | Analytical, Technical | xNTJ |
+| Medicine / Life Sciences | Numerical, Logical, Verbal | Analytical, Social | xSxJ |
+| Business / Commerce | Numerical, Verbal, Logical | Executive, Analytical | ExxJ |
+| Law / Social Sciences | Verbal, Logical | Verbal, Social | xxxJ |
+| Arts / Design / Media | Spatial, Verbal | Creative, Verbal | xNFP |
 
-Each family includes: fit score, alignment tag, guidance text, and specific course suggestions.
+Each family gets: fit score, alignment tag, MBTI bonus, guidance text, and course suggestions. Families within **5 points** of the leader are flagged `tied: true`.
 
 #### Step 8: Career Cluster Generation
-Generates 6 career clusters with match scores:
+Scores all **18 clusters** in `careerClusters.ts` (filtered to top 3 for the report). Each cluster carries a curated `mbtiFit` pattern drawn from the published **Holland (RIASEC) ↔ MBTI correspondence** (Tieger / Barron-Tieger; Hammer & Macdaid) — *not* inferred from RIASEC scores at runtime. The same ±5 pt MBTI bonus is applied. Clusters within 5 points of the leader render an **EQUALLY VIABLE** badge.
 
-| Cluster | Example Roles |
-|---|---|
-| STEM & Technology | Software Developer, Data Scientist, AI Engineer, Cybersecurity Analyst |
-| Engineering & Design | Design Engineer, Civil Engineer, Robotics Engineer, Architect |
-| Business, Finance & Management | Financial Analyst, CA, Entrepreneur, HR Manager |
-| Healthcare & Life Sciences | Doctor, Pharmacist, Physiotherapist, Clinical Researcher |
-| Creative Arts & Media | Graphic Designer, Animator, Film Director, UX Designer |
-| Social Sciences & Education | Teacher, Psychologist, Social Worker, Journalist |
+#### Step 9: MBTI Scoring (Step-I-style)
+- 16 forced-Likert items, 4 per axis (E/I, S/N, T/F, J/P).
+- Each axis returns `{leaning, strength: 0–100, itemsAnswered}`.
+- A type is reported only when **all 4 axes** have at least 3 answered items.
+- The MBTI signal is **supporting**, not deciding — its contribution to family/cluster scores is hard-capped at ±5 points and is suppressed when validity is Low.
+
+#### Step 10: Validity Controls
+- **10 mirror-pair consistency items** (361–364, 380–389) — average absolute Likert gap classified Low/Moderate/High.
+- **2 attention checks** (395, 396) with forced expected answers.
+- Two attention failures force the consistency rating to **Low** and disable the MBTI bonus.
 
 ### Final Output
 ```
@@ -485,10 +495,13 @@ ReportData {
   preferenceScores[],         // 6 RIASEC domains with 1-5 scores
   dominantHemisphere,         // "Left" | "Right" | "Balanced"
   learningStyles[],           // Top 2 learning styles
-  streamRecommendations[],    // 3 streams (Science/Commerce/Arts)
-  courseFamilyRecommendations[], // 6 course families sorted by fit
-  careerClusters[],           // 6 career clusters sorted by match
-  totalAnswered,              // Out of 76
+  streamRecommendations[],    // 3 streams (Science/Commerce/Arts) + tied flag
+  courseFamilyRecommendations[], // 6 course families + mbtiBonus + tied flag
+  careerClusters[],           // top 3 of 18 clusters + mbtiBonus + tied flag
+  miScores[],                 // 8 Multiple Intelligences (display-only)
+  mbti: { type, axes[], reliable }, // 4-letter code + per-axis strength
+  consistency: { level, attentionCheckPassed }, // validity summary
+  totalAnswered,              // Out of 103
   completionRate              // Percentage
 }
 ```
@@ -504,15 +517,15 @@ The report is generated as a **complete HTML document** by `generateFullReport()
 | Page | Section | Content |
 |---|---|---|
 | **Page 1** | Executive Summary | Academy branding, student name & date, "What We Measured" summary, "How to Read This Report" guide, disclaimer |
-| **Page 2A** | Aptitude Snapshot (Table) | 5-column table: Domain, Score, Level, Readiness, Key Skills |
+| **Page 2A** | Aptitude Snapshot (Table) | 5-column table: Domain, Score, Performance Level, Readiness, Key Skills (parent-facing — technical CI column removed) |
 | **Page 2B** | Aptitude Snapshot (Chart) | Horizontal bar chart (SVG), interpretation text, strongest area highlight, developing areas, guardrail note |
-| **Page 3** | Preference Analysis | Radar/spider chart (SVG), RIASEC table with inline bars, top interests narrative, aptitude vs preference comparison |
-| **Page 4** | Brain & Learning Style | Brain hemisphere analysis, learning style identification (Visual/Auditory/Kinesthetic), study strategies, five senses grid |
+| **Page 3** | Preference & Personality | RIASEC radar chart (SVG), RIASEC table, top interests narrative, **Personality Type Indicator** (4-letter MBTI code with bidirectional axis bars and ±5pt-cap note) |
+| **Page 4** | Brain & Learning Style | Brain hemisphere analysis, **MI distribution** (8-row horizontal bar chart, display-only), learning style identification, study strategies, five senses grid |
 | **Page 5A** | Class 10 Stream Decision | Stream readiness overview, why-this-fits narrative |
-| **Page 5B** | Class 10 Stream Decision (cont.) | Stream decision table (Science/Commerce/Arts), readiness comparison, guidance per stream |
-| **Page 6** | Class 12 Course Families | Course family alignment, 60/40 scoring method explanation, 6-family decision table, pathway progression |
-| **Page 7** | Career Clusters | 5–6 career cluster cards with roles & reasoning, exploration disclaimer, cross-cluster combinations |
-| **Page 8** | Action Steps & Guidance | Student next steps, parent guidance, conversation starters, consultation CTA, closing message |
+| **Page 5B** | Class 10 Stream Decision (cont.) | Stream decision table with **EQUALLY VIABLE** tied-zone badges, guidance per stream |
+| **Page 6** | Class 12 Course Families | Course family alignment, 50/30/20 + ±5 Personality-fit adjustment, 6-family decision table with tied badges, pathway progression |
+| **Page 7** | Career Clusters | Top-3 cluster cards (out of 18) with curated MBTI-fit, exploration disclaimer, tied badges, cross-cluster combinations |
+| **Page 8** | Action Steps & Guidance | Student next steps, parent guidance, consultation CTA, **How Your Scores Are Built** block (plain-language summary — no IRT/CI/MBTI jargon), closing message |
 
 ### SVG Charts (Inline, No External Library)
 
@@ -731,23 +744,113 @@ firebase deploy --only hosting
 
 ## APPENDIX: DEMO DATA REFERENCE
 
-The `DEMO_DATA` constant in `App.tsx` provides a complete sample for testing:
+The `DEMO_DATA` constant in `App.tsx` provides a complete sample for testing the `/demo` route. It is rebuilt to match the current schema (IRT bands, MBTI, MI, validity, tied flags).
 
 | Parameter | Demo Value |
 |---|---|
 | Student Name | Demo Student |
-| Numerical Reasoning | 78% (Strong) |
-| Verbal Ability | 85% (Strong) |
-| Logical Reasoning | 72% (Moderate) |
-| Spatial Intelligence | 65% (Moderate) |
-| Clerical Speed | 60% (Moderate) |
-| Mechanical Reasoning | 55% (Developing) |
-| Top RIASEC | Investigative (4.1/5) |
+| Numerical Reasoning | 78% (CI 64–88, Moderate) |
+| Logical Reasoning | 84% (CI 71–92, Strong) |
+| Verbal Ability | 71% (CI 56–83, Moderate) |
+| Spatial Intelligence | 68% (CI 53–81, Moderate) |
+| Top RIASEC | Investigative (4.2/5) |
+| MBTI Type | INTJ (reliable: true) |
+| Response Reliability | High (consistency level + attention checks passed) |
+| MI Top 3 | Logical-Mathematical (82), Linguistic (70), Visual-Spatial (68) |
 | Hemisphere | Left |
 | Learning Styles | Visual, Logical |
-| Top Stream | Science (88% confidence) |
-| Top Course Family | Engineering/Technology (85 fit score) |
-| Top Career Cluster | STEM & Technology (90 match score) |
+| Top Stream | Science / Commerce / Arts all 77% confidence (Commerce + Arts marked **Equally Viable**) |
+| Top Course Family | Engineering/Technology (86 fit) — Data Science tied |
+| Top Career Cluster | Engineering & Technology (85) — Pure Sciences tied |
+| Items Answered | 103 / 103 |
+
+> Stale fields removed in this audit: `Clerical Speed` and `Mechanical Reasoning` aptitude domains (never measured), and the legacy 76-question total. The current bank is **103 items**.
+
+---
+
+## APPENDIX B: CAREER COUNSELLOR CERTIFICATION (CCC) LANDING PAGE
+
+A standalone marketing landing page for the 3-month Career Counsellor Certification programme.
+
+### Routing & Files
+| Item | Path |
+|---|---|
+| Public URL | `/career-counsellor-certification/` |
+| Source (deployed) | `client/public/career-counsellor-certification/index.html` |
+| Source (root copy / preview) | `srichakra/career-counsellor-certification.html` |
+| Tracking script | `client/public/ccc-landing.js` |
+| Meta Pixel | `client/public/meta-pixel.js` |
+| Campaign brief | `Career_Counsellor_Certification_Campaign.md` |
+| Ad scripts | `Career_Counsellor_Certification_Campaign.md` + `VinayagarAgaval/Ad_Scripts_Career_Counselling.md` |
+| WhatsApp flow | `WhatsApp_Automation_Flow_CCC.md` |
+| Meta ads strategy | `Meta_Ads_Strategy_CCC.md` |
+
+> The page is **served as a static HTML file** by Firebase Hosting from `client/public/`. It is *not* part of the React SPA bundle, so it loads fast and has its own SEO meta. The SPA's catch-all rewrite (`** → /index.html`) does not apply because the file exists at the requested path.
+
+### Programme Snapshot (kept in sync with the page)
+| Field | Value |
+|---|---|
+| Duration | 3 months |
+| Delivery | Live online, 2 classes / week |
+| Modules | 6 (Foundations, Assessment Science, RIASEC & MBTI, Counselling Skills, Practicum, Business Setup) |
+| Cohort size | 15 seats / batch (capped) |
+| Backed by | SCOPE assessment science (the same engine documented above) |
+| Brand voice | Dronacharya × Modern Science |
+
+### Target Personas (from `Career_Counsellor_Certification_Campaign.md`)
+1. The Frustrated / Experienced Teacher
+2. The Psychology Graduate
+3. The Empowered / Ambitious Parent
+4. The HR / Corporate Switcher
+5. The School Management Buyer
+
+### Conversion Surfaces on the Page
+- Sticky top bar with **"Only 15 seats / batch"** scarcity badge
+- Hero CTA → WhatsApp enrolment number (`wa.me/...`)
+- "Made for you if…" persona grid
+- Module breakdown (6 cards)
+- Pricing block with seats counter
+- Final CTA section with WhatsApp + call buttons
+- Meta Pixel `Lead` event fires on CTA click (`ccc-landing.js`)
+
+### Audit Notes
+- ✅ Page served from `client/public/` so it deploys on every `firebase deploy --only hosting`.
+- ✅ Same Content-Security-Policy headers from `firebase.json` apply (Razorpay, Meta, GA allowed).
+- ⚠️  No client-side enrolment form yet — leads are captured via WhatsApp + manual sales follow-up. A Firestore `cccLeads` collection is *not yet* wired.
+- ⚠️  The seats-remaining number is currently hard-coded; consider promoting to a Firestore-backed counter so it updates across the site without a redeploy.
+
+---
+
+## APPENDIX C: CHANGE LOG / AUDIT TRAIL
+
+Major upgrades to the assessment platform, in chronological order.
+
+| Wave | Scope | Files Touched |
+|---|---|---|
+| **W1 — MI decoupling** | Multiple Intelligences was leaking into stream/family/cluster scoring. Removed MI from `preferenceFit` for 4 clusters; demoted MI to **display-only** (Page 4 distribution chart). | `careerClusters.ts`, `scoringEngine.ts`, `reportTemplate.tsx` |
+| **W2 — MI distribution chart** | Added 8-row horizontal bar chart on Page 4 between hemisphere block and learning-style insights. | `reportTemplate.tsx` |
+| **W3 — Validity v1** | 5 mirror-pair consistency check + Response Reliability badge on Page 1. | `questionBank.ts`, `scoringEngine.ts`, `reportTemplate.tsx` |
+| **W4 — Honesty audit** | Removed claims about MBTI/clerical/mechanical that were never actually measured. | docs + `reportTemplate.tsx` |
+| **W5 — Reliability + MBTI** | 16-item MBTI Step-I-style; expanded to **10 mirror pairs + 2 attention checks**; aptitude IRT Standard Error → 95% CI; ±5pt MBTI fit cap. | `irt.ts`, `scoringEngine.ts`, `questionBank.ts`, `reportTemplate.tsx` |
+| **W6 — Standards-based fit** | Curated `mbtiFit` per cluster (Tieger/Barron + Hammer & Macdaid); Wechsler-style 98/84/50 z-cuts; tie-zone rule (within 5 pts → "Equally Viable"); low-info CI flag (>40 pt span); Methodology Notes block on Page 8. | `careerClusters.ts`, `scoringEngine.ts`, `reportTemplate.tsx` |
+| **W7 — Demo refresh + audit** | Rewrote `DEMO_DATA` (App.tsx) to match the current schema. Updated Page 1 "What We Measured" to reflect the 16+60+10+2+16 = 103-item bank. Documented the CCC landing page. | `App.tsx`, `reportTemplate.tsx`, this doc |
+| **W8 — Parent-facing language cleanup** | Stripped psychometric jargon from the student/parent report: removed the 95% CI column and LOW INFO badge from the Page 2A aptitude table; replaced "Psychometric Analysis" header with "Career Assessment"; rewrote "What We Measured" and the Page 8 "How Your Scores Are Built" block in plain English (no IRT, Wechsler, RIASEC, Likert, Holland\u2194MBTI references); corrected the Page 6 Scoring Method footnote from "60% Aptitude + 40% Preference" to the actual **50% Aptitude + 30% Personality + 20% Interest** (with capped \u00b15 personality-fit adjustment); renamed the in-table "MBTI fit" badge to "Personality fit". The standalone Counsellor's Note (`/counsellor-note`) is unchanged and remains the technical companion document. Demo report (`scope-demo-report.html`) regenerated. | `reportTemplate.tsx`, `scope-demo-report.html`, this doc || **W9 — Counsellor Note access control** | Gated `/counsellor-note` and `/counsellor-note/demo` behind `RequireAdmin` (only emails in `ADMIN_EMAILS` can open them). Added a 📋 **Counsellor's Note** button to the report toolbar in `CareerAssessment.tsx`, visible only when `isAdmin === true`; clicking opens the note in a new tab using the same cached `reportData`. Students and parents see no link or button. | `App.tsx`, `CareerAssessment.tsx`, this doc |
+### Reliability Component — Single-Page Reference
+The **Response Reliability** badge that appears under the student's name on Page 1 is the visible expression of the validity controls:
+
+```
+consistency.level = High  | Medium | Low
+consistency.attentionCheckPassed = true | false
+```
+
+Derivation (in `scoringEngine.ts → checkConsistency`):
+1. For each of the 10 mirror pairs, compute `|likertA − likertB|`.
+2. Average those 10 absolute gaps → `meanGap`.
+3. Bucket: `meanGap < 1.0` → High, `< 1.6` → Medium, else → Low.
+4. Evaluate the 2 attention-check items against their `expectedValue` field.
+5. **If two attention checks fail, force `level = 'Low'` AND set `mbti.reliable = false`** so the MBTI bonus is suppressed.
+
+Page 1 colours: High → green pill (`#d4edda` / `#155724`), Medium → amber, Low → red. Low rating shows a sentence advising cautious interpretation.
 
 ---
 
@@ -755,6 +858,7 @@ The `DEMO_DATA` constant in `App.tsx` provides a complete sample for testing:
 
 ---
 
-**Document Version:** 2.0  
+**Document Version:** 3.0  
 **Created:** 14 February 2026  
+**Last Audited:** 30 May 2026 (Wave 7 — demo data refresh + CCC landing page documented)  
 **Author:** Srichakra Academy Development Team

@@ -69,6 +69,17 @@ export interface CareerCluster {
   aptitudeFit: AptitudeDomain[];
   /** Preference domains that are most relevant (from questionBank) */
   preferenceFit: PreferenceDomain[];
+  /**
+   * Typical MBTI pattern for this cluster, drawn from the published Holland-RIASEC
+   * ↔ MBTI correspondence (Tieger, Barron-Tieger; Hammer & Macdaid).
+   * Use '*' on an axis to mean "either pole works for this cluster".
+   */
+  mbtiFit?: {
+    EI?: 'E' | 'I' | '*';
+    SN?: 'S' | 'N' | '*';
+    TF?: 'T' | 'F' | '*';
+    JP?: 'J' | 'P' | '*';
+  };
   /** Key skills needed */
   keySkills: string[];
   /** Class 11-12 recommended subjects */
@@ -95,6 +106,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Design, build, and optimize systems — from software and AI to bridges and circuits. The backbone of modern innovation.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning', 'Spatial Intelligence'],
     preferenceFit: ['Analytical', 'Technical'],
+    mbtiFit: { EI: '*', SN: '*', TF: 'T', JP: 'J' },
     keySkills: [
       'Problem-solving',
       'Mathematical modelling',
@@ -171,6 +183,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Diagnose, treat, and prevent illness. Spans clinical practice, surgery, research, allied health, and public health.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning', 'Verbal Ability'],
     preferenceFit: ['Analytical', 'Social'],
+    mbtiFit: { EI: '*', SN: '*', TF: '*', JP: 'J' },
     keySkills: [
       'Attention to detail',
       'Empathy and patient care',
@@ -247,6 +260,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Investigate fundamental questions in physics, chemistry, biology, and mathematics through research and experimentation.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning'],
     preferenceFit: ['Analytical', 'Technical'],
+    mbtiFit: { EI: 'I', SN: 'N', TF: 'T', JP: '*' },
     keySkills: [
       'Research methodology',
       'Quantitative analysis',
@@ -298,7 +312,8 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
     description:
       'Sustainable farming, food technology, environmental conservation, and climate science.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning'],
-    preferenceFit: ['Naturalistic', 'Analytical'],
+    preferenceFit: ['Analytical', 'Technical'],
+    mbtiFit: { EI: '*', SN: 'S', TF: '*', JP: '*' },
     keySkills: [
       'Fieldwork',
       'Data collection and analysis',
@@ -351,6 +366,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Serve the nation through armed forces, civil services, or technical government roles.',
     aptitudeFit: ['Logical Reasoning', 'Numerical Reasoning', 'Verbal Ability'],
     preferenceFit: ['Executive', 'Social', 'Conscientiousness'],
+    mbtiFit: { EI: '*', SN: 'S', TF: 'T', JP: 'J' },
     keySkills: [
       'Physical fitness',
       'Leadership',
@@ -403,6 +419,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Design functional, aesthetic, and sustainable spaces — buildings, cities, and landscapes.',
     aptitudeFit: ['Spatial Intelligence', 'Numerical Reasoning', 'Logical Reasoning'],
     preferenceFit: ['Creative', 'Technical'],
+    mbtiFit: { EI: '*', SN: 'N', TF: '*', JP: 'J' },
     keySkills: [
       'Spatial visualization',
       'Sketching and CAD',
@@ -459,6 +476,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Manage money, audit books, assess risk, and guide financial decisions for individuals and organizations.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning'],
     preferenceFit: ['Analytical', 'Conscientiousness'],
+    mbtiFit: { EI: '*', SN: 'S', TF: 'T', JP: 'J' },
     keySkills: [
       'Numerical accuracy',
       'Financial analysis',
@@ -518,7 +536,8 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
     description:
       'Lead organizations, launch ventures, and drive strategy in marketing, operations, and human resources.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning', 'Numerical Reasoning'],
-    preferenceFit: ['Executive', 'Entrepreneurial', 'Social'],
+    preferenceFit: ['Executive', 'Social'],
+    mbtiFit: { EI: 'E', SN: '*', TF: 'T', JP: 'J' },
     keySkills: [
       'Leadership',
       'Strategic thinking',
@@ -579,6 +598,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Analyze markets, design public policy, and study how societies allocate resources.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning', 'Verbal Ability'],
     preferenceFit: ['Analytical', 'Verbal', 'Social'],
+    mbtiFit: { EI: '*', SN: 'N', TF: 'T', JP: '*' },
     keySkills: [
       'Quantitative analysis',
       'Research and writing',
@@ -631,6 +651,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Operate and innovate in banking systems, insurance products, and financial technology platforms.',
     aptitudeFit: ['Numerical Reasoning', 'Logical Reasoning'],
     preferenceFit: ['Conscientiousness', 'Analytical', 'Technical'],
+    mbtiFit: { EI: '*', SN: 'S', TF: 'T', JP: 'J' },
     keySkills: [
       'Financial literacy',
       'Customer relations',
@@ -687,6 +708,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Advocate for justice, draft contracts, ensure compliance, and litigate in courts.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
     preferenceFit: ['Verbal', 'Analytical', 'Executive'],
+    mbtiFit: { EI: '*', SN: '*', TF: 'T', JP: 'J' },
     keySkills: [
       'Legal reasoning',
       'Argumentation and debate',
@@ -739,6 +761,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Tell stories, inform the public, and shape narratives through print, digital, TV, and social media.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
     preferenceFit: ['Verbal', 'Creative', 'Social'],
+    mbtiFit: { EI: 'E', SN: 'N', TF: '*', JP: 'P' },
     keySkills: [
       'Writing and editing',
       'Research and fact-checking',
@@ -799,6 +822,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Shape the next generation through teaching, curriculum design, edtech, and educational research.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
     preferenceFit: ['Social', 'Verbal', 'Conscientiousness'],
+    mbtiFit: { EI: '*', SN: '*', TF: 'F', JP: 'J' },
     keySkills: [
       'Communication and patience',
       'Subject mastery',
@@ -851,6 +875,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Understand human behaviour, provide therapy, and support mental health and well-being.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
     preferenceFit: ['Social', 'Analytical', 'Verbal'],
+    mbtiFit: { EI: '*', SN: 'N', TF: 'F', JP: '*' },
     keySkills: [
       'Active listening',
       'Empathy',
@@ -902,7 +927,8 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
     description:
       'Express creativity through visual design, fine arts, music, dance, and theatre.',
     aptitudeFit: ['Spatial Intelligence', 'Verbal Ability'],
-    preferenceFit: ['Creative', 'Musical'],
+    preferenceFit: ['Creative'],
+    mbtiFit: { EI: '*', SN: 'N', TF: 'F', JP: 'P' },
     keySkills: [
       'Visual thinking',
       'Creativity and originality',
@@ -963,6 +989,7 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
       'Serve communities through governance, welfare programs, NGOs, and social justice initiatives.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
     preferenceFit: ['Social', 'Executive', 'Conscientiousness'],
+    mbtiFit: { EI: '*', SN: '*', TF: 'F', JP: 'J' },
     keySkills: [
       'Communication and advocacy',
       'Community organizing',
@@ -1006,7 +1033,8 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
     description:
       'Manage hotels, plan travel experiences, and serve guests in one of the world\'s largest industries.',
     aptitudeFit: ['Verbal Ability', 'Logical Reasoning'],
-    preferenceFit: ['Social', 'Executive', 'Entrepreneurial'],
+    preferenceFit: ['Social', 'Executive'],
+    mbtiFit: { EI: 'E', SN: 'S', TF: '*', JP: '*' },
     keySkills: [
       'Customer service',
       'Communication (multilingual preferred)',
@@ -1058,7 +1086,8 @@ export const CAREER_CLUSTERS: CareerCluster[] = [
     description:
       'Pursue careers in professional sports, coaching, sports science, and fitness management.',
     aptitudeFit: ['Logical Reasoning', 'Spatial Intelligence'],
-    preferenceFit: ['Social', 'Naturalistic'],
+    preferenceFit: ['Social', 'Technical'],
+    mbtiFit: { EI: 'E', SN: 'S', TF: '*', JP: 'P' },
     keySkills: [
       'Physical fitness',
       'Teamwork and discipline',

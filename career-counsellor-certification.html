@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Career Counsellor Certification Program — Srichakra Academy</title>
+<meta name="description" content="Get certified as a Career Counsellor in 3 months. Live online program by Srichakra Academy. 6 modules, 2 classes/week. Backed by SCOPE science. Only 15 seats per batch." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #1a1a2e;
+  background: #fff;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ─── VARIABLES ────────────────────────────────────────────── */
+:root {
+  --saffron:   #e8720c;
+  --gold:      #f5a623;
+  --teal:      #006D77;
+  --teal-dark: #004D55;
+  --cream:     #fffbf2;
+  --dark:      #1a1a2e;
+  --grey:      #5a5a72;
+  --light-bg:  #f7f3ed;
+  --wa-green:  #25D366;
+}
+
+/* ─── STICKY HEADER ────────────────────────────────────────── */
+.top-bar {
+  position: sticky; top: 0; z-index: 999;
+  background: var(--teal-dark);
+  color: #fff;
+  padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.top-bar .brand { font-weight: 700; font-size: 15px; letter-spacing: 0.3px; }
+.top-bar .brand span { color: var(--gold); }
+.top-bar .seats-badge {
+  background: var(--saffron);
+  color: #fff;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 12px; border-radius: 100px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,114,12,0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(232,114,12,0); }
+}
+
+/* ─── HERO ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding: 60px 20px 80px;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(245,166,35,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 10% 80%, rgba(0,109,119,0.15) 0%, transparent 55%),
+    linear-gradient(155deg, #1a1a2e 0%, #0d2137 60%, #0a3040 100%);
+  color: #fff;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+/* decorative arc */
+.hero::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 80px;
+  background: #fff;
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+.hero-inner {
+  position: relative; z-index: 2;
+  max-width: 780px; margin: 0 auto; text-align: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,0.15);
+  border: 1px solid rgba(245,166,35,0.35);
+  color: var(--gold);
+  font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 100px;
+  margin-bottom: 22px;
+}
+.hero-eyebrow::before { content: '🏹'; font-size: 14px; }
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(34px, 6vw, 58px);
+  font-weight: 900;
+  line-height: 1.12;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.hero h1 .accent { color: var(--gold); display: block; }
+.hero h1 .accent2 { color: #7ee8c2; }
+
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 18px);
+  opacity: 0.9;
+  max-width: 580px; margin: 0 auto 32px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.hero-badges {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  margin-bottom: 40px;
+}
+.hero-badge {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 7px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+.hero-badge .dot { width: 8px; height: 8px; background: #7ee8c2; border-radius: 50%; flex-shrink: 0; }
+
+.hero-cta-group {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;
+  margin-bottom: 48px;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: linear-gradient(135deg, var(--saffron), #c45c00);
+  color: #fff;
+  font-size: 16px; font-weight: 700;
+  padding: 16px 32px; border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(232,114,12,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none; cursor: pointer;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,114,12,0.5); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 15px; font-weight: 600;
+  padding: 15px 28px; border-radius: 12px;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.18); }
+
+.hero-price-note {
+  font-size: 13px; opacity: 0.75;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.hero-price-note .price-highlight {
+  background: var(--gold); color: #1a1a2e;
+  font-weight: 800; padding: 2px 10px; border-radius: 6px; font-size: 15px;
+}
+.hero-price-note .strikethrough { text-decoration: line-through; opacity: 0.6; }
+
+/* ─── STAT BAR ─────────────────────────────────────────────── */
+.stat-bar {
+  background: var(--teal);
+  color: #fff;
+  padding: 28px 20px;
+}
+.stat-bar-inner {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px; text-align: center;
+}
+.stat-item .stat-num {
+  font-size: 32px; font-weight: 800;
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-item .stat-label { font-size: 12px; opacity: 0.85; margin-top: 4px; font-weight: 500; }
+
+/* ─── SECTION SHELL ────────────────────────────────────────── */
+.section { padding: 72px 20px; }
+.section-alt { background: var(--light-bg); }
+.section-dark { background: var(--dark); color: #fff; }
+.container { max-width: 900px; margin: 0 auto; }
+.section-tag {
+  display: inline-block;
+  color: var(--saffron);
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 900; line-height: 1.2;
+  margin-bottom: 14px;
+}
+.section-title .hl { color: var(--saffron); }
+.section-sub { font-size: 16px; color: var(--grey); max-width: 580px; line-height: 1.7; }
+.section-sub.light { color: rgba(255,255,255,0.7); }
+
+/* ─── DRONACHARYA QUOTE ────────────────────────────────────── */
+.quote-block {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+  color: #fff;
+  padding: 48px 28px;
+  border-radius: 20px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  margin: 48px 0 0;
+}
+.quote-block::before {
+  content: '"';
+  position: absolute; top: -20px; left: 16px;
+  font-size: 180px; font-family: 'Playfair Display', serif;
+  color: rgba(255,255,255,0.06); line-height: 1;
+  pointer-events: none;
+}
+.quote-text {
+  font-size: clamp(17px, 2.8vw, 22px);
+  font-style: italic; line-height: 1.6;
+  font-family: 'Playfair Display', serif;
+  max-width: 640px; margin: 0 auto 16px;
+}
+.quote-author { font-size: 13px; opacity: 0.7; font-weight: 500; }
+
+/* ─── WHO IS THIS FOR ──────────────────────────────────────── */
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px; margin-top: 40px;
+}
+.persona-card {
+  background: #fff;
+  border: 1.5px solid #e8e8ee;
+  border-radius: 16px;
+  padding: 28px 24px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.persona-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+  border-color: var(--saffron);
+}
+.persona-icon { font-size: 36px; margin-bottom: 14px; }
+.persona-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+.persona-pain { font-size: 13.5px; color: var(--grey); line-height: 1.6; margin-bottom: 12px; }
+.persona-hook {
+  font-size: 13px; font-weight: 600;
+  color: var(--teal);
+  padding: 8px 12px;
+  background: rgba(0,109,119,0.07);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  line-height: 1.5;
+}
+
+/* ─── CURRICULUM ───────────────────────────────────────────── */
+.week-list { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+.week-card {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: box-shadow 0.2s;
+}
+.week-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.12); }
+.week-num {
+  background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
+  color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  line-height: 1.3;
+}
+.week-num span { font-size: 24px; font-weight: 900; font-family: 'Playfair Display', serif; }
+.week-body { padding: 20px 24px; }
+.week-body h3 { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; color: var(--dark); }
+.week-body p { font-size: 13.5px; color: var(--grey); line-height: 1.6; }
+.week-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.week-tag {
+  background: var(--light-bg);
+  color: var(--teal-dark);
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+}
+
+/* ─── DELIVERABLES ─────────────────────────────────────────── */
+.deliverables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px; margin-top: 40px;
+}
+.deliv-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  padding: 22px 20px;
+  text-align: center;
+  transition: background 0.2s;
+}
+.deliv-card:hover { background: rgba(255,255,255,0.1); }
+.deliv-icon { font-size: 32px; margin-bottom: 12px; }
+.deliv-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.deliv-desc { font-size: 12.5px; opacity: 0.7; line-height: 1.5; }
+
+/* ─── PRICING ──────────────────────────────────────────────── */
+.pricing-wrapper {
+  max-width: 700px; margin: 40px auto 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 540px) { .pricing-wrapper { grid-template-columns: 1fr; } }
+.price-card {
+  border-radius: 20px;
+  padding: 32px 28px;
+  position: relative; overflow: hidden;
+}
+.price-card.regular {
+  background: #f7f3ed;
+  border: 2px solid #e8e8ee;
+}
+.price-card.earlybird {
+  background: linear-gradient(145deg, var(--teal) 0%, var(--teal-dark) 100%);
+  color: #fff;
+  border: 2px solid transparent;
+  box-shadow: 0 16px 40px rgba(0,109,119,0.35);
+}
+.price-card.earlybird::before {
+  content: '⭐ EARLYBIRD';
+  position: absolute; top: 16px; right: -22px;
+  background: var(--gold); color: #1a1a2e;
+  font-size: 10px; font-weight: 800; letter-spacing: 1px;
+  padding: 4px 36px; transform: rotate(35deg);
+}
+.price-label { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px; }
+.price-amount { font-size: 44px; font-weight: 900; font-family: 'Playfair Display', serif; line-height: 1; }
+.price-amount small { font-size: 22px; vertical-align: super; }
+.price-seats { font-size: 13px; margin-top: 6px; opacity: 0.75; }
+.price-features { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.price-features li { font-size: 13.5px; display: flex; align-items: flex-start; gap: 9px; }
+.price-features li::before { content: '✓'; font-weight: 800; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+.price-card.regular .price-features li::before { color: var(--teal); }
+.price-cta {
+  display: block; text-align: center;
+  margin-top: 24px;
+  padding: 13px 20px; border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+  background: var(--wa-green); color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.price-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,211,102,0.4); }
+.price-card.regular .price-cta { background: var(--teal); }
+
+.instalment-note {
+  text-align: center; margin-top: 18px;
+  font-size: 13px; color: var(--grey);
+  padding: 12px 20px; background: rgba(0,109,119,0.06);
+  border-radius: 10px;
+}
+.instalment-note strong { color: var(--teal); }
+
+/* ─── SOCIAL PROOF ─────────────────────────────────────────── */
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px; margin-top: 40px;
+}
+.proof-card {
+  background: #fff;
+  border: 1.5px solid #e8e8ee;
+  border-radius: 16px;
+  padding: 24px;
+}
+.proof-stars { color: var(--gold); font-size: 16px; margin-bottom: 12px; }
+.proof-text { font-size: 14px; color: var(--grey); line-height: 1.7; font-style: italic; margin-bottom: 14px; }
+.proof-author { display: flex; align-items: center; gap: 10px; }
+.proof-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 15px;
+  flex-shrink: 0;
+}
+.proof-name { font-size: 13px; font-weight: 700; color: var(--dark); }
+.proof-role { font-size: 11.5px; color: var(--grey); }
+
+/* ─── FAQ ──────────────────────────────────────────────────── */
+.faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  background: #fff;
+  border: 1.5px solid #e8e8ee;
+  border-radius: 14px; overflow: hidden;
+}
+.faq-q {
+  width: 100%; background: none; border: none;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  font-size: 15px; font-weight: 600; color: var(--dark);
+  cursor: pointer; text-align: left;
+  font-family: 'Poppins', sans-serif;
+  transition: color 0.2s;
+}
+.faq-q:hover { color: var(--teal); }
+.faq-icon {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--light-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; flex-shrink: 0;
+  transition: transform 0.3s, background 0.2s;
+  color: var(--teal);
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--teal); color: #fff; }
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.2s;
+  padding: 0 22px;
+  font-size: 14px; color: var(--grey); line-height: 1.7;
+}
+.faq-item.open .faq-a { max-height: 200px; padding-bottom: 18px; }
+
+/* ─── FINAL CTA ────────────────────────────────────────────── */
+.final-cta {
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(245,166,35,0.2) 0%, transparent 60%),
+    linear-gradient(155deg, #1a1a2e 0%, #0d2137 100%);
+  color: #fff; padding: 80px 20px; text-align: center;
+}
+.final-cta .section-title { color: #fff; margin-bottom: 14px; }
+.final-cta .section-sub.light { margin: 0 auto 36px; }
+.seats-counter {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,114,12,0.15);
+  border: 1px solid rgba(232,114,12,0.35);
+  color: var(--gold);
+  padding: 8px 20px; border-radius: 100px;
+  font-size: 13px; font-weight: 600;
+  margin-bottom: 28px;
+  animation: pulse 2s infinite;
+}
+
+/* ─── REGISTRATION FORM ────────────────────────────────────── */
+.reg-form {
+  background: #fff;
+  max-width: 520px; margin: 0 auto;
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.reg-form h3 {
+  font-size: 20px; font-weight: 700; color: var(--dark);
+  margin-bottom: 6px; text-align: center;
+}
+.reg-form .form-sub {
+  font-size: 13px; color: var(--grey); text-align: center; margin-bottom: 24px;
+}
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12.5px; font-weight: 600;
+  color: var(--dark); margin-bottom: 6px;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px; font-family: 'Poppins', sans-serif;
+  color: var(--dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  background: #fff;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,109,119,0.12);
+}
+.form-submit {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--wa-green), #1da851);
+  color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 8px;
+}
+.form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.4); }
+.form-privacy {
+  font-size: 11.5px; color: #999; text-align: center;
+  margin-top: 12px; line-height: 1.5;
+}
+
+/* ─── FOOTER ───────────────────────────────────────────────── */
+footer {
+  background: var(--dark); color: rgba(255,255,255,0.6);
+  padding: 32px 20px; text-align: center;
+  font-size: 13px; line-height: 1.8;
+}
+footer strong { color: #fff; }
+footer a { color: var(--gold); }
+
+/* ─── FLOATING WA BUTTON ───────────────────────────────────── */
+.wa-float {
+  position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+  background: var(--wa-green);
+  color: #fff; width: 60px; height: 60px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 6px 20px rgba(37,211,102,0.5);
+  animation: wa-bounce 3s ease-in-out infinite;
+  transition: transform 0.2s;
+}
+.wa-float:hover { transform: scale(1.1); }
+@keyframes wa-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ─── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .top-bar .seats-badge { display: none; }
+  .reg-form { padding: 28px 20px; }
+  .week-card { grid-template-columns: 52px 1fr; }
+  .week-num span { font-size: 20px; }
+}
+</style>
+<script src="/meta-pixel.js" defer></script>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  STICKY TOP BAR                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<header class="top-bar">
+  <div class="brand">Srichakra <span>Academy</span></div>
+  <div class="seats-badge">🔥 Only 15 Seats Per Batch</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  HERO                                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Career Counsellor Certification Program</div>
+
+    <h1>
+      Be the Dronacharya
+      <span class="accent">200 Million Children Need.</span>
+      <span style="font-size:0.55em; color:rgba(255,255,255,0.8); font-family:'Poppins',sans-serif; font-weight:400; display:block; margin-top:8px;">
+        Get <span class="accent2">SCOPE-Certified</span> in 3 months.
+      </span>
+    </h1>
+
+    <p class="hero-sub">
+      India has 26 crore school students. Less than 1% have access to a certified career counsellor.
+      That gap is your calling — and your opportunity.
+    </p>
+
+    <div class="hero-badges">
+      <div class="hero-badge"><div class="dot"></div> 3 Months · 2 Classes/Week</div>
+      <div class="hero-badge"><div class="dot"></div> SCOPE Platform Included</div>
+      <div class="hero-badge"><div class="dot"></div> Batch Starts June 11</div>
+      <div class="hero-badge"><div class="dot"></div> Only 15 Seats / Batch</div>
+      <div class="hero-badge"><div class="dot"></div> Certificate on Completion</div>
+    </div>
+
+    <div class="hero-cta-group">
+      <a href="#register" class="btn-primary">
+        📲 Enrol Now on WhatsApp
+      </a>
+      <a href="#curriculum" class="btn-secondary">
+        📘 See Curriculum
+      </a>
+    </div>
+
+    <div class="hero-price-note">
+      Earlybird Price &nbsp;
+      <span class="price-highlight">₹11,999</span>
+      &nbsp; <span class="strikethrough">₹14,999</span>
+      &nbsp; · &nbsp; Save ₹3,000
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  STAT BAR                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat-item">
+      <div class="stat-num">26Cr</div>
+      <div class="stat-label">School students in India</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">&lt;1%</div>
+      <div class="stat-label">Have access to a counsellor</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5L+</div>
+      <div class="stat-label">Counsellors needed urgently</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Years of Srichakra expertise</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  DRONACHARYA QUOTE                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="quote-block">
+      <p class="quote-text">
+        "Dronacharya didn't teach every child the same thing. He observed each student's nature,
+        matched them to their strength, and shaped them into greatness.
+        That's exactly what a certified career counsellor does today."
+      </p>
+      <div class="quote-author">— The Dronacharya Principle · Srichakra Academy</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  WHO IS THIS FOR                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="who">
+  <div class="container">
+    <div class="section-tag">Who Is This For</div>
+    <h2 class="section-title">This programme is <span class="hl">made for you</span> if…</h2>
+    <p class="section-sub">Five different people. One shared purpose — to change the career trajectories of young students.</p>
+
+    <div class="persona-grid">
+      <div class="persona-card">
+        <div class="persona-icon">🧑‍🏫</div>
+        <div class="persona-title">The Experienced Teacher</div>
+        <div class="persona-pain">You've guided students for years but have no formal credential. The school counsellor role goes to someone else.</div>
+        <div class="persona-hook">"You've done the work for years. Time to make it official."</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🎓</div>
+        <div class="persona-title">The Psychology Graduate</div>
+        <div class="persona-pain">Your degree is broad. Clinical psychology is expensive and competitive. You need a clear, practical entry point.</div>
+        <div class="persona-hook">"Your psychology background + our certification = a career from Day 1."</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">👩‍👧</div>
+        <div class="persona-title">The Empowered Parent</div>
+        <div class="persona-pain">You navigated your own child's career confusion and realised no one does this well professionally.</div>
+        <div class="persona-hook">"Get certified to guide 100 families — on your own schedule."</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">💼</div>
+        <div class="persona-title">The HR / Corporate Professional</div>
+        <div class="persona-pain">Corporate work feels hollow. You want to work with youth and build something meaningful.</div>
+        <div class="persona-hook">"Your HR skills + our certification = a business that changes lives."</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🏫</div>
+        <div class="persona-title">School Management</div>
+        <div class="persona-pain">CBSE/NEP mandates need an in-house counsellor. Hiring externally is expensive and unreliable.</div>
+        <div class="persona-hook">"Train your own teacher. Create your school's certified counsellor."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  CURRICULUM                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="curriculum">
+  <div class="container">
+    <div class="section-tag">6-Module Curriculum</div>
+    <h2 class="section-title">From <span class="hl">Foundations</span> to First Client</h2>
+    <p class="section-sub">6 modules over 3 months — 2 live online sessions per week. Real tools, real practice, real clients.</p>
+
+    <div class="week-list">
+      <div class="week-card">
+        <div class="week-num">MOD <span>1</span></div>
+        <div class="week-body">
+          <h3>Foundations of Career Counselling</h3>
+          <p>What career counselling really means, NEP 2020 mandates, ethical framework, and the Indian context — why now is the best time.</p>
+          <div class="week-tags">
+            <span class="week-tag">NEP 2020</span>
+            <span class="week-tag">Ethics</span>
+            <span class="week-tag">Indian Market</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">MOD <span>2</span></div>
+        <div class="week-body">
+          <h3>Assessment Science &amp; SCOPE Methodology</h3>
+          <p>Psychometrics basics, aptitude vs interest vs intelligence, deep dive into the SCOPE assessment platform you'll use with every student.</p>
+          <div class="week-tags">
+            <span class="week-tag">SCOPE Platform</span>
+            <span class="week-tag">Psychometrics</span>
+            <span class="week-tag">Multiple Intelligence</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">MOD <span>3</span></div>
+        <div class="week-body">
+          <h3>Career Mapping &amp; Indian Job Market</h3>
+          <p>Career clusters, stream selection frameworks (Class 10 & 12), course families, emerging careers, and realistic Indian job market data.</p>
+          <div class="week-tags">
+            <span class="week-tag">Career Clusters</span>
+            <span class="week-tag">Stream Selection</span>
+            <span class="week-tag">Job Market</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">MOD <span>4</span></div>
+        <div class="week-body">
+          <h3>Counselling Skills &amp; Communication</h3>
+          <p>Active listening, motivational interviewing, handling parental pressure, difficult student conversations, and building a counsellor mindset.</p>
+          <div class="week-tags">
+            <span class="week-tag">Active Listening</span>
+            <span class="week-tag">Parent Conversations</span>
+            <span class="week-tag">Motivational Interviewing</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">MOD <span>5</span></div>
+        <div class="week-body">
+          <h3>Tools, Reports &amp; Live Practice</h3>
+          <p>Using SCOPE platform end-to-end, reading and interpreting 10-page reports, mock counselling sessions with feedback from your trainer.</p>
+          <div class="week-tags">
+            <span class="week-tag">Mock Sessions</span>
+            <span class="week-tag">Report Reading</span>
+            <span class="week-tag">Live Feedback</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">MOD <span>6</span></div>
+        <div class="week-body">
+          <h3>Certification, Practice &amp; Business Setup</h3>
+          <p>Final evaluation with real students, certificate awarding, how to attract your first clients, and how to list on the Srichakra counsellor directory.</p>
+          <div class="week-tags">
+            <span class="week-tag">Final Assessment</span>
+            <span class="week-tag">Certificate</span>
+            <span class="week-tag">Get First Client</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  DELIVERABLES                                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-tag" style="color:var(--gold)">What You Get</div>
+    <h2 class="section-title" style="color:#fff">Everything you need to <span style="color:var(--gold)">start immediately.</span></h2>
+    <p class="section-sub light">Your certification isn't just a certificate. It's a complete launchpad.</p>
+
+    <div class="deliverables-grid">
+      <div class="deliv-card">
+        <div class="deliv-icon">🏆</div>
+        <div class="deliv-title">SCOPE-Certified Certificate</div>
+        <div class="deliv-desc">Digital certificate from Srichakra Academy — shareable on LinkedIn, WhatsApp, anywhere.</div>
+      </div>
+      <div class="deliv-card">
+        <div class="deliv-icon">📊</div>
+        <div class="deliv-title">SCOPE Platform Access</div>
+        <div class="deliv-desc">1-year discounted access to conduct assessments with your own students and clients.</div>
+      </div>
+      <div class="deliv-card">
+        <div class="deliv-icon">📖</div>
+        <div class="deliv-title">Career Counsellor Handbook</div>
+        <div class="deliv-desc">Complete reference guide — frameworks, scripts, case studies, Indian career database.</div>
+      </div>
+      <div class="deliv-card">
+        <div class="deliv-icon">👥</div>
+        <div class="deliv-title">WhatsApp Alumni Community</div>
+        <div class="deliv-desc">Peer network of certified counsellors. Share referrals, resources, and opportunities.</div>
+      </div>
+      <div class="deliv-card">
+        <div class="deliv-icon">📍</div>
+        <div class="deliv-title">Counsellor Directory Listing</div>
+        <div class="deliv-desc">Get featured on Srichakra Academy's counsellor directory — receive client referrals directly.</div>
+      </div>
+      <div class="deliv-card">
+        <div class="deliv-icon">📣</div>
+        <div class="deliv-title">Marketing Kit</div>
+        <div class="deliv-desc">Ready-made WhatsApp templates, social media posts, and brochures to promote your practice.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SOCIAL PROOF                                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-tag">What People Are Saying</div>
+    <h2 class="section-title">Real words from <span class="hl">real counsellors.</span></h2>
+
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"I finally have a credential that matches what I've been doing for 8 years. The SCOPE platform is a game-changer — parents and students take me so much more seriously now."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">L</div>
+          <div>
+            <div class="proof-name">Latha R.</div>
+            <div class="proof-role">School Teacher → Certified Counsellor, Chennai</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"As a psychology graduate, I was lost. This certification gave me a clear niche and a platform to start immediately. Got my first 3 clients within 30 days of completing."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">P</div>
+          <div>
+            <div class="proof-name">Priya M.</div>
+            <div class="proof-role">MSc Psychology → Career Counsellor, Coimbatore</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p class="proof-text">"Our school needed a counsellor to meet NEP requirements. We sent our senior teacher here. She came back transformed — confident, certified, and our students love her sessions."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">S</div>
+          <div>
+            <div class="proof-name">S. Krishnan</div>
+            <div class="proof-role">School Principal, Madurai</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  PRICING                                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-tag">Investment</div>
+    <h2 class="section-title">Simple, <span class="hl">transparent pricing.</span></h2>
+    <p class="section-sub">One paid counselling session charges ₹1,500–₹3,000. Your certification pays back within your first week of practice.</p>
+
+    <div class="pricing-wrapper">
+      <div class="price-card regular">
+        <div class="price-label">Standard Price</div>
+        <div class="price-amount"><small>₹</small>14,999</div>
+        <div class="price-seats">Available anytime</div>
+        <ul class="price-features">
+          <li>Full 6-module programme (3 months)</li>
+          <li>SCOPE platform access (1 year)</li>
+          <li>Career Counsellor Handbook</li>
+          <li>Alumni community</li>
+          <li>Counsellor directory listing</li>
+          <li>Marketing kit</li>
+        </ul>
+        <a href="https://wa.me/918590396662?text=Hi%21%20I%27m%20interested%20in%20the%20Career%20Counsellor%20Certification%20Program%20at%20the%20standard%20price.%20Please%20share%20details." target="_blank" rel="noopener" class="price-cta">
+          💬 Enquire on WhatsApp
+        </a>
+      </div>
+
+      <div class="price-card earlybird">
+        <div class="price-label" style="color:rgba(255,255,255,0.75)">Earlybird — First 5 Seats</div>
+        <div class="price-amount"><small>₹</small>11,999</div>
+        <div class="price-seats" style="color:rgba(255,255,255,0.7)">Save ₹3,000 — limited time</div>
+        <ul class="price-features">
+          <li>Full 6-module programme (3 months)</li>
+          <li>SCOPE platform access (1 year)</li>
+          <li>Career Counsellor Handbook</li>
+          <li>Alumni community</li>
+          <li>Counsellor directory listing</li>
+          <li>Marketing kit</li>
+        </ul>
+        <a href="https://wa.me/918590396662?text=Hi%21%20I%27d%20like%20to%20register%20for%20the%20Career%20Counsellor%20Certification%20Program%20at%20the%20earlybird%20price%20of%20%E2%82%B911%2C999.%20Please%20confirm%20my%20seat." target="_blank" rel="noopener" class="price-cta">
+          ⚡ Claim Earlybird Seat
+        </a>
+      </div>
+    </div>
+
+    <div class="instalment-note" style="max-width:700px;margin:18px auto 0">
+      � Pay <strong>₹999 now</strong> to block your seat — balance split into <strong>2 easy instalments</strong> &nbsp;·&nbsp;
+      <a href="https://wa.me/918590396662?text=Hi%21%20I%27d%20like%20to%20block%20my%20seat%20with%20%E2%82%B9999%20for%20the%20CCC%20program.%20Please%20share%20payment%20details." target="_blank" rel="noopener" style="color:var(--teal);font-weight:700">Block Seat Now →</a>
+    </div>
+    <div class="instalment-note" style="max-width:700px;margin:10px auto 0;background:rgba(0,109,119,0.06)">
+      🏫 <strong>School Package:</strong> ₹9,999/teacher + 1 year hand-holding &nbsp;·&nbsp;
+      📊 <strong>SCOPE Assessment:</strong> ₹1,099/student &nbsp;·&nbsp; ₹699/student for 50+ students &nbsp;·&nbsp;
+      <a href="https://wa.me/918590396662?text=Hi%21%20I%27d%20like%20to%20know%20about%20the%20school%20package%20or%20bulk%20assessment%20pricing." target="_blank" rel="noopener" style="color:var(--teal);font-weight:700">Enquire →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  RELAUNCH TRACK — certified but not yet practising         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="relaunch" style="background:linear-gradient(135deg,#0f2942 0%,#006d77 100%);color:#fff">
+  <div class="container" style="max-width:900px">
+    <div class="section-tag" style="background:rgba(255,255,255,0.12);color:#e9c46a;border:1px solid rgba(233,196,106,0.35)">Separate Track &nbsp;·&nbsp; Different Audience</div>
+    <h2 class="section-title" style="color:#fff">Already Certified? <span style="color:#e9c46a">It's Time to Launch.</span></h2>
+    <p class="section-sub" style="color:rgba(255,255,255,0.78)">You did the hard part — you got certified. Now let's get you <strong style="color:#fff">actually practising</strong>. A focused 1.5-month track to move from "certified" to "booked".</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:36px 0">
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:26px 20px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:10px">🚀</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:8px;color:#fff">1.5-Month Practice Sprint</div>
+        <div style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.55">Structured sessions to set up your practice, land your first clients, and build a referral system that runs on its own</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:26px 20px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:10px">📊</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:8px;color:#fff">30% Off SCOPE Assessments</div>
+        <div style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.55">Exclusive discount on SCOPE assessment credits — so you can offer every student a science-backed career report from day one</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:26px 20px;text-align:center">
+        <div style="font-size:2rem;margin-bottom:10px">🤝</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:8px;color:#fff">1-Year Mentorship Support</div>
+        <div style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.55">Monthly group check-ins, Srichakra community access, and live case consultation support for a full 12 months</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:28px;margin-top:4px">
+      <div style="text-align:center">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Track Fee</div>
+        <div style="font-size:2.8rem;font-weight:800;color:#e9c46a;line-height:1"><small style="font-size:1.1rem">₹</small>5,999</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:4px">One-time &nbsp;·&nbsp; includes 1-year support</div>
+      </div>
+      <a href="https://wa.me/918590396662?text=Hi%21%20I%20am%20already%20a%20certified%20career%20counsellor%20but%20haven%27t%20started%20practising%20yet.%20I%27d%20like%20to%20know%20more%20about%20the%201.5-month%20Practice%20Launch%20track%20at%20%E2%82%B95%2C999." target="_blank" rel="noopener" style="background:#e9c46a;color:#0f2942;font-weight:800;font-size:1rem;padding:17px 34px;border-radius:50px;text-decoration:none;display:inline-block;white-space:nowrap">
+        👉 I'm Already Certified — Tell Me More
+      </a>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:0.82rem;color:rgba(255,255,255,0.4)">This track is for counsellors who hold an existing certification. Not yet certified? See the main programme above.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FAQ                                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="faq">
+  <div class="container">
+    <div class="section-tag">Common Questions</div>
+    <h2 class="section-title">Everything you <span class="hl">want to know.</span></h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Do I need any prior counselling experience?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">No prior counselling experience is required. If you have teaching, psychology, or HR experience that's a bonus — but the programme is designed to take you from beginner to certified practitioner. Enthusiasm and a genuine desire to help students is the only prerequisite.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Is this programme fully online? What is the schedule?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes — fully live online via Google Meet / Zoom. The programme runs over 3 months with 2 live sessions per week, scheduled to suit working professionals and teachers. Session timings are confirmed after enrolment based on the batch's preference. All sessions are recorded so you never miss a class.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What certificate do I receive?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">You receive a "SCOPE-Certified Career Counsellor" digital certificate issued by Srichakra Academy, a 10-year-old education brand trusted by schools across Tamil Nadu. The certificate is shareable on LinkedIn, WhatsApp, and your website — and you'll be listed in our official counsellor directory.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Can I start earning immediately after the programme?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes. You get SCOPE platform access from Module 2, so you can practice with real students during the programme itself. By Module 6, you'll have conducted mock counselling sessions and know how to get your first paying clients. Many graduates land their first 3 clients within 30 days of completing.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What is the payment and refund policy?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">A ₹999 token payment blocks your seat. The balance is split into 2 instalments. Please note: all fees paid are non-refundable. We encourage you to attend the free discovery call and review the full curriculum before enrolling to ensure the programme is the right fit for you.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What language are the sessions conducted in?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Sessions are currently conducted in English. A Tamil-medium version of the programme is in the pipeline — if you'd like to be notified when it launches, let us know on WhatsApp and we'll keep you on the priority list.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FINAL CTA + FORM                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="final-cta" id="register">
+  <div class="container">
+    <div class="section-tag" style="color:var(--gold)">Reserve Your Seat</div>
+    <h2 class="section-title">Ready to be the Dronacharya<br>200 million children need?</h2>
+    <p class="section-sub light">Fill in your details below. We'll WhatsApp you the brochure, batch dates, and payment link within 2 hours.</p>
+
+    <div class="seats-counter">🔥 Batch starts June 11 · Only 15 seats — filling fast</div>
+
+    <div class="reg-form">
+      <h3>Get Your Free Info Pack + Reserve a Seat</h3>
+      <p class="form-sub">Takes 30 seconds. No spam, ever.</p>
+
+      <form id="cccForm" novalidate>
+        <div class="form-group">
+          <label for="name">Your Full Name *</label>
+          <input type="text" id="name" name="name" placeholder="e.g. Meena Subramaniam" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="phone">WhatsApp Number *</label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 98765 43210" required autocomplete="tel" maxlength="15" />
+        </div>
+        <div class="form-group">
+          <label for="role">I am a… *</label>
+          <select id="role" name="role" required>
+            <option value="" disabled selected>Select your background</option>
+            <option value="teacher">Teacher / School Staff</option>
+            <option value="psychology">Psychology / Education Graduate</option>
+            <option value="parent">Parent</option>
+            <option value="hr">HR / Corporate Professional</option>
+            <option value="school">School Management / Principal</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="city">City *</label>
+          <input type="text" id="city" name="city" placeholder="e.g. Chennai" required autocomplete="address-level2" />
+        </div>
+        <button type="submit" class="form-submit">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Send Me the Info Pack on WhatsApp
+        </button>
+      </form>
+      <p class="form-privacy">🔒 Your details are safe. We will only contact you about this programme. No third-party sharing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<footer>
+  <strong>Srichakra Academy</strong><br />
+  Career Counsellor Certification Program<br />
+  📞 <a href="tel:+918590396662">+91 85903 96662</a> &nbsp;·&nbsp;
+  🌐 <a href="https://srichakraacademy.org" target="_blank" rel="noopener">srichakraacademy.org</a><br /><br />
+  <em>"Discover · Decide · Develop"</em><br />
+  <span style="font-size:11px;opacity:0.5;margin-top:8px;display:block">© 2026 Srichakra Academy. All rights reserved.</span>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FLOATING WHATSAPP                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<a href="https://wa.me/918590396662?text=Hi%21%20I%27m%20interested%20in%20the%20Career%20Counsellor%20Certification%20Program.%20Please%20share%20details." target="_blank" rel="noopener" class="wa-float" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script src="/ccc-landing.js" defer></script>
+
+</body>
+</html>

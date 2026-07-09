@@ -100,3 +100,26 @@ export const estimateAbility = (
 
   return theta;
 };
+
+/**
+ * Compute the Fisher information at a given theta for a set of 2PL items,
+ * and return the standard error of the ability estimate (SE = 1/sqrt(I)).
+ *
+ * Caps SE at 2.0 to keep low-information cases from rendering absurd bands.
+ */
+export const abilityStandardError = (
+  theta: number,
+  answers: AptitudeAnswer[]
+): number => {
+  if (answers.length === 0) return 2.0;
+  let info = 0;
+  for (const answer of answers) {
+    const a = answer.question.discrimination;
+    const b = answer.question.difficulty;
+    const aD = a * D_SCALE;
+    const p = twoParamLogistic(theta, b, a);
+    info += aD * aD * p * (1 - p);
+  }
+  if (info < 1e-6) return 2.0;
+  return Math.min(2.0, 1 / Math.sqrt(info));
+};

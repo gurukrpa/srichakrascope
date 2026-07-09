@@ -29,7 +29,14 @@ export type PreferenceDomain =
   | 'Naturalistic'
   | 'Musical'
   | 'Entrepreneurial'
-  | 'Consistency'; // For internal validation
+  | 'MBTI_EI'         // Extraversion vs Introversion
+  | 'MBTI_SN'         // Sensing vs Intuition
+  | 'MBTI_TF'         // Thinking vs Feeling
+  | 'MBTI_JP'         // Judging vs Perceiving
+  | 'AttentionCheck'  // Bot/careless-response trap
+  | 'Consistency';    // For internal validation
+
+export type MBTIPole = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
 
 export interface AptitudeQuestion {
   id: number;
@@ -48,6 +55,10 @@ export interface PreferenceQuestion {
   type: 'preference';
   domain: PreferenceDomain;
   question: string;
+  /** For MBTI items: which pole high agreement (4-5) leans toward. */
+  mbtiPole?: MBTIPole;
+  /** For AttentionCheck items: the expected Likert value (1-5). */
+  expectedValue?: number;
   // Likert scale 1-5, no options needed
 }
 
@@ -315,7 +326,7 @@ export const APTITUDE_QUESTIONS: AptitudeQuestion[] = [
 ];
 
 // ────────────────────────────────────────────
-// PART 2 — Self-Report Preferences (50 Questions)
+// PART 2 — Self-Report Preferences (RIASEC + MBTI + MI + Validity items)
 // ────────────────────────────────────────────
 
 export const PREFERENCE_QUESTIONS: PreferenceQuestion[] = [
@@ -397,6 +408,51 @@ export const PREFERENCE_QUESTIONS: PreferenceQuestion[] = [
 
   { id: 373, type: 'preference', domain: 'Consistency', question: 'I find it easy to talk to new people.' }, // Mirror of 374
   { id: 374, type: 'preference', domain: 'Consistency', question: 'I am usually quiet in a room full of strangers.' },
+
+  // ADDITIONAL CONSISTENCY PAIRS (5 more) — for stronger careless-response detection
+  { id: 380, type: 'preference', domain: 'Consistency', question: 'I prefer detailed plans before starting a task.' }, // Mirror of 381
+  { id: 381, type: 'preference', domain: 'Consistency', question: 'I prefer to start a task and figure it out as I go.' },
+
+  { id: 382, type: 'preference', domain: 'Consistency', question: 'I am energized after a busy day with many people.' }, // Mirror of 383
+  { id: 383, type: 'preference', domain: 'Consistency', question: 'A busy social day leaves me drained and needing alone time.' },
+
+  { id: 384, type: 'preference', domain: 'Consistency', question: 'I prefer concrete facts and proven methods.' }, // Mirror of 385
+  { id: 385, type: 'preference', domain: 'Consistency', question: 'I prefer exploring possibilities and new ideas.' },
+
+  { id: 386, type: 'preference', domain: 'Consistency', question: 'When deciding, I prioritize logic over feelings.' }, // Mirror of 387
+  { id: 387, type: 'preference', domain: 'Consistency', question: 'When deciding, I prioritize how people will feel.' },
+
+  { id: 388, type: 'preference', domain: 'Consistency', question: 'I feel calmer when my day is fully scheduled.' }, // Mirror of 389
+  { id: 389, type: 'preference', domain: 'Consistency', question: 'A fully scheduled day feels restrictive to me.' },
+
+  // ATTENTION CHECKS — flag careless / bot responding. Expected values fixed.
+  { id: 395, type: 'preference', domain: 'AttentionCheck', question: 'For this item, please select "Strongly Agree" so we can confirm careful reading.', expectedValue: 5 },
+  { id: 396, type: 'preference', domain: 'AttentionCheck', question: 'To verify careful attention, please select "Disagree" for this item.', expectedValue: 2 },
+
+  // ─── MBTI (16 items, 4 per dichotomy) ────────────────────────────────
+  // Extraversion (E) vs Introversion (I)
+  { id: 401, type: 'preference', domain: 'MBTI_EI', mbtiPole: 'E', question: 'I gain energy from being around groups of people.' },
+  { id: 402, type: 'preference', domain: 'MBTI_EI', mbtiPole: 'I', question: 'I need quiet time alone to recharge after social events.' },
+  { id: 403, type: 'preference', domain: 'MBTI_EI', mbtiPole: 'E', question: 'I think out loud and like to talk through ideas with others.' },
+  { id: 404, type: 'preference', domain: 'MBTI_EI', mbtiPole: 'I', question: 'I prefer to think things through privately before sharing.' },
+
+  // Sensing (S) vs Intuition (N)
+  { id: 405, type: 'preference', domain: 'MBTI_SN', mbtiPole: 'S', question: 'I trust information that is concrete, detailed, and verifiable.' },
+  { id: 406, type: 'preference', domain: 'MBTI_SN', mbtiPole: 'N', question: 'I enjoy imagining future possibilities and abstract patterns.' },
+  { id: 407, type: 'preference', domain: 'MBTI_SN', mbtiPole: 'S', question: 'I prefer step-by-step instructions over open-ended briefs.' },
+  { id: 408, type: 'preference', domain: 'MBTI_SN', mbtiPole: 'N', question: 'I often connect ideas across different fields to see the bigger picture.' },
+
+  // Thinking (T) vs Feeling (F)
+  { id: 409, type: 'preference', domain: 'MBTI_TF', mbtiPole: 'T', question: 'I make decisions based on logic, even if some people are upset.' },
+  { id: 410, type: 'preference', domain: 'MBTI_TF', mbtiPole: 'F', question: 'I weigh how my decisions will affect people\'s feelings.' },
+  { id: 411, type: 'preference', domain: 'MBTI_TF', mbtiPole: 'T', question: 'I value fairness and consistency over sympathy.' },
+  { id: 412, type: 'preference', domain: 'MBTI_TF', mbtiPole: 'F', question: 'I find it important to maintain harmony in a group.' },
+
+  // Judging (J) vs Perceiving (P)
+  { id: 413, type: 'preference', domain: 'MBTI_JP', mbtiPole: 'J', question: 'I like to plan ahead and finish tasks well before deadlines.' },
+  { id: 414, type: 'preference', domain: 'MBTI_JP', mbtiPole: 'P', question: 'I work best when I keep options open and decide later.' },
+  { id: 415, type: 'preference', domain: 'MBTI_JP', mbtiPole: 'J', question: 'A clear to-do list helps me feel in control of my day.' },
+  { id: 416, type: 'preference', domain: 'MBTI_JP', mbtiPole: 'P', question: 'I enjoy being spontaneous and adapting plans on the fly.' },
 ];
 
 // ────────────────────────────────────────────

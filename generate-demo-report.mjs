@@ -63,8 +63,31 @@ APTITUDE_QUESTIONS.forEach(q => {
 });
 
 const preferenceAnswers = {};
+
+// Demo persona: an INTJ-leaning analytical/technical student.
+// MBTI target: I, N, T, J — answer items so each pole's items get high agreement.
+const mbtiTarget = { E: 2, I: 5, S: 2, N: 5, T: 5, F: 2, J: 5, P: 2 };
+
 PREFERENCE_QUESTIONS.forEach(q => {
     let score = 3;
+
+    // 1) Attention checks — answer correctly so validity stays high.
+    if (q.domain === 'AttentionCheck' && typeof q.expectedValue === 'number') {
+        preferenceAnswers[q.id] = q.expectedValue;
+        return;
+    }
+
+    // 2) MBTI items — answer per the target pole's strength.
+    if (q.mbtiPole) {
+        preferenceAnswers[q.id] = mbtiTarget[q.mbtiPole];
+        return;
+    }
+
+    // 3) Consistency mirror items — let the regular domain assignment handle them
+    //    (the pair partners share a domain, so they'll get the same score and
+    //    the consistency check will pass).
+
+    // 4) Regular RIASEC / interest domains — analytical/technical persona.
     if (['Analytical', 'Technical', 'Conscientiousness'].includes(q.domain)) score = 5;
     else if (['Creative', 'Executive'].includes(q.domain)) score = 4;
     else if (['Social', 'Musical'].includes(q.domain)) score = 2;

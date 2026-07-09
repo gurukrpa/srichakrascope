@@ -19,10 +19,8 @@ import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '../firebase';
 
 // ─── Config ───
-const ORIGINAL_FEE = 2999;     // ₹2,999 (MRP)
-const OFFER_FEE = 1599;        // ₹1,599 (current offer)
-const COUPON_DISCOUNT = 500;   // ₹500 OFF (e-book coupon)
-const OFFER_EXPIRY = new Date('2026-04-30T23:59:59+05:30');
+const ORIGINAL_FEE = 1599;     // ₹1,599 (standard fee)
+const COUPON_DISCOUNT = 500;   // ₹500 OFF (e-book coupon → ₹1,099)
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
 
@@ -33,26 +31,9 @@ declare global {
   }
 }
 
-// Check if offer is still active
-function isOfferActive(): boolean {
-  return new Date() <= OFFER_EXPIRY;
-}
-
-// Get current fee
+// Get current fee (base fee before any coupon)
 function getCurrentFee(): number {
-  return isOfferActive() ? OFFER_FEE : ORIGINAL_FEE;
-}
-
-// Savings percentage
-function getSavingsPercent(): number {
-  return Math.round(((ORIGINAL_FEE - OFFER_FEE) / ORIGINAL_FEE) * 100);
-}
-
-// Days remaining for offer
-function getOfferDaysRemaining(): number {
-  const now = new Date();
-  const diff = OFFER_EXPIRY.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  return ORIGINAL_FEE;
 }
 
 const AccessGate: React.FC = () => {
@@ -68,11 +49,7 @@ const AccessGate: React.FC = () => {
   const [ebookLeadEmail, setEbookLeadEmail] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
 
-  const offerActive = isOfferActive();
-  const baseFee = getCurrentFee();
-  const discount = couponApplied ? COUPON_DISCOUNT : 0;
-  const currentFee = Math.max(0, baseFee - discount);
-  const daysLeft = getOfferDaysRemaining();
+  const currentFee = Math.max(0, getCurrentFee() - (couponApplied ? COUPON_DISCOUNT : 0));
 
   // Auto-apply if both coupon & leadId arrived in the URL (from EbookSuccess CTA)
   useEffect(() => {
@@ -245,29 +222,7 @@ const AccessGate: React.FC = () => {
           <p style={{ margin: '4px 0 0', color: '#83C5BE', fontSize: '0.9em' }}>SCOPE Assessment Portal</p>
         </div>
 
-        {/* 🎉 Anniversary Offer Banner */}
-        {offerActive && (
-          <div style={styles.offerBanner}>
-            <div style={{ fontSize: '1.3em', marginBottom: 4 }}>🎉</div>
-            <div style={{ fontWeight: 800, fontSize: '1.1em', color: '#fff' }}>
-              10th Year Anniversary Offer!
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, margin: '8px 0' }}>
-              <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.65)', fontSize: '1.2em' }}>
-                ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
-              </span>
-              <span style={{ fontSize: '2em', fontWeight: 900, color: '#fff' }}>
-                ₹{baseFee.toLocaleString('en-IN')}
-              </span>
-              <span style={styles.savingsBadge}>
-                SAVE {getSavingsPercent()}%
-              </span>
-            </div>
-            <div style={{ fontSize: '0.82em', color: 'rgba(255,255,255,0.85)' }}>
-              ⏰ Offer valid till 30th April 2026 · <strong>{daysLeft} days left</strong>
-            </div>
-          </div>
-        )}
+
 
         {/* Welcome */}
         <div style={{ padding: '24px 30px 0' }}>
@@ -296,7 +251,7 @@ const AccessGate: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: '#333', fontWeight: 500 }}>SCOPE Assessment Fee</span>
                   <div style={{ textAlign: 'right' as const }}>
-                    {(offerActive || couponApplied) && (
+                    {couponApplied && (
                       <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', marginRight: 8 }}>
                         ₹{ORIGINAL_FEE.toLocaleString('en-IN')}
                       </span>
@@ -363,11 +318,11 @@ const AccessGate: React.FC = () => {
                     </div>
                     <details style={{ fontSize: '0.82em', color: '#666' }}>
                       <summary style={{ cursor: 'pointer', color: '#006D77' }}>
-                        Have a Lead ID instead? (advanced)
+                        Have a Gift ID instead? (advanced)
                       </summary>
                       <input
                         type="text"
-                        placeholder="Lead ID from confirmation email"
+                        placeholder="Gift ID from confirmation email"
                         value={ebookLeadId}
                         onChange={(e) => setEbookLeadId(e.target.value.trim())}
                         style={{ width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.85em', boxSizing: 'border-box', fontFamily: 'monospace', marginTop: 6 }}
@@ -380,7 +335,7 @@ const AccessGate: React.FC = () => {
                           return;
                         }
                         if (!ebookLeadEmail.trim() && !ebookLeadId.trim()) {
-                          setPaymentError('Please enter the email you used at e-book checkout (or a Lead ID).');
+                          setPaymentError('Please enter the email you used at e-book checkout (or a Gift ID).');
                           return;
                         }
                         setPaymentError('');

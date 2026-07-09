@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School Focused Social Creative - Srichakra</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Manrope:wght@400;600;700;800&display=swap');
+
+    :root {
+      --teal-900: #0e6068;
+      --teal-700: #11737d;
+      --peach: #e58f74;
+      --gold: #d9a24c;
+      --ink: #203036;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(130deg, #ebf2f4 0%, #f8f1e7 100%);
+      font-family: 'Manrope', 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    .canvas {
+      width: min(100%, 780px);
+      aspect-ratio: 4 / 5;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(155deg, #163745 0%, #11737d 52%, #1d919c 100%);
+      color: var(--white);
+      box-shadow: 0 22px 44px rgba(17, 115, 125, 0.28);
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge {
+      align-self: flex-start;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background: rgba(255, 255, 255, 0.14);
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(32px, 5.4vw, 50px);
+      line-height: 1.05;
+      max-width: 650px;
+    }
+
+    .sub {
+      margin: 0;
+      max-width: 640px;
+      font-size: clamp(15px, 2.3vw, 20px);
+      line-height: 1.45;
+      opacity: 0.95;
+    }
+
+    .offer {
+      margin-top: 8px;
+      border-radius: 14px;
+      border-left: 4px solid var(--gold);
+      background: rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.24);
+      border-right: 1px solid rgba(255, 255, 255, 0.24);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+      padding: 14px;
+    }
+
+    .offer h2 {
+      margin: 0 0 8px;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 24px;
+    }
+
+    .offer ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      display: grid;
+      gap: 4px;
+      font-weight: 600;
+    }
+
+    .mini {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mini-card {
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.11);
+      padding: 10px;
+      font-size: 12.5px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .footer {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 98px 1fr;
+      gap: 12px;
+      align-items: center;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 10px;
+    }
+
+    .footer img {
+      width: 98px;
+      height: 98px;
+      border-radius: 8px;
+      background: #fff;
+      padding: 5px;
+    }
+
+    .footer strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .footer p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 720px) {
+      .canvas { padding: 24px; }
+      .mini { grid-template-columns: 1fr; }
+      .footer { grid-template-columns: 80px 1fr; }
+      .footer img { width: 80px; height: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <article class="canvas">
+    <div class="badge">School Focused</div>
+    <h1>A Career Readiness Model for Schools</h1>
+    <p class="sub">Build structured guidance from middle school to higher education pathways with measurable outcomes.</p>
+
+    <section class="offer">
+      <h2>School Partnership Offer</h2>
+      <ul>
+        <li>Profile Building and MI from Grade 6</li>
+        <li>Career Assessments from Grade 8 at discounted rates</li>
+        <li>2 teachers trained and certified in Career Counselling</li>
+        <li>Overseas admission support for school families</li>
+      </ul>
+    </section>
+
+    <section class="mini">
+      <div class="mini-card">Top destinations: UK, USA, Canada, Australia, Germany, France, Netherlands, New Zealand, Singapore, Malaysia, and more.</div>
+      <div class="mini-card">Exclusive recommendations for France and Netherlands pathways through AURA and TIO.</div>
+    </section>
+
+    <section class="footer">
+      <img src="qr-srichakra.png" alt="Srichakra QR" />
+      <div>
+        <strong>Scan to Request a School Presentation</strong>
+        <p>85903 96662 | 98430 30697</p>
+        <p>srichakraacademy.org</p>
+      </div>
+    </section>
+  </article>
+</body>
+</html>

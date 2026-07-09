@@ -43,7 +43,7 @@
 
         /* ═══════════════ REPORT PAGE ═══════════════ */
         .report-page {
-            width: 210mm; margin: 30px auto;
+            width: 210mm; margin: 12px auto;
             background: white; box-shadow: 0 4px 25px rgba(0,0,0,0.1);
             overflow: hidden; position: relative;
         }
@@ -218,22 +218,65 @@
 
         /* ═══════════════ PRINT STYLES ═══════════════ */
         @media print {
-            @page { size: A4; margin: 6mm; }
-            body { background: white; }
-            .no-print { display: none !important; }
-            .download-btn { display: none !important; }
+            @page { size: A4 portrait; margin: 8mm 6mm; }
+            html, body { background: white; margin: 0; padding: 0; }
+            .no-print, .download-btn { display: none !important; }
+
+            /* Each report-page = exactly one A4 sheet.                    */
+            /* Do NOT use page-break-inside: avoid here — when the block   */
+            /* is taller than the printable area the browser pushes the    */
+            /* entire page to the next sheet, leaving a huge empty gap.   */
             .report-page {
-                box-shadow: none; margin: 0;
-                page-break-inside: avoid;
+                box-shadow: none;
+                margin: 0 auto;
+                width: 194mm;             /* A4 width 210mm − 2 × 8mm safety */
+                min-height: 0;
+                page-break-inside: auto;
                 page-break-after: always;
-                width: 100%;
-                min-height: auto;
+                break-after: page;
+                overflow: hidden;
             }
-            .report-page:last-child { page-break-after: auto; }
+            .report-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
             .report-page.hide-for-print { display: none !important; }
-            .guidance-page { page-break-before: always; }
             .guidance-page.hide-for-print { display: none !important; }
+
+            /* Keep visual blocks intact — prevents charts/cards from      */
+            /* being split across pages (the "clumsy overlap" symptom).    */
+            .header-banner,
+            .guidance-banner,
+            .student-bar,
+            .chart-section,
+            .strengths-row,
+            .strength-card,
+            .ls-section,
+            .ls-bar-row,
+            .mi-bar-row,
+            .intel-card,
+            .tips-grid,
+            .tip-box,
+            .section-title,
+            .ls-insight,
+            .report-footer {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .section-title { page-break-after: avoid; break-after: avoid; }
+
+            /* Tighter print spacing — keeps each page on a single sheet.  */
+            .header-banner { padding: 10px 18px; }
+            .student-bar { padding: 6px 18px; }
+            .chart-section { padding: 6px 14px 2px; gap: 8px; }
+            .strengths-row { padding: 0 18px 4px; gap: 8px; }
+            .ls-section { padding: 0 18px 6px; }
+            .intel-details { padding: 6px 18px 2px; }
+            .tips-grid { padding: 4px 18px 4px; gap: 6px; }
+            .report-footer { padding: 6px 18px; }
+
             .mi-bar-fill, .ls-fill { transition: none; }
+            /* Avoid an extra blank page at the end caused by page-break-after on the last node */
         }
 
         /* ═══════════════ BAR ANIMATION ═══════════════ */

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>Dronacharya Poster — Srichakra Academy CCC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800&display=swap">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #08111f;
+    }
+
+    .poster {
+      width: 1080px;
+      height: 1080px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 56px 80px 44px;
+      overflow: hidden;
+    }
+
+    /* Atmospheric layers */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 75% 50% at 50% 10%, rgba(0,109,119,0.40) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 50% 95%, rgba(233,196,106,0.16) 0%, transparent 60%),
+        radial-gradient(ellipse 110% 110% at 50% 50%, #0d1e35 0%, #08111f 100%);
+      z-index: 0;
+    }
+
+    /* Stars background */
+    .stars {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ── BRAND ── */
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: #e9c46a;
+      text-transform: uppercase;
+    }
+
+    .brand-rule {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-rule::before,
+    .brand-rule::after {
+      content: '';
+      display: block;
+      width: 44px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(233,196,106,0.45), transparent);
+    }
+
+    .brand-diamond {
+      width: 5px;
+      height: 5px;
+      background: rgba(233,196,106,0.55);
+      transform: rotate(45deg);
+    }
+
+    /* ── MAIN VISUAL ── */
+    .visual-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bow-wrap {
+      filter: drop-shadow(0 0 22px rgba(233,196,106,0.38));
+    }
+
+    /* ── HEADLINE ── */
+    .headline-block {
+      text-align: center;
+      margin-top: 36px;
+    }
+
+    .hl-top {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 83px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+    }
+
+    .hl-bottom {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 77px;
+      font-weight: 900;
+      color: #e9c46a;
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+      margin-top: 6px;
+    }
+
+    .subtext {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 21px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      margin-top: 22px;
+      line-height: 1.55;
+      font-style: italic;
+      letter-spacing: 0.01em;
+    }
+
+    .subtext em {
+      font-style: normal;
+      color: rgba(255,255,255,0.82);
+      font-weight: 500;
+    }
+
+    /* ── BOTTOM ── */
+    .bottom {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .program-strip {
+      width: 100%;
+      background: rgba(0,109,119,0.18);
+      border: 1px solid rgba(0,180,200,0.28);
+      border-radius: 14px;
+      padding: 20px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .strip-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .strip-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(100,220,230,0.75);
+    }
+
+    .strip-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .strip-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #e9c46a;
+      white-space: nowrap;
+    }
+
+    .strip-price small {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    .strip-sep {
+      width: 1px;
+      height: 48px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .cta-item {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .cta-item strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 700;
+    }
+
+    .cta-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- Atmospheric background -->
+  <div class="bg-layer"></div>
+
+  <!-- Scattered stars (SVG) -->
+  <svg class="stars" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+    <!-- Tiny stars scattered around dark areas -->
+    <circle cx="88"  cy="95"  r="1.5" fill="#e9c46a" opacity="0.35"/>
+    <circle cx="210" cy="48"  r="1"   fill="#ffffff"  opacity="0.25"/>
+    <circle cx="340" cy="82"  r="1.2" fill="#e9c46a" opacity="0.25"/>
+    <circle cx="750" cy="60"  r="1.5" fill="#ffffff"  opacity="0.20"/>
+    <circle cx="910" cy="88"  r="1.2" fill="#e9c46a" opacity="0.30"/>
+    <circle cx="985" cy="140" r="1"   fill="#ffffff"  opacity="0.22"/>
+    <circle cx="55"  cy="340" r="1.2" fill="#ffffff"  opacity="0.18"/>
+    <circle cx="40"  cy="520" r="1.5" fill="#e9c46a" opacity="0.22"/>
+    <circle cx="1040" cy="300" r="1.2" fill="#e9c46a" opacity="0.28"/>
+    <circle cx="1048" cy="480" r="1"  fill="#ffffff"  opacity="0.20"/>
+    <circle cx="920" cy="920" r="1.5" fill="#e9c46a" opacity="0.30"/>
+    <circle cx="160" cy="970" r="1.2" fill="#ffffff"  opacity="0.20"/>
+    <circle cx="480" cy="1050" r="1" fill="#e9c46a" opacity="0.22"/>
+    <!-- Subtle diamond particles near bow area -->
+    <g transform="translate(200,450)" opacity="0.15">
+      <path d="M0,-3 L2,0 L0,3 L-2,0 Z" fill="#e9c46a"/>
+    </g>
+    <g transform="translate(860,420)" opacity="0.12">
+      <path d="M0,-3 L2,0 L0,3 L-2,0 Z" fill="#e9c46a"/>
+    </g>
+  </svg>
+
+  <div class="content">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-name">Srichakra Academy</div>
+      <div class="brand-rule"><div class="brand-diamond"></div></div>
+    </div>
+
+    <!-- Bow + Arrow + Headline -->
+    <div class="visual-area">
+
+      <!-- Dronacharya Bow & Arrow SVG -->
+      <div class="bow-wrap">
+        <svg viewBox="0 0 600 190" width="600" height="190" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Gold glow filter -->
+            <filter id="glow-gold" x="-15%" y="-30%" width="130%" height="160%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+              <feFlood flood-color="#e9c46a" flood-opacity="0.65" result="col"/>
+              <feComposite in="col" in2="blur" operator="in" result="shadow"/>
+              <feMerge>
+                <feMergeNode in="shadow"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <!-- Bright star glow -->
+            <filter id="glow-star" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="12" result="blur"/>
+              <feFlood flood-color="#e9c46a" flood-opacity="0.9" result="col"/>
+              <feComposite in="col" in2="blur" operator="in" result="glow"/>
+              <feMerge>
+                <feMergeNode in="glow"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <!-- Target area ambient -->
+            <radialGradient id="target-bg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#e9c46a" stop-opacity="0.20"/>
+              <stop offset="100%" stop-color="#e9c46a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Ambient glow behind target -->
+          <ellipse cx="522" cy="95" rx="72" ry="72" fill="url(#target-bg)"/>
+
+          <!-- ─── BOW BODY (C-curve, opening rightward) ─── -->
+          <!-- Curves from (115,12) through the left to (115,178) -->
+          <path d="M 115,12 C 12,48 12,142 115,178"
+                fill="none" stroke="#e9c46a" stroke-width="10"
+                stroke-linecap="round" filter="url(#glow-gold)"/>
+
+          <!-- End jewels on bow -->
+          <circle cx="115" cy="12"  r="5.5" fill="#e9c46a" opacity="0.95" filter="url(#glow-gold)"/>
+          <circle cx="115" cy="178" r="5.5" fill="#e9c46a" opacity="0.95" filter="url(#glow-gold)"/>
+
+          <!-- Centre knot on bow -->
+          <circle cx="56"  cy="95"  r="5"   fill="#e9c46a" opacity="0.75"/>
+
+          <!-- ─── BOW STRING ─── -->
+          <line x1="115" y1="12" x2="115" y2="178"
+                stroke="#e9c46a" stroke-width="1.8" stroke-opacity="0.55"/>
+
+          <!-- ─── ARROW SHAFT ─── -->
+          <line x1="118" y1="95" x2="445" y2="95"
+                stroke="#e9c46a" stroke-width="4"
+                stroke-linecap="round" filter="url(#glow-gold)"/>
+
+          <!-- Arrow nock (back end on string) -->
+          <path d="M 118,95 L 100,79 L 110,95 L 100,111 Z"
+                fill="#e9c46a" opacity="0.88"/>
+
+          <!-- Arrowhead (tip) -->
+          <path d="M 445,95 L 420,79 L 426,95 L 420,111 Z" fill="#e9c46a"/>
+
+          <!-- ─── TARGET RINGS ─── -->
+          <circle cx="522" cy="95" r="54" fill="none" stroke="#e9c46a" stroke-width="1.2" stroke-opacity="0.20"/>
+          <circle cx="522" cy="95" r="40" fill="none" stroke="#e9c46a" stroke-width="1.5" stroke-opacity="0.35"/>
+          <circle cx="522" cy="95" r="27" fill="none" stroke="#e9c46a" stroke-width="2"   stroke-opacity="0.55"/>
+          <circle cx="522" cy="95" r="14" fill="none" stroke="#e9c46a" stroke-width="2.5" stroke-opacity="0.75"/>
+
+          <!-- Bullseye 4-point star -->
+          <path d="M 522,79 L 525,89 L 535,95 L 525,101 L 522,111 L 519,101 L 509,95 L 519,89 Z"
+                fill="#e9c46a" opacity="0.95" filter="url(#glow-star)"/>
+          <circle cx="522" cy="95" r="4" fill="#fffae6"/>
+        </svg>
+      </div>
+
+      <!-- Headline -->
+      <div class="headline-block">
+        <span class="hl-top">Be the Dronacharya</span>
+        <span class="hl-bottom">200 Million Children Need.</span>
+      </div>
+
+      <!-- Subtext -->
+      <p class="subtext">Every child has a <em>calling</em>. Be the one who <em>sees</em> it.</p>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="bottom">
+      <div class="program-strip">
+        <div class="strip-item">
+          <div class="strip-label">Programme</div>
+          <div class="strip-value">Career Counsellor Certification</div>
+        </div>
+        <div class="strip-sep"></div>
+        <div class="strip-item">
+          <div class="strip-label">Batch Starts</div>
+          <div class="strip-value">June 11, 2026</div>
+        </div>
+        <div class="strip-sep"></div>
+        <div class="strip-item">
+          <div class="strip-label">Earlybird Fee</div>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <div class="strip-price"><small>₹</small>11,999</div>
+            <div style="font-family:'Inter',sans-serif;font-size:15px;font-weight:500;color:rgba(255,255,255,0.4);text-decoration:line-through">₹14,999</div>
+          </div>
+          <div style="font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;color:#e9c46a;margin-top:2px">SAVE ₹3,000</div>
+        </div>
+        <div class="strip-sep"></div>
+        <div class="strip-item">
+          <div class="strip-label">Seats</div>
+          <div class="strip-value">15 Only</div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <div class="cta-item">📲 <strong>+91 85903 96662</strong></div>
+        <div class="cta-dot"></div>
+        <div class="cta-item">🌐 <strong>srichakraacademy.org</strong></div>
+        <div class="cta-dot"></div>
+        <div class="cta-item">3 months · 2 live classes/week · Online</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -17,7 +17,8 @@ export interface ReportData {
   preferenceScores?: any[];
   dominantHemisphere?: string;
   learningStyles?: any;
-  
+  miScores?: { name: string; score: number }[]; // 0-100, 8 Gardner intelligences
+
   // Recommendations
   streamRecommendations?: any[];
   courseFamilyRecommendations?: any[];
@@ -29,6 +30,19 @@ export interface ReportData {
   consistency?: {
     level: 'High' | 'Medium' | 'Low';
     flags: string[];
+    attentionCheckPassed?: boolean;
+  };
+
+  // MBTI (16-item Likert, 4 per dichotomy). Strength is 50-100 (50 = balanced).
+  mbti?: {
+    type: string; // 4-letter code, e.g. 'INTJ'
+    reliable: boolean;
+    axes: {
+      axis: 'EI' | 'SN' | 'TF' | 'JP';
+      leaning: 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P';
+      strength: number;
+      itemsAnswered: number;
+    }[];
   };
 }
 
@@ -57,7 +71,7 @@ export function renderPage1ExecutiveSummary(data: ReportData): string {
         <p style="font-size: 1.0em; color: #666; font-weight: bold;">Student Career & Opportunity Pathway Evaluation</p>
         <p style="font-size: 1.1em; color: #666;">Srichakra Academy - The School To identify Your Child's Divine Gift!!</p>
         <p style="font-size: 0.9em; color: #888; font-style: italic;">(A Unit of SriKrpa Foundation Trust)</p>
-        <p style="color: #83C5BE; font-size: 1.1em;">Comprehensive Psychometric Analysis</p>
+        <p style="color: #83C5BE; font-size: 1.1em;">Comprehensive Career Assessment</p>
       </div>
 
       <div class="student-details">
@@ -101,14 +115,22 @@ export function renderPage1ExecutiveSummary(data: ReportData): string {
         <h2 style="color: #006D77;">What We Measured</h2>
         <ul style="line-height: 2; font-size: 1.05em;">
           <li>
-            <strong>Aptitude (Ability):</strong> 24 objective questions measuring cognitive capabilities across 
-            four domains—Numerical Reasoning, Logical Reasoning, Verbal Ability, and Spatial Intelligence. 
-            These are performance-based tests with correct and incorrect answers.
+            <strong>Aptitude (Ability):</strong> 16 objective questions across four domains — Numerical Reasoning,
+            Logical Reasoning, Verbal Ability, and Spatial Intelligence.
           </li>
           <li>
-            <strong>Preferences (Interest):</strong> 50 self-reported questions exploring what the student enjoys, 
-            values, and feels motivated by. These cover interest patterns (RIASEC model), multiple intelligences, 
-            learning styles, and work preferences. There are no "right" answers—only honest reflections.
+            <strong>Interests:</strong> 60 questions covering the six recognised interest areas
+            (Realistic, Investigative, Artistic, Social, Enterprising, Conventional), along with learning style and
+            multiple-intelligence indicators.
+          </li>
+          <li>
+            <strong>Personality:</strong> 16 questions covering four personality dimensions, used as a supporting
+            signal to refine — not decide — the recommendations.
+          </li>
+          <li>
+            <strong>Reliability Checks:</strong> Repeated and attention-check questions confirm that answers are
+            consistent. The <em>Response Reliability</em> badge above reflects this — a Low rating means results
+            should be interpreted with caution.
           </li>
         </ul>
         <p style="font-style: italic; color: #555; margin-top: 15px;">
@@ -452,6 +474,66 @@ export function renderPage3PreferenceAnalysis(data: ReportData): string {
           you enjoy doing. Pages 5-6 combine these dimensions to produce stream and course recommendations.
         </p>
       </div>
+
+      <!-- SECTION E: Personality Type (MBTI-style 16-item) -->
+      ${(() => {
+        const mbti = data.mbti;
+        if (!mbti || !mbti.type || mbti.type.length !== 4) return '';
+        const axisLabels: Record<string, { left: string; right: string; title: string }> = {
+          EI: { left: 'Extraversion (E)', right: 'Introversion (I)', title: 'How you direct & receive energy' },
+          SN: { left: 'Sensing (S)',      right: 'Intuition (N)',    title: 'How you take in information' },
+          TF: { left: 'Thinking (T)',     right: 'Feeling (F)',      title: 'How you make decisions' },
+          JP: { left: 'Judging (J)',      right: 'Perceiving (P)',   title: 'How you organize your world' },
+        };
+        return `
+        <h2 style="color: #006D77; margin-top: 35px;">Personality Type Indicator</h2>
+
+        <div style="margin: 15px 0; padding: 18px; background: #f0f4f8; border-left: 4px solid #006D77; border-radius: 6px;">
+          <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+            <div style="font-size: 2.2em; font-weight: bold; color: #006D77; letter-spacing: 4px;">${mbti.type}</div>
+            <div style="flex: 1; min-width: 220px;">
+              <p style="margin: 0; line-height: 1.6; font-size: 0.98em; color: #333;">
+                Your 4-letter personality indicator from a 16-item Likert scale, modeled on the Myers-Briggs
+                framework. ${mbti.reliable ? '' : '<em style="color:#a05a00;">Note: at least one axis had fewer than 2 items answered — interpret with caution.</em>'}
+              </p>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            ${mbti.axes.map((ax: any) => {
+              const meta = axisLabels[ax.axis];
+              if (!meta) return '';
+              const strength = Math.max(50, Math.min(100, ax.strength));
+              const onLeft = (ax.axis[0] === ax.leaning);
+              const leftFill = onLeft ? strength : 100 - strength;
+              return `
+              <div style="margin: 10px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.88em; color: #555; margin-bottom: 4px;">
+                  <span><strong>${meta.left}</strong></span>
+                  <span style="color:#888; font-style: italic;">${meta.title}</span>
+                  <span><strong>${meta.right}</strong></span>
+                </div>
+                <div style="position: relative; background: #e9ecef; border-radius: 6px; height: 16px; overflow: hidden;">
+                  <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${leftFill}%; background: ${onLeft ? '#006D77' : '#E29578'};"></div>
+                  <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #fff; opacity: 0.7;"></div>
+                </div>
+                <div style="font-size: 0.82em; color: #444; margin-top: 3px;">
+                  Leaning: <strong>${ax.leaning}</strong> · Strength ${ax.strength}/100 · ${ax.itemsAnswered} item(s)
+                </div>
+              </div>
+              `;
+            }).join('')}
+          </div>
+
+          <p style="margin: 14px 0 0; font-size: 0.9em; color: #555; line-height: 1.6;">
+            <strong>How this is used:</strong> the type indicator contributes a small (±5 pts) fit adjustment to
+            course-family and career-cluster scoring. It is descriptive — useful for self-awareness and
+            counsellor conversation — and is intentionally weighted lightly relative to validated aptitude
+            and RIASEC interest signals.
+          </p>
+        </div>
+        `;
+      })()}
     </div>
   `;
 }
@@ -470,6 +552,7 @@ export function renderPage3PreferenceAnalysis(data: ReportData): string {
 export function renderPage4BrainAndLearning(data: ReportData): string {
   const dominantHemisphere = data.dominantHemisphere || 'Balanced';
   const learningStyles = data.learningStyles || { primary: 'Visual', secondary: 'Kinesthetic' };
+  const miScores = (data.miScores || []).slice().sort((a, b) => b.score - a.score);
   
   // Determine hemisphere description
   let hemisphereDescription = '';
@@ -570,6 +653,46 @@ export function renderPage4BrainAndLearning(data: ReportData): string {
           <strong>Important:</strong> Hemisphere dominance is not a measure of intelligence or ability. It simply 
           reflects how you tend to approach problems and organize information. Both thinking styles are equally 
           valuable, and most people use both hemispheres in complementary ways throughout the day.
+        </p>
+      </div>
+
+      <!-- SECTION B2: Multiple Intelligence Distribution -->
+      <h2 style="color: #006D77; margin-top: 30px;">Multiple Intelligence Distribution</h2>
+
+      <div style="margin: 10px 0 20px;">
+        <p style="line-height: 1.7; font-size: 1.0em; color: #555;">
+          Based on Howard Gardner's framework, the chart below shows the relative emphasis across eight
+          intelligences. This is provided for <strong>self-awareness and learning-style insight only</strong>—it
+          does <strong>not</strong> influence stream, course-family, or career-cluster recommendations, which are
+          driven by RIASEC, MBTI-style preferences, and aptitude.
+        </p>
+      </div>
+
+      <div style="margin: 15px 0; padding: 18px; background: #f0f4f8; border-radius: 8px; border-left: 4px solid #006D77;">
+        ${miScores.length === 0 ? `
+          <p style="margin: 0; font-style: italic; color: #777;">MI distribution unavailable for this report.</p>
+        ` : miScores.map((mi, i) => {
+          const score = Math.max(0, Math.min(100, Math.round(mi.score)));
+          const palette = ['#006D77', '#E29578', '#83C5BE', '#FFB085', '#5B8FB9', '#B084CC', '#76B947', '#E6A23C'];
+          const color = palette[i % palette.length];
+          return `
+          <div style="display: flex; align-items: center; margin: 8px 0; font-size: 0.95em;">
+            <div style="width: 170px; flex-shrink: 0; font-weight: 600; color: #333;">${mi.name}</div>
+            <div style="flex: 1; background: #e9ecef; border-radius: 6px; height: 18px; overflow: hidden; position: relative;">
+              <div style="width: ${score}%; height: 100%; background: ${color}; border-radius: 6px;"></div>
+            </div>
+            <div style="width: 50px; text-align: right; margin-left: 10px; font-weight: 600; color: ${color};">${score}%</div>
+          </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div style="margin: 10px 0 25px; padding: 12px 15px; background: #e7f3f5; border-radius: 5px;">
+        <p style="margin: 0; font-size: 0.92em; color: #006D77; line-height: 1.6;">
+          <strong>How to read:</strong> Higher bars indicate intelligences you tend to draw on most readily.
+          Strengths across multiple intelligences are normal—use this picture to choose study methods,
+          collaboration styles, and enrichment activities that play to your stronger modes while gently
+          stretching the lower ones.
         </p>
       </div>
 
@@ -781,6 +904,7 @@ export function renderPage5Class10Decision(data: ReportData): string {
             <td style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: bold; 
                        color: ${scienceData.readiness === 'READY NOW' ? '#28a745' : scienceData.readiness === 'WITH DEVELOPMENT' ? '#ffc107' : '#6c757d'};">
               ${scienceData.readiness || 'WITH DEVELOPMENT'}
+              ${scienceData.tied ? `<div style="margin-top: 4px; padding: 2px 6px; background: #d1ecf1; color: #0c5460; border-radius: 3px; font-size: 0.7em; font-weight: bold;">EQUALLY VIABLE</div>` : ''}
             </td>
             <td style="border: 1px solid #ddd; padding: 12px; font-size: 0.9em;">
               ${scienceData.guidance || 'Review numerical and logical performance. Consider Math vs Biology based on spatial strength.'}
@@ -801,6 +925,7 @@ export function renderPage5Class10Decision(data: ReportData): string {
             <td style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: bold; 
                        color: ${commerceData.readiness === 'READY NOW' ? '#28a745' : commerceData.readiness === 'WITH DEVELOPMENT' ? '#ffc107' : '#6c757d'};">
               ${commerceData.readiness || 'READY NOW'}
+              ${commerceData.tied ? `<div style="margin-top: 4px; padding: 2px 6px; background: #d1ecf1; color: #0c5460; border-radius: 3px; font-size: 0.7em; font-weight: bold;">EQUALLY VIABLE</div>` : ''}
             </td>
             <td style="border: 1px solid #ddd; padding: 12px; font-size: 0.9em;">
               ${commerceData.guidance || 'Balanced numerical and verbal skills support business and economics understanding.'}
@@ -821,6 +946,7 @@ export function renderPage5Class10Decision(data: ReportData): string {
             <td style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: bold; 
                        color: ${artsData.readiness === 'READY NOW' ? '#28a745' : artsData.readiness === 'WITH DEVELOPMENT' ? '#ffc107' : '#6c757d'};">
               ${artsData.readiness || 'READY NOW'}
+              ${artsData.tied ? `<div style="margin-top: 4px; padding: 2px 6px; background: #d1ecf1; color: #0c5460; border-radius: 3px; font-size: 0.7em; font-weight: bold;">EQUALLY VIABLE</div>` : ''}
             </td>
             <td style="border: 1px solid #ddd; padding: 12px; font-size: 0.9em;">
               ${artsData.guidance || 'Strong verbal and reasoning abilities support humanities depth and essay-based assessments.'}
@@ -911,9 +1037,8 @@ export function renderPage6Class12Decision(data: ReportData): string {
           pathways that best match your cognitive strengths and personal interests.
         </p>
         <p style="line-height: 1.8; font-size: 1.05em; margin-top: 15px;">
-          These recommendations combine <strong>60% aptitude scores</strong> (objective ability) with 
-          <strong>40% preference alignment</strong> (self-reported interests) to produce a balanced assessment 
-          of fit for each course family.
+          These recommendations combine <strong>aptitude</strong> (objective ability), <strong>personality</strong>,
+          and <strong>interests</strong> to produce a balanced assessment of fit for each course family.
         </p>
       </div>
 
@@ -967,6 +1092,8 @@ export function renderPage6Class12Decision(data: ReportData): string {
             <td style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: bold;
                        color: ${cf.alignment === 'READY NOW' || cf.alignment === 'STRONG' ? '#28a745' : cf.alignment === 'WITH DEVELOPMENT' || cf.alignment === 'MODERATE' ? '#ffc107' : '#6c757d'};">
               ${cf.alignment || 'WITH DEVELOPMENT'}
+              ${cf.tied ? `<div style="margin-top: 4px; padding: 2px 6px; background: #d1ecf1; color: #0c5460; border-radius: 3px; font-size: 0.7em; font-weight: bold;">EQUALLY VIABLE</div>` : ''}
+              ${typeof cf.mbtiBonus === 'number' && cf.mbtiBonus !== 0 ? `<div style="margin-top: 4px; font-size: 0.7em; font-weight: normal; color: ${cf.mbtiBonus > 0 ? '#0c5460' : '#6c757d'};">Personality fit ${cf.mbtiBonus > 0 ? '+' : ''}${cf.mbtiBonus} pts</div>` : ''}
             </td>
             <td style="border: 1px solid #ddd; padding: 12px; font-size: 0.9em;">
               ${cf.guidance || 'Review aptitude and preference alignment for this pathway.'}
@@ -978,9 +1105,10 @@ export function renderPage6Class12Decision(data: ReportData): string {
 
       <div style="margin: 20px 0; padding: 15px; background: #e7f3ff; border-radius: 5px; border-left: 4px solid #007bff;">
         <p style="margin: 0; font-size: 0.95em; line-height: 1.7; color: #004085;">
-          <strong>Scoring Method:</strong> Combined Score = (60% Aptitude Match) + (40% Preference Alignment). 
-          This weighting reflects that objective ability is a stronger predictor of academic success, while personal 
-          interest is essential for sustained motivation and satisfaction.
+          <strong>How the Combined Score is built:</strong> 50% Aptitude (objective ability) + 30% Personality + 20% Interests.
+          A small Personality-fit adjustment (capped at ±5 points) may nudge a family up or down where it clearly suits
+          the student. This balance reflects that ability is a strong predictor of academic success, while personality
+          and interest are essential for sustained motivation and satisfaction.
         </p>
       </div>
 
@@ -1103,7 +1231,10 @@ export function renderPage7CareerClusters(data: ReportData): string {
                     border-radius: 8px; border-left: 4px solid ${index === 0 ? '#006D77' : index === 1 ? '#E29578' : index === 2 ? '#83C5BE' : index === 3 ? '#FFDDD2' : '#006D77'};">
           <h3 style="color: #006D77; margin-top: 0; font-size: 1.15em;">
             ${cluster.icon || '●'} ${cluster.name}
+            ${cluster.tied ? `<span style="margin-left: 8px; padding: 2px 8px; background: #d1ecf1; color: #0c5460; border-radius: 3px; font-size: 0.65em; font-weight: bold; vertical-align: middle;">EQUALLY VIABLE</span>` : ''}
+            ${typeof cluster.matchScore === 'number' ? `<span style="float: right; font-size: 0.8em; color: #555; font-weight: normal;">Match ${cluster.matchScore}%</span>` : ''}
           </h3>
+          ${typeof cluster.mbtiBonus === 'number' && cluster.mbtiBonus !== 0 && data.mbti?.type ? `<p style="line-height: 1.6; font-size: 0.88em; margin: 4px 0 8px 0; color: ${cluster.mbtiBonus > 0 ? '#0c5460' : '#6c757d'};"><strong>Personality fit (${data.mbti.type}):</strong> ${cluster.mbtiBonus > 0 ? '+' : ''}${cluster.mbtiBonus} pts ${cluster.mbtiBonus > 0 ? 'boost' : 'drag'} from MBTI alignment (capped at ±5).</p>` : ''}
           <p style="line-height: 1.6; font-size: 0.95em; margin: 8px 0;">
             <strong>Why this may fit:</strong> ${cluster.whyFits}
           </p>
@@ -1284,19 +1415,8 @@ export function renderPage8ActionSteps(data: ReportData): string {
           </ul>
         </div>
 
-        <p style="line-height: 1.8; font-size: 1.05em;">
-          <strong>📞 Book a 1:1 Career Counselling Session — ₹1,399</strong><br/>
-          A 45-minute personalised session walking you through this report,
-          answering your questions, and mapping the next 12 months.
-        </p>
-        <p style="text-align: center; margin: 14px 0 6px;">
-          <a href="https://srichakraacademy.org/counselling"
-             style="display: inline-block; padding: 12px 28px; background: #006D77; color: #fff; text-decoration: none; border-radius: 24px; font-weight: 700;">
-            Book Counselling Session →
-          </a>
-        </p>
-        <p style="line-height: 1.8; font-size: 0.95em; margin-bottom: 0; text-align: center; color: #555;">
-          Or visit <a href="https://srichakraacademy.org/contact" style="color: #006D77; font-weight: bold;">srichakraacademy.org/contact</a>
+        <p style="line-height: 1.8; font-size: 1.05em; margin-bottom: 0;">
+          To schedule a consultation, visit <a href="https://srichakraacademy.org/contact" style="color: #006D77; font-weight: bold;">srichakraacademy.org/contact</a> or visit Srichakra Academy directly.
         </p>
       </div>
 
@@ -1331,6 +1451,20 @@ export function renderPage8ActionSteps(data: ReportData): string {
           evaluation of ability, aptitude, or potential. Final educational and career decisions should be made in
           consultation with teachers, parents, and qualified counselors.
         </p>
+      </div>
+
+      <!-- SECTION F2: How Scores Are Built -->
+      <div style="margin: 20px 0 0; padding: 16px 20px; background: #f0f4f8; border: 1px solid #c9d6e2; border-radius: 8px;">
+        <h3 style="color: #006D77; margin-top: 0; font-size: 1.0em;">How Your Scores Are Built</h3>
+        <ul style="line-height: 1.7; font-size: 0.88em; color: #444; margin: 8px 0 0 0; padding-left: 20px;">
+          <li><strong>Aptitude:</strong> 4 ability domains — Numerical, Logical, Verbal and Spatial — measured through objective questions with right and wrong answers.</li>
+          <li><strong>Performance levels</strong> (Exceptional / Strong / Average / Developing) follow widely used percentile bands for ability tests.</li>
+          <li><strong>Personality:</strong> a 16-question profile across four dimensions. It supports the recommendations — the personality-fit adjustment is capped at ±5 points so it never overrides ability or interest.</li>
+          <li><strong>Interest:</strong> 6 standard interest areas rated by the student, used to gauge enjoyment and motivation.</li>
+          <li><strong>Multiple Intelligences:</strong> shown as a self-reported profile only — it is not used to score streams, course families, or careers.</li>
+          <li><strong>Reliability checks:</strong> repeated and attention-check questions confirm answers are consistent. If too many checks fail, the personality adjustment is switched off.</li>
+          <li><strong>Tie-zone rule:</strong> any stream, course family, or career cluster within 5 points of the leader is marked <em>Equally Viable</em> — rank order alone should not drive the choice.</li>
+        </ul>
       </div>
 
       <!-- SECTION G: Footer -->
@@ -1369,6 +1503,12 @@ export function generateFullReport(data: ReportData): string {
             box-sizing: border-box;
           }
           
+          html, body {
+            height: auto;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
@@ -1377,34 +1517,47 @@ export function generateFullReport(data: ReportData): string {
             font-size: 14px;
           }
 
+          /* Smooth scroll when navigation jumps between pages. */
+          html { scroll-behavior: smooth; }
+
           /* ===== PAGE LAYOUT FOR PDF ===== */
           .page {
             width: 210mm;
             /* On-screen: hug content so sections don't have huge empty gaps. */
-            /* Print rules below restore full A4 height per page.            */
-            padding: 25mm 20mm;
+            /* Print rules below restore proper A4 layout.                    */
+            padding: 18mm 16mm;
             margin: 0 auto 12mm;
             background: white;
             position: relative;
           }
 
           @media print {
+            html, body { background: #fff; }
             .page {
-              /* Do NOT force min-height — that pads short sections with huge   */
-              /* empty space at the bottom of every printed sheet.              */
-              /* page-break-after: always still puts each section on its own page. */
-              page-break-after: always;
-              padding: 20mm 18mm;
+              /* Width must match the @page printable area (210mm − 2 × 12mm). */
+              /* Using 210mm + a 10mm @page margin caused the right edge to   */
+              /* be cropped/scaled which produced misaligned, overlapping    */
+              /* layouts in the printed PDF.                                 */
+              width: auto;
+              max-width: 100%;
+              padding: 0;
               margin: 0;
+              /* Each page() function is one logical section. Allow content  */
+              /* to flow naturally onto a second sheet if it overflows —     */
+              /* breaks inside large sections prevent clumsy overlaps.       */
+              page-break-after: always;
+              break-after: page;
+              page-break-inside: auto;
             }
             .page:last-child {
               page-break-after: auto;
+              break-after: auto;
             }
           }
 
           @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 12mm;
           }
 
           /* ===== TYPOGRAPHY ===== */
@@ -1538,26 +1691,222 @@ export function generateFullReport(data: ReportData): string {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
-            table { page-break-inside: avoid; }
-            .header { page-break-after: avoid; }
-            h2, h3 { page-break-after: avoid; }
-            div[style*="background"] {
+            /* Keep cohesive blocks on the same sheet — prevents the      */
+            /* "huge gap + overlap" pattern caused by half-broken tables. */
+            table, thead, tr { page-break-inside: avoid; break-inside: avoid; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            .header { page-break-after: avoid; break-after: avoid; }
+            h1, h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
+            /* Boxed callouts (the inline divs with background colors used  */
+            /* throughout the template) should also stay intact.            */
+            div[style*="background"],
+            div[style*="border-left"] {
+              page-break-inside: avoid;
+              break-inside: avoid;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
+            /* Tighter print spacing for headings/sections inside a page.   */
+            h2 { margin-top: 14px; }
+            h3 { margin-top: 10px; }
+            ul, ol { margin: 6px 0; }
+            p { margin-bottom: 6px; }
           }
         </style>
       </head>
       <body>
-        ${renderPage1ExecutiveSummary(data)}
-        ${renderPage2AptitudeSnapshot(data)}
-        ${renderPage3PreferenceAnalysis(data)}
-        ${renderPage4BrainAndLearning(data)}
-        ${renderPage5Class10Decision(data)}
-        ${renderPage6Class12Decision(data)}
-        ${renderPage7CareerClusters(data)}
-        ${renderPage8ActionSteps(data)}
+        <div id="report-page-1" class="report-page-anchor">${renderPage1ExecutiveSummary(data)}</div>
+        <div id="report-page-2" class="report-page-anchor">${renderPage2AptitudeSnapshot(data)}</div>
+        <div id="report-page-3" class="report-page-anchor">${renderPage3PreferenceAnalysis(data)}</div>
+        <div id="report-page-4" class="report-page-anchor">${renderPage4BrainAndLearning(data)}</div>
+        <div id="report-page-5" class="report-page-anchor">${renderPage5Class10Decision(data)}</div>
+        <div id="report-page-6" class="report-page-anchor">${renderPage6Class12Decision(data)}</div>
+        <div id="report-page-7" class="report-page-anchor">${renderPage7CareerClusters(data)}</div>
+        <div id="report-page-8" class="report-page-anchor">${renderPage8ActionSteps(data)}</div>
       </body>
     </html>
   `;
+}
+
+/**
+ * COUNSELLOR'S NOTE — one-to-two-page interpretation guide for the counsellor.
+ *
+ * Aimed at the counsellor sitting with the student, NOT the student. Translates
+ * the scoring engine's outputs (CI widths, MBTI bonus, tie-zones, validity flags,
+ * MI distribution) into concrete talking points and red-flag callouts. Intended
+ * to be printed / saved as PDF and stapled to the student's full report.
+ */
+export function generateCounsellorNote(data: ReportData): string {
+  const studentName = data.studentName || 'Student';
+  const assessmentDate = data.assessmentDate || new Date().toLocaleDateString('en-IN');
+  const apt = data.aptitudeScores || [];
+  const mi = (data.miScores || []).slice().sort((a, b) => b.score - a.score);
+  const mbti = data.mbti;
+  const cons = data.consistency;
+  const streams = (data.streamRecommendations || []).slice().sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
+  const families = (data.courseFamilyRecommendations || []).slice().sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
+  const clusters = data.careerClusters || [];
+
+  const wideBands = apt.filter((a: any) => {
+    if (!a.scoreCi95) return false;
+    const [lo, hi] = a.scoreCi95;
+    return hi - lo > 40;
+  });
+  const tiedStreams = streams.filter((s: any) => s.tied);
+  const tiedFamilies = families.filter((f: any) => f.tied);
+  const tiedClusters = clusters.filter((c: any) => c.tied);
+
+  const reliabilityColor = cons?.level === 'High' ? '#28a745' : cons?.level === 'Medium' ? '#ffc107' : '#dc3545';
+  const reliabilityNote = cons?.level === 'Low'
+    ? 'Treat all numeric scores as indicative only. Probe the student for test-taking conditions (fatigue, distraction, language difficulty) before acting on any recommendation. Consider a retest under supervised conditions.'
+    : cons?.level === 'Medium'
+    ? 'Scores are usable but lean on the qualitative discussion. Cross-check the top picks against the student\u2019s lived experience.'
+    : 'Scores are trustworthy. Use them to anchor the conversation while still validating against the student\u2019s real-world interests.';
+
+  const miBars = mi.length === 0 ? '<p style="font-style:italic;color:#666;">MI distribution unavailable.</p>'
+    : mi.map((m, i) => `
+        <div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:11px;">
+          <div style="width:140px;color:${i < 3 ? '#006D77' : '#555'};font-weight:${i < 3 ? 'bold' : 'normal'};">${m.name}</div>
+          <div style="flex:1;background:#eee;height:14px;border-radius:2px;overflow:hidden;">
+            <div style="width:${m.score}%;height:100%;background:${i === 0 ? '#006D77' : i === 1 ? '#83C5BE' : i === 2 ? '#FFDDD2' : '#cfd8dc'};"></div>
+          </div>
+          <div style="width:34px;text-align:right;font-weight:bold;">${m.score}</div>
+        </div>`).join('');
+
+  const aptRows = apt.map((a: any) => {
+    const [lo, hi] = a.scoreCi95 || [a.score, a.score];
+    const width = hi - lo;
+    const flag = a.lowInformation || width > 40 ? '<span style="color:#dc3545;font-weight:bold;">LOW INFO</span>'
+      : width > 25 ? '<span style="color:#ffc107;">wide</span>'
+      : '<span style="color:#28a745;">tight</span>';
+    return `<tr>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;">${a.domain}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:bold;">${a.score}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;">${lo}\u2013${hi}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;">${flag}</td>
+    </tr>`;
+  }).join('');
+
+  const mbtiBlock = mbti?.type ? `
+    <p style="margin:4px 0;"><strong>Indicated type:</strong> <span style="font-size:1.3em;letter-spacing:3px;color:#006D77;font-weight:bold;">${mbti.type}</span> ${mbti.reliable ? '' : '<span style="color:#a05a00;">(\u26a0 unreliable \u2014 axis had &lt;2 items)</span>'}</p>
+    <p style="margin:4px 0;font-size:11px;color:#555;">Per-axis strength (50 = balanced, 100 = strong leaning):</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;">
+      ${mbti.axes.map((ax) => `<div style="flex:1;min-width:90px;padding:6px 8px;background:#f0f4f8;border-radius:4px;text-align:center;font-size:11px;"><div style="font-weight:bold;color:#006D77;">${ax.axis} \u2192 ${ax.leaning}</div><div>${ax.strength}/100</div></div>`).join('')}
+    </div>
+    <p style="margin:6px 0;font-size:11px;color:#555;"><strong>How MBTI moves the recommendations:</strong> the type adds a <strong>capped \u00b15-point</strong> bonus/drag to each course family and career cluster, on top of the aptitude+interest score. It supports, never decides. Watch for clusters where MBTI flipped the order \u2014 those are the conversation-starters.</p>
+  ` : '<p style="font-style:italic;color:#666;">MBTI not available.</p>';
+
+  const topClusterRows = clusters.slice(0, 3).map((c: any) => `
+    <tr>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;">${c.icon || ''} ${c.name}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:bold;">${c.matchScore || '\u2014'}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;color:${(c.mbtiBonus || 0) > 0 ? '#0c5460' : (c.mbtiBonus || 0) < 0 ? '#a05a00' : '#999'};">${typeof c.mbtiBonus === 'number' ? (c.mbtiBonus > 0 ? '+' : '') + c.mbtiBonus : '\u2014'}</td>
+      <td style="padding:4px 8px;border-bottom:1px solid #eee;text-align:center;">${c.tied ? '<strong style="color:#0c5460;">YES</strong>' : 'no'}</td>
+    </tr>`).join('');
+
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Counsellor's Note \u2014 ${studentName}</title>
+<style>
+  @page { size: A4 portrait; margin: 12mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #222; font-size: 12px; line-height: 1.45; padding: 14mm; }
+  h1 { color: #006D77; font-size: 1.5em; margin-bottom: 4px; }
+  h2 { color: #006D77; font-size: 1.05em; margin: 14px 0 6px; border-bottom: 1.5px solid #006D77; padding-bottom: 2px; }
+  h3 { color: #333; font-size: 0.95em; margin: 10px 0 4px; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0; font-size: 11px; }
+  th { background: #006D77; color: #fff; padding: 5px 8px; text-align: left; font-size: 11px; }
+  .meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid #006D77; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 12px; color: #fff; font-weight: bold; font-size: 11px; }
+  .callout { padding: 8px 12px; background: #fff8e1; border-left: 3px solid #E29578; margin: 6px 0; font-size: 11px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul { margin: 4px 0 4px 18px; }
+  li { margin: 2px 0; font-size: 11px; }
+  .footer { margin-top: 14px; padding-top: 8px; border-top: 1px solid #ccc; font-size: 10px; color: #777; font-style: italic; }
+  @media print { body { padding: 0; } .no-print { display: none; } }
+  .print-btn { position: fixed; top: 10px; right: 10px; padding: 8px 14px; background: #006D77; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+</style></head><body>
+  <button class="print-btn no-print" onclick="window.print()">\ud83d\udda8\ufe0f Save as PDF</button>
+
+  <div class="meta">
+    <div>
+      <h1>Counsellor&rsquo;s Interpretation Note</h1>
+      <div style="color:#555;font-size:11px;">SCOPE Assessment \u2014 Srichakra Academy</div>
+    </div>
+    <div style="text-align:right;font-size:11px;">
+      <div><strong>Student:</strong> ${studentName}</div>
+      <div><strong>Date:</strong> ${assessmentDate}</div>
+      ${cons ? `<div style="margin-top:4px;"><span class="pill" style="background:${reliabilityColor};">Reliability: ${cons.level}</span></div>` : ''}
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Purpose.</strong> This one-pager is a translation layer between the scoring engine and your conversation
+    with the student. The full 8-page student report carries the narrative; this note carries the cautions,
+    the tie-zones, and the things the student is unlikely to read.
+  </div>
+
+  <h2>1. Reliability First \u2014 Before You Quote Any Score</h2>
+  <p>${reliabilityNote}</p>
+  ${cons?.flags && cons.flags.length > 0 ? `<p style="margin-top:4px;font-size:11px;color:#a05a00;"><strong>Flags raised:</strong> ${cons.flags.join('; ')}</p>` : ''}
+  ${wideBands.length > 0 ? `<p style="margin-top:4px;font-size:11px;color:#dc3545;"><strong>LOW INFO domains:</strong> ${wideBands.map((w: any) => w.domain).join(', ')} \u2014 CI band &gt; 40 pts. Do not rank these against the others.</p>` : ''}
+
+  <h2>2. Aptitude \u2014 Read the Bands, Not Just the Numbers</h2>
+  <table>
+    <thead><tr><th>Domain</th><th style="text-align:center;">Score</th><th style="text-align:center;">95% CI</th><th style="text-align:center;">Precision</th></tr></thead>
+    <tbody>${aptRows || '<tr><td colspan="4" style="padding:6px;font-style:italic;color:#777;">No aptitude data.</td></tr>'}</tbody>
+  </table>
+  <p style="margin-top:6px;font-size:11px;"><strong>How to talk about this:</strong> "Your verbal score is 72, but the test is 95% sure it&rsquo;s somewhere between 64 and 80." Where two domains&rsquo; CI bands overlap, treat them as a tie \u2014 do not let the student infer a ranking.</p>
+
+  <div class="grid2" style="margin-top:10px;">
+    <div>
+      <h2>3. Personality (MBTI) \u2014 The Supporting Signal</h2>
+      ${mbtiBlock}
+    </div>
+    <div>
+      <h2>4. Multiple Intelligences \u2014 Self-Reported Profile</h2>
+      ${miBars}
+      <p style="margin-top:6px;font-size:10px;color:#666;">MI is a self-report distribution. It does <em>not</em> feed into stream/family/cluster scoring. Use it for self-image and motivation conversations only.</p>
+    </div>
+  </div>
+
+  <h2>5. Top 3 Career Clusters \u2014 With MBTI Influence Surfaced</h2>
+  <table>
+    <thead><tr><th>Cluster</th><th style="text-align:center;">Match %</th><th style="text-align:center;">MBTI \u0394</th><th style="text-align:center;">Tied?</th></tr></thead>
+    <tbody>${topClusterRows || '<tr><td colspan="4" style="padding:6px;font-style:italic;color:#777;">No cluster data.</td></tr>'}</tbody>
+  </table>
+  <p style="margin-top:4px;font-size:11px;color:#555;">MBTI &Delta; is capped at &plusmn;5. A cluster with +5 means personality pushed it up; \u22125 means it would rank higher without the MBTI drag. A "tied" cluster is statistically indistinguishable from the leader.</p>
+
+  <h2>6. Tie-Zone Watch \u2014 Don&rsquo;t Force a Winner</h2>
+  <ul>
+    ${tiedStreams.length > 0 ? `<li><strong>Streams tied:</strong> ${tiedStreams.map((s: any) => `${s.stream || s.name} (${s.score})`).join(', ')}</li>` : '<li>Streams: clear leader \u2014 no tie.</li>'}
+    ${tiedFamilies.length > 0 ? `<li><strong>Course families tied:</strong> ${tiedFamilies.map((f: any) => `${f.family} (${f.score})`).join(', ')}</li>` : '<li>Course families: clear leader \u2014 no tie.</li>'}
+    ${tiedClusters.length > 0 ? `<li><strong>Career clusters tied:</strong> ${tiedClusters.map((c: any) => `${c.name} (${c.matchScore})`).join(', ')}</li>` : '<li>Career clusters: clear leader \u2014 no tie.</li>'}
+  </ul>
+
+  <h2>7. Suggested Conversation Prompts</h2>
+  <ul>
+    <li>"Which of the top three clusters surprises you most? Why?"</li>
+    <li>"Looking at your aptitude bands, where do you feel the score under-represents you? What kind of items did you find hardest?"</li>
+    ${mbti?.type ? `<li>"Your indicated MBTI type is <strong>${mbti.type}</strong>. Tell me about a recent decision you made \u2014 does that pattern feel like you?"</li>` : ''}
+    ${mi.length > 0 ? `<li>"Your strongest self-reported intelligences are <strong>${mi.slice(0, 2).map((m) => m.name).join(' and ')}</strong>. Where in everyday life do those show up?"</li>` : ''}
+    ${tiedStreams.length > 0 || tiedFamilies.length > 0 ? '<li>"You have two equally viable paths on paper. Which one matches the life you imagine in 10 years?"</li>' : ''}
+    <li>"What career did you think you wanted before this assessment, and has anything in this report nudged that?"</li>
+  </ul>
+
+  <h2>8. Red Flags \u2014 Escalate or Retest If You See These</h2>
+  <ul>
+    <li>Reliability = Low <strong>AND</strong> two or more LOW INFO bands \u2192 retest under supervision.</li>
+    <li>Student disputes the MBTI type strongly and the axes show 50\u201360 strength \u2192 type is borderline; do not over-anchor.</li>
+    <li>Top stream and top cluster point to different domains (e.g., Science stream but Creative Arts cluster) \u2192 explore interdisciplinary pathways, don\u2019t force a choice.</li>
+    <li>Family/parent pressure mentioned during the session \u2192 surface in the follow-up note; this report is the student\u2019s, not the family\u2019s.</li>
+  </ul>
+
+  <div class="footer">
+    Generated from the live SCOPE scoring engine. Methodology: 2PL IRT for aptitude (95% CI), 60-item RIASEC,
+    16-item MBTI Step-I-style (\u00b15 cap on cluster bonus), 10 mirror-pair consistency + 2 attention checks for validity,
+    8-domain Gardner MI as self-report. Holland\u2194MBTI mapping per Tieger / Barron-Tieger and Hammer &amp; Macdaid.
+    For internal counsellor use \u2014 do not hand to the student.
+  </div>
+</body></html>`;
 }
